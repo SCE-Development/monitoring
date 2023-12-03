@@ -1,0 +1,34 @@
+---
+groups:
+  - name: alert_rules
+    interval: 1s
+    rules:
+      - alert: ContainerNotRunning
+        expr: |
+          time() - container_last_seen{image=~"clark.*|nginx|mongo"} > 600
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Container "{{ $labels.name }}" not running
+          description: container "{{ $labels.name }}" has not been seen by cAdvisor for
+            more than {{ $value | printf "%.0f" }} seconds
+      - alert: SshTunnelDown
+        expr: time() - last_health_check_request > 600
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: SSH tunnel for job "{{ $labels.job }}" has not recieved a request for
+            over 5 minutes
+          description: last_health_check_request metric for job "{{ $labels.job }}" has a
+            value of {{ $value | printf "%.0f" }} seconds
+      - alert: InstanceDown
+        expr: up != 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Container for "{{ $labels.job }}" is down
+          description: up metric for container "{{ $labels.job }}" has been zero for more
+            than 10 minutes.

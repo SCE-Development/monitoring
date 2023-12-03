@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 5s
+
+
+scrape_configs:
+  - job_name: prometheus-aggregation
+    honor_labels: true
+    metrics_path: /federate
+    params:
+      match[]:
+        - '{job=~".+"}'
+    static_configs:
+      - targets: 
+        - prometheus-clark-sshtunnel:9090
+        - prometheus-poweredge:9090
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ['alertmanager:9093']
+
+
+rule_files:
+  - alert_rules.yml
+

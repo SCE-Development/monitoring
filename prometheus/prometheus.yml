@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 5s
+
+
+scrape_configs:
+  - job_name: 'sce-printer'
+    static_configs:
+      - targets: ['sce-printer.poweredge:9000']
+
+  - job_name: 'led-sign'
+    static_configs:
+      - targets: ['192.168.69.143:80']
+
+  - job_name: 'speaker'
+    static_configs:
+      - targets: ['192.168.69.121:8000']
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ['alertmanager:9093']
+
+
+rule_files:
+  - alert_rules.yml
+
