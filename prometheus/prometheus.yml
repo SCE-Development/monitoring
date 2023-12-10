@@ -15,6 +15,10 @@ scrape_configs:
     static_configs:
       - targets: ['192.168.69.121:8000']
 
+  - job_name: 'sce-tv'
+    static_configs:
+      - targets: ['gyat_server:5001']
+
 alerting:
   alertmanagers:
     - scheme: http
