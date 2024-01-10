@@ -24,7 +24,6 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 2,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -298,7 +297,7 @@
                         "uid": "PBFA97CFB590B2093"
                     },
                     "editorMode": "code",
-                    "expr": "process_cpu_seconds_total{job=\"cleezy\"}",
+                    "expr": "time() - process_start_time_seconds{job=\"cleezy\"}",
                     "legendFormat": "__auto",
                     "range": true,
                     "refId": "A"
@@ -324,6 +323,6 @@
     "timezone": "",
     "title": "Cleezy",
     "uid": "1_ebZxHSk",
-    "version": 2,
+    "version": 3,
     "weekStart": ""
 }
