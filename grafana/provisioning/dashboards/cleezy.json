@@ -24,6 +24,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
+    "id": 2,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -32,6 +33,7 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
             },
+            "description": "Excluding calls to /metrics",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -110,13 +112,13 @@
                         "uid": "PBFA97CFB590B2093"
                     },
                     "editorMode": "code",
-                    "expr": "http_error_codes_total",
-                    "legendFormat": "{{error_code}}",
+                    "expr": "http_code_total{path!=\"/metrics\"}",
+                    "legendFormat": "{{code}} {{path}}",
                     "range": true,
                     "refId": "A"
                 }
             ],
-            "title": "HTTP Error Response Codes",
+            "title": "HTTP Responses",
             "type": "timeseries"
         },
         {
@@ -315,13 +317,13 @@
         "list": []
     },
     "time": {
-        "from": "now-6h",
+        "from": "now-30m",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Cleezy",
     "uid": "1_ebZxHSk",
-    "version": 1,
+    "version": 2,
     "weekStart": ""
 }
