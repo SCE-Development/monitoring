@@ -319,7 +319,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "up{job=~\"led-sign|speaker|sce-printer\"}",
+          "expr": "up{job=~\"led-sign|delen|sce-printer\"}",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -393,7 +393,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "time() - process_start_time_seconds{job=~\"led-sign|speaker|sce-printer\"}",
+          "expr": "time() - process_start_time_seconds{job=~\"led-sign|delen|sce-printer\"}",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
