@@ -32,3 +32,11 @@ groups:
           summary: Container for "{{ $labels.job }}" is down
           description: up metric for container "{{ $labels.job }}" has been zero for more
             than 10 minutes.
+      - alert: SCEtaCacheBehind
+        expr: time () - cache_last_updated{job="sceta-server"} > 30 * 60
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: SCEta Cache is Behind
+          description: The transit data was last updated over 30 min ago, up from the usual 10 min interval.
