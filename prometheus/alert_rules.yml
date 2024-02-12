@@ -40,3 +40,13 @@ groups:
         annotations:
           summary: SCEta Cache is Behind
           description: The transit data was last updated over 30 min ago, up from the usual 10 min interval.
+      - alert: SCEtaTooManyRequests
+        # we don't understand how rate() works but we're alerting
+        # anytime this metric changes in value
+        expr: rate(api_response_codes_total{code="429"}[2h]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: SCEta exceeding 511 API call limit
+          description: SCEta is getting 429 errors from the 511 API
