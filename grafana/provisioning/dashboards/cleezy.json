@@ -111,7 +111,7 @@
                         "uid": "PBFA97CFB590B2093"
                     },
                     "editorMode": "code",
-                    "expr": "http_code_total{path!=\"/metrics\"}",
+                    "expr": "http_code_total{path!=\"/metrics\", job=\"cleezy\"}",
                     "legendFormat": "{{code}} {{path}}",
                     "range": true,
                     "refId": "A"
