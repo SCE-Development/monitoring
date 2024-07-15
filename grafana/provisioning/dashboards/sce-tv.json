@@ -80,7 +80,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "http_request_count_total",
+          "expr": "http_request_count_total{endpoint!=\"/metrics\"}",
           "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
