@@ -50,3 +50,27 @@ groups:
         annotations:
           summary: SCEta exceeding 511 API call limit
           description: SCEta is getting 429 errors from the 511 API
+      - alert: PrinterDoorOpen
+        expr: door_status_metric != 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: The printer door is open or has a "no print" cartridge
+          description: Status code is not 0
+      - alert: TrayIsEmpty
+        expr: tray_status_metric != 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: The printer has no more paper
+          description: Status code is not 0
+      - alert: RanOutofInk
+        expr: ink_percent = 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: The printer has no more ink
+          description: Percent is 0
