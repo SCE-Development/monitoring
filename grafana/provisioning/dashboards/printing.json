@@ -502,13 +502,13 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Paper Printing",
   "uid": "i4ipQwzSz",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
