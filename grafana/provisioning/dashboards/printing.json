@@ -33,6 +33,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -82,7 +83,7 @@
               }
             ]
           },
-          "unit": "bool_on_off"
+          "unit": "bool"
         },
         "overrides": []
       },
@@ -112,25 +113,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "snmp_metric{name=\"door_status\"}",
+          "expr": "snmp_error",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "builder",
-          "expr": "snmp_metric{name=\"tray_status\"}",
-          "hide": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "B"
         }
       ],
-      "title": "Door Status (Green) and Tray Status (Yellow)",
+      "title": "Error",
       "type": "timeseries"
     },
     {
@@ -520,6 +509,6 @@
   "timezone": "",
   "title": "Paper Printing",
   "uid": "i4ipQwzSz",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
