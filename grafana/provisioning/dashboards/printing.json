@@ -205,13 +205,44 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "snmp_metric{name=\"ink_percent\"}",
+          "expr": "snmp_metric{name=\"ink_level\"}",
+          "hide": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "builder",
+          "expr": "snmp_metric{name=\"ink_capacity\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Ink Level",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "{__name__=\"snmp_metric\", instance=\"snmp-collector:5000\", job=\"snmp-collector\", name=\"ink_level\"}",
+              "operator": "/",
+              "reducer": "sum",
+              "right": "{__name__=\"snmp_metric\", instance=\"snmp-collector:5000\", job=\"snmp-collector\", name=\"ink_capacity\"}"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -502,13 +533,13 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Paper Printing",
   "uid": "i4ipQwzSz",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }
