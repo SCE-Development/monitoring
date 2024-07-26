@@ -216,23 +216,11 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "snmp_metric{ip=\"192.168.69.149\", name=\"page_count\"}",
+          "expr": "snmp_metric{name=\"page_count\"}",
           "hide": false,
-          "legendFormat": "Left Printer {{ip}}",
+          "legendFormat": "{{ip}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "builder",
-          "expr": "snmp_metric{ip=\"192.168.69.208\", name=\"page_count\"}",
-          "hide": false,
-          "legendFormat": "Right Printer {{ip}}",
-          "range": true,
-          "refId": "B"
         }
       ],
       "title": "# of Pages Printed",
@@ -469,8 +457,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -534,6 +521,6 @@
   "timezone": "",
   "title": "Paper Printing",
   "uid": "i4ipQwzSz",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
