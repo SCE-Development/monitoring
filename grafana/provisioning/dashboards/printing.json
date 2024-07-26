@@ -113,7 +113,7 @@
           },
           "editorMode": "code",
           "expr": "snmp_metric{name=\"ink_level\",ip=\"192.168.69.149\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.149\"}",
-          "legendFormat": "Left Printer",
+          "legendFormat": "Left Printer {{ip}}",
           "range": true,
           "refId": "A"
         },
@@ -125,7 +125,7 @@
           "editorMode": "code",
           "expr": "snmp_metric{name=\"ink_level\",ip=\"192.168.69.208\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.208\"}",
           "hide": false,
-          "legendFormat": "Right Printer",
+          "legendFormat": "Right Printer {{ip}}",
           "range": true,
           "refId": "B"
         }
@@ -218,7 +218,7 @@
           "editorMode": "builder",
           "expr": "snmp_metric{ip=\"192.168.69.149\", name=\"page_count\"}",
           "hide": false,
-          "legendFormat": "Left Printer",
+          "legendFormat": "Left Printer {{ip}}",
           "range": true,
           "refId": "A"
         },
@@ -230,7 +230,7 @@
           "editorMode": "builder",
           "expr": "snmp_metric{ip=\"192.168.69.208\", name=\"page_count\"}",
           "hide": false,
-          "legendFormat": "Right Printer",
+          "legendFormat": "Right Printer {{ip}}",
           "range": true,
           "refId": "B"
         }
@@ -518,7 +518,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "revision": 1,
   "schemaVersion": 38,
   "style": "dark",
@@ -534,6 +534,6 @@
   "timezone": "",
   "title": "Paper Printing",
   "uid": "i4ipQwzSz",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
