@@ -66,8 +66,8 @@ groups:
         annotations:
           summary: The printer has no more paper
           description: Status code is not 0
-      - alert: RanOutofInk
-        expr: ink_percent = 0
+      - alert: PrinterRunningOutOfInk
+        expr: ink_percent < 0.3
         for: 10m
         labels:
           severity: critical
