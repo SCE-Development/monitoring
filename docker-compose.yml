@@ -14,8 +14,6 @@ services:
       - /var/log:/var/log
       - ./promtail:/etc/promtail
     command: -config.file=/etc/promtail/promtail-config.yml
-    networks:
-      - poweredge
   prometheus-poweredge:
     image: prom/prometheus:latest
     restart: always
