@@ -66,13 +66,18 @@ services:
     restart: unless-stopped
     volumes:
       - '/:/host:ro,rslave'
+  grafana-py:
+    build:
+      context: ./grafana/
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
 
 volumes:
   alertmanager-data:
   grafana-data:
-
-networks: 
-  default:
-    external: 
-      name: poweredge
-
