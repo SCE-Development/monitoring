@@ -58,15 +58,6 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus-federated
-  poweredge-2950-node-exporter:
-    image: quay.io/prometheus/node-exporter:latest
-    command:
-      - '--path.rootfs=/host'
-    pid: host
-    restart: unless-stopped
-    volumes:
-      - '/:/host:ro,rslave'
-
   grafana-grafanalib:
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafanalib/
@@ -79,7 +70,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - grafanalib-grafana-data:/var/lib/grafana
 
-  node-exporter:
+  poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     command:
       - '--path.rootfs=/host'
