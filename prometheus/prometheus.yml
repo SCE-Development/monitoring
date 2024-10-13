@@ -23,9 +23,9 @@ scrape_configs:
     static_configs:
       - targets: ['snmp-collector:5000']
 
-  - job_name: 'node-exporter'
+  - job_name: 'poweredge-2950-node-exporter'
     static_configs:
-      - targets: [ 'node-exporter:9100' ]
+      - targets: [ 'poweredge-2950-node-exporter:9100' ]
 
 alerting:
   alertmanagers:

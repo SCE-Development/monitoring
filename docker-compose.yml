@@ -58,7 +58,7 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus-federated
-  node-exporter:
+  poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     command:
       - '--path.rootfs=/host'
