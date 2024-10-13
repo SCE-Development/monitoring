@@ -73,3 +73,8 @@ services:
 volumes:
   alertmanager-data:
   grafana-data:
+
+networks: 
+  default:
+    external: 
+      name: poweredge
