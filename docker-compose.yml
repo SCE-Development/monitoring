@@ -71,7 +71,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - grafanalib-grafana-data:/var/lib/grafana
 
-  node-exporter:
+  poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     command:
       - '--path.rootfs=/host'
