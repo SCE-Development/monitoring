@@ -5,6 +5,8 @@ from grafanalib.core import (
 )
 from grafanalib.formatunits import BYTES_IEC
 
+prom_datasource="PBFA97CFB590B2093"
+
 dashboard = Dashboard(
     title="Containers",
     description="Data for compose projects from default Prometheus datasource collected by Cadvisor",
@@ -16,7 +18,7 @@ dashboard = Dashboard(
         Template(
             name="compose_project",
             label="compose_project",
-            dataSource="prometheus",
+            dataSource=prom_datasource,
             query='label_values({__name__=~"container.*"}, container_label_com_docker_compose_project)',
             includeAll=True,
             multi=True,
@@ -28,7 +30,7 @@ dashboard = Dashboard(
         Template(
             name="container_name",
             label="container_name",
-            dataSource="prometheus",
+            dataSource=prom_datasource,
             query='label_values({__name__=~"container.*", container_label_com_docker_compose_project=~"$compose_project"}, name)',
             includeAll=True,
             multi=True,
@@ -45,7 +47,7 @@ dashboard = Dashboard(
             title="Container Memory Usage",
             targets=[
                 Target(
-                    datasource='prometheus',
+                    datasource=prom_datasource,
                     expr='max by (name) (container_memory_usage_bytes{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"})',
                     legendFormat="{{ name }}",
                     refId='A',
