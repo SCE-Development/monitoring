@@ -58,7 +58,9 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus-federated
-  grafana-py:
+  grafana-grafanalib:
+    environment:
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafanalib/
     build:
       context: ./grafana/
       dockerfile: ./Dockerfile
@@ -66,13 +68,12 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - grafana-data:/var/lib/grafana
-    ports:
-      - 3000:3000
+      - grafanalib-grafana-data:/var/lib/grafana
 
 volumes:
   alertmanager-data:
   grafana-data:
+  grafanalib-grafana-data:
 
 networks: 
   default:
