@@ -4,6 +4,9 @@ RUN pip install grafanalib
 
 COPY ./provisioning/dashboards-py /dashboards
 
+# Required for grafanalib to find the shared python files like common.py
+ENV PYTHONPATH=/dashboards
+
 RUN generate-dashboards /dashboards/*.dashboard.py
 
 # stage 2
