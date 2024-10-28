@@ -1,5 +1,5 @@
-from grafanalib.core import Dashboard, Templating, Template, TimeSeries, PERCENT_UNIT_FORMAT, GridPos, Target
-from grafanalib.formatunits import BYTES_IEC
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target
+from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT
 
 from common import PrometheusTemplate
 from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
@@ -35,7 +35,7 @@ dashboard = Dashboard(
         TimeSeries(
             title='CPU Basic',
             description='Basic CPU usage info',
-            unit=PERCENT_UNIT_FORMAT,
+            unit=PERCENT_UNIT,
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=1,
             fillOpacity=30,
