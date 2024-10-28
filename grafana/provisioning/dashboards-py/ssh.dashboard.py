@@ -1,56 +1,121 @@
-"""
-curl -o example.dashboard.py https://raw.githubusercontent.com/weaveworks/grafanalib/main/grafanalib/tests/examples/example.dashboard.py
-generate-dashboard -o frontend.json example.dashboard.py
-"""
+from grafanalib.core import Dashboard, Templating, Stat, TimeSeries, Target, GridPos
+from grafanalib.formatunits import SECONDS, TRUE_FALSE, DAYS
 
-from grafanalib.core import (
-    Dashboard, TimeSeries, GaugePanel,
-    Target, GridPos,
-    OPS_FORMAT
-)
+from common import PrometheusTemplate
+
+time_since_ssh_overrides=[
+            {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                    "id": "byNames",
+                    "options": {
+                        "mode": "exclude",
+                        "names": [
+                            "sce-printer"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": True
+                    }
+                },
+                "properties": [
+                    {
+                        "id": "custom.hideFrom",
+                        "value": {
+                            "legend": False,
+                            "tooltip": False,
+                            "viz": True
+                        }
+                    }
+                ]
+            }
+    ]
+
+uptime_thresholds=[
+    {
+        "color": "blue",
+        "value": None
+    }
+]
 
 dashboard = Dashboard(
-    title="Python generated example dashboard",
-    description="Example dashboard using the Random Walk and default Prometheus datasource",
-    tags=[
-        'example'
-    ],
-    timezone="browser",
+    title='SSH Tunnel Health',
+    uid='SSHTunnelHealth',
+    description='Health of SSH Tunnel',
+    timezone='browser',
+    templating=Templating(list=[
+        # Datasource
+        PrometheusTemplate,
+    ]),
     panels=[
         TimeSeries(
-            title="HELP",
-            dataSource='default',
+            title='Time since last health check',
+            unit=SECONDS,
+            gridPos=GridPos(h=9, w=12, x=0, y=0),
+            lineWidth=2,
+            stacking={'group': 'A','mode': 'none'},
             targets=[
                 Target(
-                    datasource='grafana',
-                    expr='example',
-                ),
-            ],
-            gridPos=GridPos(h=8, w=16, x=0, y=0),
-        ),
-        GaugePanel(
-            title="ME!!!!",
-            dataSource='default',
-            targets=[
-                Target(
-                    datasource='grafana',
-                    expr='example',
-                ),
-            ],
-            gridPos=GridPos(h=4, w=4, x=17, y=0),
-        ),
-        TimeSeries(
-            title="Prometheus http requests",
-            dataSource='prometheus',
-            targets=[
-                Target(
-                    expr='rate(prometheus_http_requests_total[5m])',
-                    legendFormat="{{ handler }}",
+                    datasource='${datasource}',
+                    expr='time() - last_health_check_request',
+                    legendFormat='{{job}}',
                     refId='A',
                 ),
             ],
-            unit=OPS_FORMAT,
-            gridPos=GridPos(h=8, w=16, x=0, y=10),
+        ),
+        TimeSeries(
+            title='Time since SSH tunnel reopened',
+            unit=SECONDS,
+            gridPos=GridPos(h=9, w=12, x=12, y=0),
+            overrides=time_since_ssh_overrides,
+            lineWidth=2,
+            tooltipMode='all',
+            tooltipSort='desc',
+            targets=[
+                Target(
+                    datasource='${datasource}',
+                    expr='time() - ssh_tunnel_last_opened',
+                    legendFormat='{{job}}',
+                    refId='A',
+                ),
+            ],
+        ),
+        TimeSeries(
+            title='Container Health',
+            unit=TRUE_FALSE, # idk if we should have it as true/false instead of 1/0 lol
+            gridPos=GridPos(h=8, w=12, x=0, y=8),
+            lineWidth=2,
+            tooltipMode='all',
+            tooltipSort='desc',
+            targets=[
+                Target(
+                    datasource='${datasource}',
+                    expr='up{job=~"led-sign|delen|sce-printer"}',
+                    legendFormat="{{job}}",
+                    refId='A',
+                ),
+                Target(
+                    datasource='${datasource}',
+                    expr='up{instance=\"prometheus-clark-sshtunnel:9090\"}',
+                    legendFormat="{{job}}",
+                    refId='B',
+                ),
+            ],
+        ),
+        Stat(
+            title='Container Uptime',
+            gridPos=GridPos(h=8, w=12, x=12, y=9),
+            format=SECONDS,
+            decimals=2,
+            reduceCalc='lastNotNull',
+            thresholds=uptime_thresholds,
+            targets=[
+                Target(
+                    datasource='${datasource}',
+                    expr='time() - process_start_time_seconds{job=~\"led-sign|delen|sce-printer\"}',
+                    legendFormat="{{job}}",
+                    refId='A',
+                ),
+            ],
         ),
     ],
 ).auto_panel_ids()
