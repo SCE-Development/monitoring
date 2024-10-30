@@ -34,13 +34,13 @@ dashboard = Dashboard(
             unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=2,
-            legendFormat="{{query_type}}",
             stacking={'group': 'A','mode': 'none'},
             tooltipMode='all',
             tooltipSort='desc',
             targets=[
                 Target(
                     datasource='${datasource}',
+                    legendFormat="{{query_type}}",
                     expr='query_time_sum / query_time_count',
                     refId='A',
                 ),
@@ -51,13 +51,13 @@ dashboard = Dashboard(
             unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=2,
-            legendFormat="{{code}} {{path}}",
             stacking={'group': 'A','mode': 'none'},
             tooltipMode='all',
             tooltipSort='desc',
             targets=[
                 Target(
                     datasource='${datasource}',
+                    legendFormat="{{code}} {{path}}",
                     expr='http_code_total{path!="/metrics", job="cleezy"}',
                     refId='A',
                 ),
@@ -68,13 +68,13 @@ dashboard = Dashboard(
             unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=2,
-            legendFormat="{{__name__}}",
             stacking={'group': 'A','mode': 'none'},
             tooltipMode='all',
             tooltipSort='desc',
             targets=[
                 Target(
                     datasource='${datasource}',
+                    legendFormat="{{__name__}}",
                     expr='cache_hits_total',
                     refId='A',
                 ),
