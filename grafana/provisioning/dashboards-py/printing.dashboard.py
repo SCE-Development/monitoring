@@ -1,5 +1,5 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
-from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FALSE
+from grafanalib.formatunits import PERCENT_UNIT, SECONDS, 
 
 from common import PrometheusTemplate
 
@@ -38,7 +38,6 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='# of Pages Printed',
-            unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=12, y=0),
             lineWidth=2,
             tooltipMode='all',
@@ -70,7 +69,6 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='Print Jobs Recieved',
-            unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=12, y=8),
             lineWidth=2,
             tooltipMode='all',
@@ -86,7 +84,6 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='Error',
-            unit=TRUE_FALSE,
             gridPos=GridPos(h=8, w=12, x=0, y=16),
             lineWidth=2,
             tooltipMode='all',
