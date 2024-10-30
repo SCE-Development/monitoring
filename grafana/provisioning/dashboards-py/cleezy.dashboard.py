@@ -4,8 +4,8 @@ from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FA
 from common import PrometheusTemplate
 
 dashboard = Dashboard(
-    title='Clark',
-    uid='clark',
+    title='Cleezy',
+    uid='leezy',
     description='sce club website',
     timezone='browser',
     templating=Templating(list=[
