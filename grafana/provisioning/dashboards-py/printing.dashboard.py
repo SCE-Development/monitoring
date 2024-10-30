@@ -1,5 +1,5 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
-from grafanalib.formatunits import PERCENT_UNIT, SECONDS, 
+from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
 
 from common import PrometheusTemplate
 
