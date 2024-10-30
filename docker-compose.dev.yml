@@ -1,0 +1,76 @@
+
+version: '3.7'
+
+services:
+  prometheus-poweredge:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  prometheus-clark-sshtunnel:
+    image: nowsci/sshtunnel
+    volumes:
+      - ~/.ssh/id_ed25519.pub:/app/ssh_key.pub
+      - ~/.ssh/id_ed25519:/app/ssh_key
+      - ~/.ssh/known_hosts:/app/known_hosts
+    environment:
+      - REMOTE_HOST=127.0.0.1
+      - REMOTE_PORT=9090
+      - TUNNEL_HOST=sce@10.31.5.15
+      - TUNNEL_PORT=22
+      - LOCAL_PORT=9090
+      - KEY=/app/ssh_key
+  prometheus-federated:
+    restart: always
+    image: prom/prometheus:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - ./prometheus/prometheus.federate.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    restart: unless-stopped
+    volumes:
+      - "./alertmanager:/config"
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug --cluster.advertise-address=0.0.0.0:9093
+  discord-alerts:
+    image: benjojo/alertmanager-discord
+    restart: unless-stopped
+    environment:
+      - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    environment:
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus-federated
+  grafana-py:
+    build:
+      context: ./grafana/
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+
+volumes:
+  alertmanager-data:
+  grafana-data:
