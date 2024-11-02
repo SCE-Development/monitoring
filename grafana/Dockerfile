@@ -18,4 +18,4 @@ COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
 COPY ./provisioning/dashboards-py/all.yml /etc/grafana/provisioning/dashboards/all.yml
 
 # Generated dashboards
-COPY --from=builder /dashboards/*.json /etc/grafana/provisioning/dashboards
+COPY --from=builder /dashboards/*.json /etc/grafana/provisioning/dashboards/
