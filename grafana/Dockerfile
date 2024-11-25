@@ -1,4 +1,4 @@
-FROM python:3-alpine AS builder
+FROM python:3.9.6-slim-buster AS builder
 
 RUN pip install grafanalib
 
@@ -10,7 +10,7 @@ ENV PYTHONPATH=/dashboards
 RUN generate-dashboards /dashboards/*.dashboard.py
 
 # stage 2
-FROM grafana/grafana:latest
+FROM grafana/grafana:10.2.2-ubuntu
 
 # Grafana configs
 COPY ./grafana.ini /etc/grafana/grafana.ini

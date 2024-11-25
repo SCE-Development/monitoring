@@ -34,7 +34,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
   alertmanager:
-    image: prom/alertmanager:v0.23.0
+    image: prom/alertmanager:v0.27.0
     restart: unless-stopped
     volumes:
       - "./alertmanager:/config"
@@ -46,7 +46,7 @@ services:
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.2.2-ubuntu
     restart: always
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
