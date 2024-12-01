@@ -41,10 +41,6 @@ dashboard = Dashboard(
         Stat(
             title='Container Uptime',
             gridPos=GridPos(h=8, w=12, x=12, y=0),
-            unit=SECONDS,
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
