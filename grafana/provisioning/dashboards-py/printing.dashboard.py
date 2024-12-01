@@ -6,7 +6,7 @@ from common import PROMETHEUS_DATASOURCE_NAME
 
 dashboard = Dashboard(
     title='Quasar',
-    uid='quasar1',
+    uid='quasar',
     description='Printer metrics',
     timezone='browser',
     panels=[

@@ -7,7 +7,7 @@ from common import PROMETHEUS_DATASOURCE_NAME
 dashboard = Dashboard(
     title='SCEta',
     uid='sceta',
-    description='Printer metrics',
+    description='Transit prediction service metrics',
     timezone='browser',
     panels=[
         TimeSeries(
