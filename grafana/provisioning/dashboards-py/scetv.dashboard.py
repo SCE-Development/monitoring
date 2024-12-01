@@ -47,6 +47,9 @@ dashboard = Dashboard(
             title='Container Uptime',
             reduceCalc='lastNotNull',
             gridPos=GridPos(h=8, w=12, x=12, y=0),
+            thresholds=[
+                Threshold('green', 0, 0.0),
+            ],
             format=SECONDS,
             targets=[
                 Target(
