@@ -1,6 +1,7 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target
 from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT
 
+from common import PROMETHEUS_DATASOURCE_NAME
 from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
 
 dashboard = Dashboard(
@@ -15,13 +16,13 @@ dashboard = Dashboard(
         Template(
             name='job',
             label='Job',
-            dataSource='${datasource}',
+            dataSource=PROMETHEUS_DATASOURCE_NAME,
             query='label_values(node_uname_info, job)',
         ),
         Template(
             name='instance',
             label='Instance',
-            dataSource='${datasource}',
+            dataSource=PROMETHEUS_DATASOURCE_NAME,
             query='label_values(node_uname_info{job="$job"}, instance)',
         ),
     ]),
@@ -40,37 +41,37 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Busy System',
                     refId='A',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Busy User',
                     refId='B',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Busy Iowait',
                     refId='C',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Busy IRQs',
                     refId='D',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Busy Other',
                     refId='E',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                     legendFormat='Idle',
                     refId='F',
@@ -93,33 +94,33 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
                     format='time_series',
                     legendFormat='RAM Total',
                     refId='A',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
                     format='time_series',
                     legendFormat='RAM Used',
                     refId='B',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
                     legendFormat='RAM Cache + Buffer',
                     refId='C',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='node_memory_MemFree_bytes{instance="$instance",job="$job"}',
                     legendFormat='RAM Free',
                     refId='D',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
                     legendFormat='SWAP Used',
                     refId='E',

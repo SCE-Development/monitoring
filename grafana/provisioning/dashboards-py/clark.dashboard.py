@@ -1,6 +1,8 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FALSE
 
+from common import PROMETHEUS_DATASOURCE_NAME
+
 
 dashboard = Dashboard(
     title='Clark',
@@ -18,7 +20,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='endpoint_hits{route!="/metrics"}',
                     refId='A',
                 ),
@@ -34,7 +36,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='endpoint_hits{route=~"/(sendPasswordReset|validatePasswordReset|resetPassword)"}',
                     refId='A',
                 ),
@@ -50,7 +52,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='endpoint_hits{route=~"/(send|listen|getLatestMessage)"}',
                     refId='A',
                 ),

@@ -1,6 +1,8 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FALSE
 
+from common import PROMETHEUS_DATASOURCE_NAME
+
 
 dashboard = Dashboard(
     title='Cleezy',
@@ -18,7 +20,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='cache_size',
                     refId='A',
                 ),
@@ -34,7 +36,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     legendFormat="{{query_type}}",
                     expr='query_time_sum / query_time_count',
                     refId='A',
@@ -51,7 +53,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     legendFormat="{{code}} {{path}}",
                     expr='http_code_total{path!="/metrics", job="cleezy"}',
                     refId='A',
@@ -68,7 +70,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     legendFormat="{{__name__}}",
                     expr='cache_hits_total',
                     refId='A',
@@ -85,7 +87,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='time() - process_start_time_seconds{job="cleezy"}',
                     refId='A',
                 ),

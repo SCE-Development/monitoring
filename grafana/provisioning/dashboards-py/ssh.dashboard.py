@@ -1,6 +1,7 @@
 from grafanalib.core import Dashboard, Templating, Stat, TimeSeries, Target, GridPos
 from grafanalib.formatunits import SECONDS, TRUE_FALSE, DAYS
 
+from common import PROMETHEUS_DATASOURCE_NAME
 
 time_since_ssh_overrides=[
             {
@@ -50,7 +51,7 @@ dashboard = Dashboard(
             stacking={'group': 'A','mode': 'none'},
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='time() - last_health_check_request',
                     legendFormat='{{job}}',
                     refId='A',
@@ -67,7 +68,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='time() - ssh_tunnel_last_opened',
                     legendFormat='{{job}}',
                     refId='A',
@@ -83,13 +84,13 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='up{job=~"led-sign|delen|sce-printer"}',
                     legendFormat="{{job}}",
                     refId='A',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='up{instance=\"prometheus-clark-sshtunnel:9090\"}',
                     legendFormat="{{job}}",
                     refId='B',
@@ -105,7 +106,7 @@ dashboard = Dashboard(
             thresholds=uptime_thresholds,
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='time() - process_start_time_seconds{job=~\"led-sign|delen|sce-printer\"}',
                     legendFormat="{{job}}",
                     refId='A',

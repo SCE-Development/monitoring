@@ -5,7 +5,8 @@ from grafanalib.core import (
 )
 from grafanalib.formatunits import BYTES_IEC, SECONDS, BYTES_SEC_IEC
 
-prom_datasource = '${datasource}'
+from common import PROMETHEUS_DATASOURCE_NAME
+
 
 dashboard = Dashboard(
     title='Cadvisor',
@@ -19,7 +20,7 @@ dashboard = Dashboard(
         Template(
             name='compose_project',
             label='Compose Project',
-            dataSource=prom_datasource,
+            dataSource=PROMETHEUS_DATASOURCE_NAME,
             query='label_values({__name__=~"container.*"}, container_label_com_docker_compose_project)',
             includeAll=True,
             multi=True,
@@ -28,7 +29,7 @@ dashboard = Dashboard(
         Template(
             name='container_name',
             label='Container',
-            dataSource=prom_datasource,
+            dataSource=PROMETHEUS_DATASOURCE_NAME,
             query='label_values({__name__=~"container.*", container_label_com_docker_compose_project=~"$compose_project"}, name)',
             includeAll=True,
             multi=True,
@@ -49,7 +50,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource=prom_datasource,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='max by (name) (container_memory_usage_bytes{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"})',
                     legendFormat='{{ name }}',
                     refId='A',
@@ -65,7 +66,7 @@ dashboard = Dashboard(
             showPoints='never',
             targets=[
                 Target(
-                    datasource=prom_datasource,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='max by (name) (rate(container_cpu_usage_seconds_total{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"}[$__rate_interval]))',
                     legendFormat='{{ name }}',
                     refId='A',
@@ -83,13 +84,13 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource=prom_datasource,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='max by (name) (rate(container_network_receive_bytes_total{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"}[$__rate_interval]))',
                     legendFormat="rx {{ name }}",
                     refId='A',
                 ),
                 Target(
-                    datasource=prom_datasource,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='-max by (name) (rate(container_network_transmit_bytes_total{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"}[$__rate_interval]))',
                     legendFormat="tx {{ name }}",
                     refId='B',

@@ -1,6 +1,8 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
 
+from common import PROMETHEUS_DATASOURCE_NAME
+
 
 dashboard = Dashboard(
     title='Quasar',
@@ -18,13 +20,13 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_metric{name=\"ink_level\",ip=\"192.168.69.149\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.149\"}',
                     legendFormat='Left Printer {{ip}}',
                     refId='A',
                 ),
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_metric{name=\"ink_level\",ip=\"192.168.69.208\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.208\"}',
                     legendFormat='Right Printer {{ip}}',
                     refId='B',
@@ -39,7 +41,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_metric{name=\"page_count\"}',
                     legendFormat='{{ip}}',
                     refId='A',
@@ -55,7 +57,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_request_duration_sum/snmp_request_duration_count',
                     legendFormat="__auto",
                     refId='A',
@@ -70,7 +72,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='rate(print_jobs_recieved_total[$__rate_interval])',
                     legendFormat="__auto",
                     refId='A',
@@ -85,7 +87,7 @@ dashboard = Dashboard(
             tooltipSort='desc',
             targets=[
                 Target(
-                    datasource='${datasource}',
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_error',
                     legendFormat="__auto",
                     refId='A',
