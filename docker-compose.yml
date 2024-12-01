@@ -34,7 +34,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
   alertmanager:
-    image: prom/alertmanager:v0.23.0
+    image: prom/alertmanager:v0.27.0
     restart: unless-stopped
     volumes:
       - "./alertmanager:/config"
@@ -46,18 +46,17 @@ services:
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
-    image: grafana/grafana:latest
-    restart: always
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+    build:
+      context: ./grafana/
+      dockerfile: ./Dockerfile
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/provisioning:/etc/grafana/provisioning
       - grafana-data:/var/lib/grafana
-    depends_on:
-      - prometheus-federated
+
   poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     command:
@@ -75,4 +74,3 @@ networks:
   default:
     external: 
       name: poweredge
-

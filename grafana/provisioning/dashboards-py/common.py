@@ -1,0 +1,1 @@
+PROMETHEUS_DATASOURCE_NAME = 'Prometheus'

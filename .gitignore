@@ -3,3 +3,6 @@ what.sh
 game\ plan
 .DS_Store
 .bundle
+venv
+__pycache__
+grafana/provisioning/dashboards-py/*.json
