@@ -4,6 +4,7 @@ from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT
 from common import PROMETHEUS_DATASOURCE_NAME
 from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
 
+
 dashboard = Dashboard(
     title='Node Exporter',
     uid='node',
@@ -32,7 +33,6 @@ dashboard = Dashboard(
             title='CPU Basic',
             description='Basic CPU usage info',
             unit=PERCENT_UNIT,
-            gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=1,
             fillOpacity=30,
             showPoints='never',
@@ -85,7 +85,6 @@ dashboard = Dashboard(
             title='Memory Basic',
             description='Basic memory usage',
             unit=BYTES_IEC,
-            gridPos=GridPos(h=8, w=12, x=12, y=0),
             lineWidth=1,
             fillOpacity=30,
             showPoints='never',
