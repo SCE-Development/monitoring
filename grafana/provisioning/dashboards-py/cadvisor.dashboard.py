@@ -5,22 +5,17 @@ from grafanalib.core import (
 )
 from grafanalib.formatunits import BYTES_IEC, SECONDS, BYTES_SEC_IEC
 
-from common import LokiTarget, PrometheusTemplate
-
 prom_datasource = '${datasource}'
-# TODO: Loki (@weslayer)
-loki_datasource = 'loki'
 
 dashboard = Dashboard(
-    title='Containers',
-    uid='containers',
-    description='Data for compose projects from default Prometheus datasource collected by Cadvisor',
+    title='Cadvisor',
+    uid='cadvisor',
+    description='Container metrics collected by Cadvisor',
     tags=[
         'linux',
         'docker',
     ],
     templating=Templating(list=[
-        PrometheusTemplate,
         Template(
             name='compose_project',
             label='Compose Project',
@@ -38,12 +33,6 @@ dashboard = Dashboard(
             includeAll=True,
             multi=True,
             refresh=REFRESH_ON_TIME_RANGE_CHANGE,
-        ),
-        Template(
-            name='logs_query',
-            label='Log Search',
-            query='',
-            type='textbox',
         ),
     ]),
     timezone='browser',
@@ -104,23 +93,6 @@ dashboard = Dashboard(
                     expr='-max by (name) (rate(container_network_transmit_bytes_total{name=~"$container_name", container_label_com_docker_compose_project=~"$compose_project"}[$__rate_interval]))',
                     legendFormat="tx {{ name }}",
                     refId='B',
-                ),
-            ],
-        ),
-        Logs(
-            title='',
-            gridPos=GridPos(h=8, w=12, x=12, y=8),
-            showLabels=True,
-            showCommonLabels=True,
-            wrapLogMessages=True,
-            prettifyLogMessage=True,
-            dedupStrategy='numbers',
-            targets=[
-                LokiTarget(
-                    loki_datasource=loki_datasource,
-                    expr='{compose_project=~"$compose_project", container_name=~"$container_name"} |= `$logs_query`',
-                    legendFormat='{{ container_name }}',
-                    refId='A',
                 ),
             ],
         ),
