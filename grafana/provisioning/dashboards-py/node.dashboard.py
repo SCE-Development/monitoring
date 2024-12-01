@@ -1,7 +1,6 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target
 from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT
 
-from common import PrometheusTemplate
 from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
 
 dashboard = Dashboard(
@@ -13,16 +12,12 @@ dashboard = Dashboard(
     ],
     timezone='browser',
     templating=Templating(list=[
-        # Datasource
-        PrometheusTemplate,
-        # Job
         Template(
             name='job',
             label='Job',
             dataSource='${datasource}',
             query='label_values(node_uname_info, job)',
         ),
-        # Instance
         Template(
             name='instance',
             label='Instance',

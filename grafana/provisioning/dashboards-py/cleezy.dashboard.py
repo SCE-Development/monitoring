@@ -1,17 +1,12 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FALSE
 
-from common import PrometheusTemplate
 
 dashboard = Dashboard(
     title='Cleezy',
     uid='leezy',
     description='sce club website',
     timezone='browser',
-    templating=Templating(list=[
-        # Datasource
-        PrometheusTemplate,
-    ]),
     panels=[
         TimeSeries(
             title='Cache Size (entries)',

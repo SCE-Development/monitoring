@@ -1,17 +1,12 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
 
-from common import PrometheusTemplate
 
 dashboard = Dashboard(
-    title='Printers',
-    uid='printers',
+    title='Quasar',
+    uid='quasar',
     description='Printer metrics',
     timezone='browser',
-    templating=Templating(list=[
-        # Datasource
-        PrometheusTemplate,
-    ]),
     panels=[
         TimeSeries(
             title='Ink Level',
