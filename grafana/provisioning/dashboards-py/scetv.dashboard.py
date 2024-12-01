@@ -133,7 +133,7 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='Cache Size Bytes',
-            gridPos=GridPos(h=8, w=12, x=0, y=24),
+            gridPos=GridPos(h=8, w=12, x=12, y=24),
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
@@ -149,7 +149,7 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='Total YouTube Videos Played',
-            gridPos=GridPos(h=8, w=12, x=8, y=24),
+            gridPos=GridPos(h=8, w=12, x=0, y=32),
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
@@ -165,7 +165,7 @@ dashboard = Dashboard(
         ),
         TimeSeries(
             title='Cache Size',
-            gridPos=GridPos(h=8, w=12, x=0, y=32),
+            gridPos=GridPos(h=8, w=12, x=12, y=32),
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
