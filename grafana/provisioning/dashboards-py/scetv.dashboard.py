@@ -28,6 +28,8 @@ dashboard = Dashboard(
     panels=[
         BarGauge(
             title='HTTP Requests',
+            calc='lastNotNull',
+            thresholdType='off',
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             targets=[
                 Target(
