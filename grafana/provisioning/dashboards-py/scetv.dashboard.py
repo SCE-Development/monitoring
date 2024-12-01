@@ -2,6 +2,7 @@ from grafanalib.core import (
     Dashboard,
     Templating,
     Template,
+    Threshold,
     TimeSeries,
     Target,
     GridPos,
@@ -29,7 +30,9 @@ dashboard = Dashboard(
         BarGauge(
             title='HTTP Requests',
             calc='lastNotNull',
-            thresholds=[],
+            thresholds=[
+                Threshold('green', 0, 0.0),
+            ],
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             targets=[
                 Target(
