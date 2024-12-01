@@ -30,7 +30,7 @@ dashboard = Dashboard(
         Stat(
             title='Container Uptime',
             reduceCalc='lastNotNull',
-            gridPos=GridPos(h=8, w=12, x=0, y=0),
+            gridPos=GridPos(h=16, w=24, x=0, y=0),
             thresholds=[
                 Threshold('green', 0, 0.0),
             ],
@@ -53,7 +53,7 @@ dashboard = Dashboard(
         TimeSeries(
             title='Metric Health',
             unit=NUMBER_FORMAT,
-            gridPos=GridPos(h=8, w=12, x=12, y=0),
+            gridPos=GridPos(h=8, w=12, x=0, y=16),
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
@@ -69,7 +69,7 @@ dashboard = Dashboard(
         TimeSeries(
             title='Container Last Seen (Clark Only)',
             unit=SECONDS,
-            gridPos=GridPos(h=8, w=12, x=0, y=8),
+            gridPos=GridPos(h=8, w=12, x=12, y=16),
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
