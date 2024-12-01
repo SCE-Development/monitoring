@@ -1,7 +1,6 @@
 from grafanalib.core import Dashboard, Templating, Stat, TimeSeries, Target, GridPos
 from grafanalib.formatunits import SECONDS, TRUE_FALSE, DAYS
 
-from common import PrometheusTemplate
 
 time_since_ssh_overrides=[
             {
@@ -42,10 +41,6 @@ dashboard = Dashboard(
     uid='SSHTunnelHealth',
     description='Health of SSH Tunnel',
     timezone='browser',
-    templating=Templating(list=[
-        # Datasource
-        PrometheusTemplate,
-    ]),
     panels=[
         TimeSeries(
             title='Time since last health check',
