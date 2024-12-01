@@ -29,7 +29,6 @@ dashboard = Dashboard(
         BarGauge(
             title='HTTP Requests',
             gridPos=GridPos(h=8, w=12, x=0, y=0),
-            lineWidth=2,
             stacking={'group': 'A','mode': 'none'},
             tooltipMode='all',
             tooltipSort='desc',
