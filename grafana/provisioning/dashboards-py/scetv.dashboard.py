@@ -28,7 +28,6 @@ dashboard = Dashboard(
     panels=[
         BarGauge(
             title='HTTP Requests',
-            unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             lineWidth=2,
             stacking={'group': 'A','mode': 'none'},
