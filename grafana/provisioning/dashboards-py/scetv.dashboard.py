@@ -72,9 +72,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=BITS_SEC,
             targets=[
                 Target(
-                    datasource=BITS_SEC,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='data_downloaded_total{job=\"sce-tv\"} * 8 / download_time_sum',
                     legendFormat="__auto",
                     refId='A',
@@ -87,9 +88,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=SECONDS
             targets=[
                 Target(
-                    datasource=SECONDS,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='download_time_sum',
                     legendFormat="{{job}}",
                     refId='A',
@@ -102,9 +104,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=NUMBER_FORMAT,
             targets=[
                 Target(
-                    datasource=NUMBER_FORMAT,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='cache_miss_count_total',
                     legendFormat="__auto",
                     refId='A',
@@ -117,9 +120,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=NUMBER_FORMAT,
             targets=[
                 Target(
-                    datasource=NUMBER_FORMAT,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='video_download_count_total',
                     legendFormat="__auto",
                     refId='A',
@@ -132,9 +136,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=BYTES,
             targets=[
                 Target(
-                    datasource=BYTES,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='cache_size_bytes',
                     legendFormat="__auto",
                     refId='A',
@@ -147,9 +152,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=BYTES,
             targets=[
                 Target(
-                    datasource=BYTES,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='video_count_total',
                     legendFormat="__auto",
                     refId='A',
@@ -162,9 +168,10 @@ dashboard = Dashboard(
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
+            unit=NUMBER_FORMAT,
             targets=[
                 Target(
-                    datasource=NUMBER_FORMAT,
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='cache_size{job=\"sce-tv\"}',
                     legendFormat="__auto",
                     refId='A',
