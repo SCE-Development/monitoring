@@ -45,6 +45,7 @@ dashboard = Dashboard(
         ),
         Stat(
             title='Container Uptime',
+            reduceCalc='lastNotNull',
             gridPos=GridPos(h=8, w=12, x=12, y=0),
             format=SECONDS,
             targets=[
