@@ -30,14 +30,3 @@ scrape_configs:
   - job_name: 'node-exporter'
     static_configs:
       - targets: [ 'node-exporter:9100' ]
-
-alerting:
-  alertmanagers:
-    - scheme: http
-      static_configs:
-        - targets: ['alertmanager:9093']
-
-
-rule_files:
-  - alert_rules.yml
-

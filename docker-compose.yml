@@ -29,7 +29,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
       - ./prometheus/prometheus.federate.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -40,11 +39,6 @@ services:
       - "./alertmanager:/config"
       - alertmanager-data:/data
     command: --config.file=/config/alertmanager.yml --log.level=debug --cluster.advertise-address=0.0.0.0:9093
-  discord-alerts:
-    image: benjojo/alertmanager-discord
-    restart: unless-stopped
-    environment:
-      - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
