@@ -1,7 +1,7 @@
 apiVersion: 1
 contactPoints:
     - orgId: 1
-      name: SCE Discord Webhook
+      name: SCE Discord Webhook2
       receivers:
         - uid: f4e67a14-bb9b-4f9b-877a-dc8ad24ca5f2
           type: discord
