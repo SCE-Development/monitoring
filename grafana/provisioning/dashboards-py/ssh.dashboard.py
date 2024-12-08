@@ -3,43 +3,9 @@ from grafanalib.formatunits import SECONDS, TRUE_FALSE, DAYS
 
 from common import PROMETHEUS_DATASOURCE_NAME
 
-time_since_ssh_overrides=[
-            {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                    "id": "byNames",
-                    "options": {
-                        "mode": "exclude",
-                        "names": [
-                            "sce-printer"
-                        ],
-                        "prefix": "All except:",
-                        "readOnly": True
-                    }
-                },
-                "properties": [
-                    {
-                        "id": "custom.hideFrom",
-                        "value": {
-                            "legend": False,
-                            "tooltip": False,
-                            "viz": True
-                        }
-                    }
-                ]
-            }
-    ]
-
-uptime_thresholds=[
-    {
-        "color": "blue",
-        "value": None
-    }
-]
-
 dashboard = Dashboard(
     title='SSH Tunnel Health',
-    uid='sshtunnelhealth',
+    uid='ssh',
     description='Health of SSH Tunnel',
     timezone='browser',
     panels=[
@@ -62,7 +28,6 @@ dashboard = Dashboard(
             title='Time since SSH tunnel reopened',
             unit=SECONDS,
             gridPos=GridPos(h=9, w=12, x=12, y=0),
-            overrides=time_since_ssh_overrides,
             lineWidth=2,
             tooltipMode='all',
             tooltipSort='desc',
@@ -103,7 +68,6 @@ dashboard = Dashboard(
             format=SECONDS,
             decimals=2,
             reduceCalc='lastNotNull',
-            thresholds=uptime_thresholds,
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
