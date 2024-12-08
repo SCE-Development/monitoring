@@ -32,13 +32,6 @@ services:
       - ./prometheus/prometheus.federate.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-  alertmanager:
-    image: prom/alertmanager:v0.27.0
-    restart: unless-stopped
-    volumes:
-      - "./alertmanager:/config"
-      - alertmanager-data:/data
-    command: --config.file=/config/alertmanager.yml --log.level=debug --cluster.advertise-address=0.0.0.0:9093
   grafana:
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
