@@ -39,7 +39,7 @@ uptime_thresholds=[
 
 dashboard = Dashboard(
     title='SSH Tunnel Health',
-    uid='SSHTunnelHealth',
+    uid='sshtunnelhealth',
     description='Health of SSH Tunnel',
     timezone='browser',
     panels=[
