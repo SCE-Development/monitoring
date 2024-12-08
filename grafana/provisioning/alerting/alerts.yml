@@ -1,0 +1,417 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: default
+      folder: Services
+      interval: 1m
+      rules:
+        - uid: a27a6186-24d5-45cb-950a-52d32ebcdf9f
+          title: Container Not Running
+          condition: B
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: time() - container_last_seen{image=~"clark.*|nginx|mongo"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 600
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            summary: A container has not been seen by cAdvisor for more than 5 minutes
+          labels: {}
+          isPaused: false
+        - uid: de81ef3a-ff01-4b02-89a0-f176ae32c0de
+          title: SSH Tunnel Down
+          condition: A
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: time() - last_health_check_request
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 600
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            summary: A health check HTTP request has not been sent from Clark in over 5 minutes
+          labels: {}
+          isPaused: false
+        - uid: be59864d-5659-494d-afdd-f5a2a376efcb
+          title: Up != 1
+          condition: B
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: up
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                            - 0
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 5m
+          annotations:
+            summary: up metric for a container has been zero for more than 5 minutes.
+          labels: {}
+          isPaused: false
+        - uid: f483b547-f18a-4311-9faf-fe79238cd57b
+          title: SCEta Cache is Behind
+          condition: B
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: time () - cache_last_updated{job="sceta-server"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1800
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 1m
+          annotations:
+            summary: The transit data was last updated over 30 minutes ago, past the usual 10 minutes interval.
+          labels: {}
+          isPaused: false
+        - uid: d29b4565-df08-4392-9899-bd2690c3b095
+          title: SCEta Experiencing Rate Limiting from 511 API
+          condition: A
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: rate(api_response_codes_total{code="429"}[2h])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            summary: SCEta is getting 429 errors from the 511 API
+          labels: {}
+          isPaused: false
+        - uid: beb34e36-3f67-4701-8d1f-2706049532dc
+          title: '[Quasar] Printer tray is open'
+          condition: A
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: door_status_metric
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations: {}
+          labels: {}
+          isPaused: false
+        - uid: c5ca6231-fd96-4327-8a93-873788b4a4f8
+          title: '[Quasar] Printer is out of paper'
+          condition: A
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: tray_status_metric
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations: {}
+          labels: {}
+          isPaused: false
+        - uid: ccab7650-9156-43a9-884d-49c2c4335ff7
+          title: '[Quasar] Printer is running out of ink'
+          condition: A
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                editorMode: code
+                expr: ink_percent
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.3
+                            - 0
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            summary: The printer ink levels are under 30% per SNMP metrics.
+          labels: {}
+          isPaused: false

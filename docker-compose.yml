@@ -61,7 +61,6 @@ services:
       - '/:/host:ro,rslave'
 
 volumes:
-  alertmanager-data:
   grafana-data:
 
 networks: 
