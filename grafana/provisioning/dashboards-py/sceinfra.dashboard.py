@@ -1,10 +1,7 @@
 from grafanalib.core import (
-    Dashboard,
     Templating,
     Template,
     Threshold,
-    TimeSeries,
-    Target,
     GridPos,
     BarGauge,
     Stat,
@@ -18,14 +15,13 @@ from grafanalib.formatunits import (
     BITS_SEC,
 )
 
-from common import PROMETHEUS_DATASOURCE_NAME
+from common import MyDashboard, MyTimeSeries, PromTarget
 
 
-dashboard = Dashboard(
+dashboard = MyDashboard(
     title='SCE Infra',
     uid='sceinfra',
     description='SCE services',
-    timezone='browser',
     panels=[
         Stat(
             title='Container Uptime',
@@ -36,49 +32,37 @@ dashboard = Dashboard(
             ],
             format=SECONDS,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='time() - process_start_time_seconds',
                     legendFormat='{{job}}',
-                    refId='A',
                 ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - container_start_time_seconds{image=~\"clark.*|nginx|mongo\"}',
+                PromTarget(
+                    expr='time() - container_start_time_seconds{image=~"clark.*|nginx|mongo"}',
                     legendFormat='{{name}}',
-                    refId='B',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Metric Health',
             unit=NUMBER_FORMAT,
             gridPos=GridPos(h=8, w=12, x=0, y=16),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='up',
                     legendFormat="{{instance}}",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Container Last Seen (Clark Only)',
             unit=SECONDS,
             gridPos=GridPos(h=8, w=12, x=12, y=16),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - container_last_seen{image=~\"clark.*|nginx|mongo\"}',
+                PromTarget(
+                    expr='time() - container_last_seen{image=~"clark.*|nginx|mongo"}',
                     legendFormat="{{image}}",
-                    refId='A',
                 ),
             ],
         ),

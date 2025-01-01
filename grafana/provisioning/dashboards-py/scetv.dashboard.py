@@ -1,10 +1,7 @@
 from grafanalib.core import (
-    Dashboard,
     Templating,
     Template,
     Threshold,
-    TimeSeries,
-    Target,
     GridPos,
     BarGauge,
     Stat,
@@ -18,14 +15,13 @@ from grafanalib.formatunits import (
     BITS_SEC,
 )
 
-from common import PROMETHEUS_DATASOURCE_NAME
+from common import MyDashboard, MyTimeSeries, PromTarget
 
 
-dashboard = Dashboard(
+dashboard = MyDashboard(
     title='SCE TV',
     uid='scetv',
     description='SCE video streaming service',
-    timezone='browser',
     panels=[
         BarGauge(
             title='HTTP Requests',
@@ -35,11 +31,9 @@ dashboard = Dashboard(
             ],
             gridPos=GridPos(h=8, w=12, x=0, y=0),
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='http_request_count_total{endpoint!=\"/metrics\"}',
+                PromTarget(
+                    expr='http_request_count_total{endpoint!="/metrics"}',
                     legendFormat='{{endpoint}}',
-                    refId='A',
                 ),
             ],
         ),
@@ -52,139 +46,105 @@ dashboard = Dashboard(
             ],
             format=SECONDS,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - process_start_time_seconds{job=\"sce-tv\"}',
+                PromTarget(
+                    expr='time() - process_start_time_seconds{job="sce-tv"}',
                     legendFormat='{{job}}',
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Data Downloaded',
             unit=BYTES,
             gridPos=GridPos(h=8, w=12, x=0, y=8),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='data_downloaded_total',
                     legendFormat="{{job}}",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='API data rate',
             gridPos=GridPos(h=8, w=12, x=12, y=8),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=BITS_SEC,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='data_downloaded_total{job=\"sce-tv\"} * 8 / download_time_sum',
+                PromTarget(
+                    expr='data_downloaded_total{job="sce-tv"} * 8 / download_time_sum',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Download Time',
             gridPos=GridPos(h=8, w=12, x=0, y=16),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=SECONDS,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='download_time_sum',
                     legendFormat="{{job}}",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Cache Hit/Miss',
             gridPos=GridPos(h=8, w=12, x=12, y=16),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=NUMBER_FORMAT,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='cache_miss_count_total',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Total Videos Downloaded',
             gridPos=GridPos(h=8, w=12, x=0, y=24),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=NUMBER_FORMAT,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='video_download_count_total',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Cache Size Bytes',
             gridPos=GridPos(h=8, w=12, x=12, y=24),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=BYTES,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='cache_size_bytes',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Total YouTube Videos Played',
             gridPos=GridPos(h=8, w=12, x=0, y=32),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=BYTES,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                PromTarget(
                     expr='video_count_total',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
-        TimeSeries(
+        MyTimeSeries(
             title='Cache Size',
             gridPos=GridPos(h=8, w=12, x=12, y=32),
-            lineWidth=2,
-            tooltipMode='all',
             tooltipSort='desc',
             unit=NUMBER_FORMAT,
             targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='cache_size{job=\"sce-tv\"}',
+                PromTarget(
+                    expr='cache_size{job="sce-tv"}',
                     legendFormat="__auto",
-                    refId='A',
                 ),
             ],
         ),
