@@ -14,7 +14,12 @@ FROM grafana/grafana:10.2.2-ubuntu
 
 # Grafana configs
 COPY ./grafana.ini /etc/grafana/grafana.ini
+
 COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
+
+# force regeneration of dashboards generated from python
+RUN rm -rf /etc/grafana/provisioning/dashboards/*
+
 COPY ./provisioning/dashboards-py/all.yml /etc/grafana/provisioning/dashboards/all.yml
 
 # Generated dashboards
