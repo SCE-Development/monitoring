@@ -58,13 +58,13 @@ groups:
         annotations:
           summary: The printer door is open or has a "no print" cartridge
           description: Status code is not 0
-      - alert: TrayIsEmpty
-        expr: tray_status_metric != 0
+      - alert: PrinterPaperTrayIsEmpty
+        expr: snmp_error{name=~"tray_empty.*"} == 1
         for: 10m
         labels:
           severity: critical
         annotations:
-          summary: The printer has no more paper
+          summary: The paper tray of the printer is empty
           description: Status code is not 0
       - alert: PrinterRunningOutOfInk
         expr: ink_percent < 0.3
