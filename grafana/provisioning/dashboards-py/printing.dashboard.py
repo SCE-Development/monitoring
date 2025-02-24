@@ -80,7 +80,7 @@ dashboard = Dashboard(
             ],
         ),
         TimeSeries(
-            title='Error',
+            title='Active SNMP Errors',
             gridPos=GridPos(h=8, w=12, x=0, y=16),
             lineWidth=2,
             tooltipMode='all',
@@ -88,8 +88,8 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_error',
-                    legendFormat="__auto",
+                    expr='snmp_error == 1',
+                    legendFormat='{{ip}} {{name}}',
                     refId='A',
                 ),
             ],
