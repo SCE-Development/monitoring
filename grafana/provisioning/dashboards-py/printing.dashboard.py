@@ -89,7 +89,7 @@ dashboard = Dashboard(
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='snmp_error == 1',
-                    legendFormat='{{name}}',
+                    legendFormat='{{ip}} {{name}}',
                     refId='A',
                 ),
             ],
