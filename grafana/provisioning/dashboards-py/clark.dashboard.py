@@ -45,7 +45,7 @@ dashboard = Dashboard(
         TimeSeries(
             title='Office Access Card',
             unit=NUMBER_FORMAT,
-            gridPos=GridPos(h=8, w=12, x=12, y=8),
+            gridPos=GridPos(h=8, w=12, x=0, y=8),
             lineWidth=2,
             stacking={'group': 'A','mode': 'none'},
             tooltipMode='all',
