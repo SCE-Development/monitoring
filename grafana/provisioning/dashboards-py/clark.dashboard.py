@@ -22,6 +22,7 @@ dashboard = Dashboard(
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='endpoint_hits{route!="/metrics"}',
+                    legendFormat='{{route}} {{method}} {{statusCode}}',
                     refId='A',
                 ),
             ],
@@ -37,7 +38,8 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='endpoint_hits{route=~"/(validateVerificationEmail|sendPasswordReset|validatePasswordReset|resetPassword)"}',
+                    expr='endpoint_hits{route=~"/api/Auth.*"}',
+                    legendFormat='{{route}} {{method}} {{statusCode}}',
                     refId='A',
                 ),
             ],
@@ -53,7 +55,8 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='endpoint_hits{route=~"/(verify)"}',
+                    expr='endpoint_hits{route="/api/OfficeAccessCard/verify"}',
+                    legendFormat='{{route}} {{method}} {{statusCode}}',
                     refId='A',
                 ),
             ],
@@ -69,7 +72,8 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='endpoint_hits{route=~"/(send|listen|getLatestMessage)"}',
+                    expr='endpoint_hits{route=~"/api/Messages.*"}',
+                    legendFormat='{{route}} {{method}} {{statusCode}}',
                     refId='A',
                 ),
             ],
