@@ -72,7 +72,7 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='endpoint_hits{route=~"/api/Messages.*"}',
+                    expr='endpoint_hits{route=~"/api/messages.*"}',
                     legendFormat='{{route}} {{method}} {{statusCode}}',
                     refId='A',
                 ),
