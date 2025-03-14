@@ -65,10 +65,20 @@ services:
     restart: unless-stopped
     volumes:
       - '/:/host:ro,rslave'
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    ports:
+      - '9000:9000'
+      - '9443:9443'
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - portainer_data:/data
 
 volumes:
   alertmanager-data:
   grafana-data:
+  portainer_data:
 
 networks: 
   default:
