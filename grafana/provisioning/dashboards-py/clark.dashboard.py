@@ -135,5 +135,5 @@ dashboard = Dashboard(
     uid="clark",
     description="sce club website",
     timezone="browser",
-    rows=[get_office_card_row(), get_other_row],
+    rows=[get_office_card_row(), get_other_row()],
 ).auto_panel_ids()
