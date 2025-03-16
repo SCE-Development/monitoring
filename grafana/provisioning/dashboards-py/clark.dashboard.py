@@ -56,7 +56,7 @@ def get_office_card_row():
 
 def get_other_row():
     return Row(
-        title="Example Row",
+        title="Endpoint Requests",
         panels=[
             TimeSeries(
                 title="All main-endpoints traffic",
@@ -90,22 +90,11 @@ def get_other_row():
                         legendFormat="{{route}} {{method}} {{statusCode}}",
                         refId="A",
                     ),
-                ],
-            ),
-            TimeSeries(
-                title="Office Access Card",
-                unit=NUMBER_FORMAT,
-                gridPos=GridPos(h=8, w=12, x=0, y=8),
-                lineWidth=2,
-                stacking={"group": "A", "mode": "none"},
-                tooltipMode="all",
-                tooltipSort="desc",
-                targets=[
                     Target(
                         datasource=PROMETHEUS_DATASOURCE_NAME,
-                        expr='endpoint_hits{route="/api/OfficeAccessCard/verify"}',
-                        legendFormat="{{route}} {{method}} {{statusCode}}",
-                        refId="A",
+                        expr='sum(rate(endpoint_hits{route=~"/api/Auth.*"}[1h])) by (route, method, statusCode) * 3600',
+                        legendFormat="{{statusCode}} dY/dt [hourly]",
+                        refId="B",
                     ),
                 ],
             ),
