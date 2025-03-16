@@ -90,12 +90,6 @@ def get_other_row():
                         legendFormat="{{route}} {{method}} {{statusCode}}",
                         refId="A",
                     ),
-                    Target(
-                        datasource=PROMETHEUS_DATASOURCE_NAME,
-                        expr='sum(rate(endpoint_hits{route=~"/api/Auth.*"}[1h])) by (route, method, statusCode) * 3600',
-                        legendFormat="{{statusCode}} dY/dt [hourly]",
-                        refId="B",
-                    ),
                 ],
             ),
             TimeSeries(
@@ -109,7 +103,7 @@ def get_other_row():
                 targets=[
                     Target(
                         datasource=PROMETHEUS_DATASOURCE_NAME,
-                        expr='endpoint_hits{route=~"/api/messages.*"}',
+                        expr='endpoint_hits{route=~"/api/messages/.*"}',
                         legendFormat="{{route}} {{method}} {{statusCode}}",
                         refId="A",
                     ),
