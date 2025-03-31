@@ -3,7 +3,9 @@ groups:
   - name: alert_rules
     interval: 1s
     rules:
-      - alert: ContainerNotRunning
+    # the below rule for ClarkContainerNotRunning only applies
+    # for the containers running on the clark machine
+      - alert: ClarkContainerNotRunning
         expr: |
           time() - container_last_seen{image=~"clark.*|nginx|mongo"} > 600
         for: 1m
@@ -23,7 +25,7 @@ groups:
             over 5 minutes
           description: last_health_check_request metric for job "{{ $labels.job }}" has a
             value of {{ $value | printf "%.0f" }} seconds
-      - alert: InstanceDown
+      - alert: ContainerNotRunning
         expr: up != 1
         for: 1m
         labels:
