@@ -13,7 +13,7 @@ scrape_configs:
 
   - job_name: 'delen'
     static_configs:
-      - targets: ['192.168.69.122:8000']
+      - targets: ['192.168.69.144:8000']
 
   - job_name: 'sce-tv'
     static_configs:
