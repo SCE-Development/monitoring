@@ -30,7 +30,7 @@ scrape_configs:
   - job_name: 'sceats'
     metrics_path: '/api/v1/inventory/metrics'
     static_configs:
-      - targets: [ 'backend:6970' ]
+      - targets: ['sceats-backend-1:6970']
 
 alerting:
   alertmanagers:
