@@ -13,8 +13,8 @@ services:
   prometheus-clark-sshtunnel:
     image: nowsci/sshtunnel
     volumes:
-      - ~/.ssh/id_ed25519.pub:/app/ssh_key.pub
-      - ~/.ssh/id_ed25519:/app/ssh_key
+      - ~/.ssh/id_ed25519-tunnel.pub:/app/ssh_key.pub
+      - ~/.ssh/id_ed25519-tunnel:/app/ssh_key
       - ~/.ssh/known_hosts:/app/known_hosts
     environment:
       - REMOTE_HOST=127.0.0.1
