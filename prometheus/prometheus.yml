@@ -23,10 +23,6 @@ scrape_configs:
     static_configs:
       - targets: [ 'poweredge-2950-node-exporter:9100' ]
 
-  - job_name: 'clark-node-exporter'
-    static_configs:
-      - targets: [ 'clark-node-exporter:9100' ]
-      
 #  - job_name: 'sceats'
 #    metrics_path: '/api/v1/inventory/metrics'
 #   static_configs:
