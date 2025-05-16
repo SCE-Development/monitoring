@@ -2,7 +2,7 @@ FROM python:3.9.6-slim-buster AS builder
 
 RUN pip install grafanalib
 
-COPY ./provisioning/dashboards-py /dashboards
+COPY ./provisioning/dashboards /dashboards
 
 # Required for grafanalib to find the shared python files like common.py
 ENV PYTHONPATH=/dashboards
@@ -20,7 +20,7 @@ COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
 # force regeneration of dashboards generated from python
 RUN rm -rf /etc/grafana/provisioning/dashboards/*
 
-COPY ./provisioning/dashboards-py/all.yml /etc/grafana/provisioning/dashboards/all.yml
+COPY ./provisioning/dashboards/all.yml /etc/grafana/provisioning/dashboards/all.yml
 
 # Generated dashboards
 COPY --from=builder /dashboards/*.json /etc/grafana/provisioning/dashboards/

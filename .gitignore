@@ -5,4 +5,4 @@ game\ plan
 .bundle
 venv
 __pycache__
-grafana/provisioning/dashboards-py/*.json
+grafana/provisioning/dashboards/*.json
