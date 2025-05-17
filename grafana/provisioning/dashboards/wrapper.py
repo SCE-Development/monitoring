@@ -108,15 +108,14 @@ class SceGrafanalibWrapper:
                 ],
             )
         )
-        # update coordinates for the next panel to be on the same row,
-        # to the right of the panel we just added
-        if self.x == 0:
-            self.x = 12
-            return
         # update coordinates for the next panel to be on the next row
         # underneath
-        self.y += 8
-        self.x = 0
+        if self.x == 12:
+            self.y += 8
+            self.x = 0
+        # update coordinates for the next panel to be on the same row,
+        # to the right of the panel we just added
+        self.x += 12
 
     def Render(self):
         return Dashboard(
