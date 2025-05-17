@@ -9,7 +9,7 @@ dashboard = Dashboard(
     uid='quasar',
     description='Printer metrics',
     timezone='browser',
-    rows=[RowPanel(title='test if panels get strange x values;', panels=[
+    rows=[RowPanel(title='test if panels get strange x values;', collapsed=True, panels=[
         TimeSeries(
             title='Ink Level',
             unit=PERCENT_UNIT,
