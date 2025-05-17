@@ -48,7 +48,7 @@ class SceGrafanalibWrapper:
 
     def DefineRow(self, title):
         self.rows.append(
-            RowPanel(title=title, panels=[]),
+            RowPanel(title=title, collapsed=True, panels=[]),
         )
         return self
 
