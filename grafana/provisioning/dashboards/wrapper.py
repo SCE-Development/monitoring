@@ -83,9 +83,10 @@ class SceGrafanalibWrapper:
             self.x = 0
         # update coordinates for the next panel to be on the same row,
         # to the right of the panel we just added
-        self.x += 12
+        self.x = 12
 
     def AddPanel(self, title, queries: list[ExpressionAndLegendPair]):
+        print(self.x, self.y)
         ref_id = RefIdGenerator()
         self.panels.append(
             TimeSeries(
@@ -114,7 +115,7 @@ class SceGrafanalibWrapper:
             self.x = 0
         # update coordinates for the next panel to be on the same row,
         # to the right of the panel we just added
-        self.x += 12
+        self.x = 12
 
     def Render(self):
         return Dashboard(
