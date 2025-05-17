@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import typing
+
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos, Row
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS
 
@@ -16,7 +18,7 @@ class RefIdGenerator:
 @dataclass
 class ExpressionAndLegendPair:
     expression: str
-    legend: str | None
+    legend: typing.Optional[str]
 
 class SceGrafanalibWrapper:
     def __init__(
