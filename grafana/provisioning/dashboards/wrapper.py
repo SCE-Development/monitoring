@@ -81,6 +81,7 @@ class SceGrafanalibWrapper:
         if self.x == 12:
             self.y += 8
             self.x = 0
+            return
         # update coordinates for the next panel to be on the same row,
         # to the right of the panel we just added
         self.x = 12
@@ -113,6 +114,7 @@ class SceGrafanalibWrapper:
         if self.x == 12:
             self.y += 8
             self.x = 0
+            return
         # update coordinates for the next panel to be on the same row,
         # to the right of the panel we just added
         self.x = 12
