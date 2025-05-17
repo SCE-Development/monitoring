@@ -1,4 +1,4 @@
-from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos, Row
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
 
 from common import PROMETHEUS_DATASOURCE_NAME
@@ -9,7 +9,7 @@ dashboard = Dashboard(
     uid='quasar',
     description='Printer metrics',
     timezone='browser',
-    panels=[
+    rows=[Row(title='test if panels get strange x values;', panels=[
         TimeSeries(
             title='Ink Level',
             unit=PERCENT_UNIT,
@@ -94,5 +94,5 @@ dashboard = Dashboard(
                 ),
             ],
         ),
-    ],
+    ])],
 ).auto_panel_ids()
