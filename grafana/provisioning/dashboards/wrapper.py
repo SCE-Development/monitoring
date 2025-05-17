@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import typing
 
-from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos, RowPanel
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos, Row
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS
 
 
@@ -48,7 +48,7 @@ class SceGrafanalibWrapper:
 
     def DefineRow(self, title):
         self.rows.append(
-            RowPanel(title=title, collapsed=True, panels=[]),
+            Row(title=title, collapsed=True, panels=[]),
         )
         return self
 
