@@ -2,11 +2,13 @@ import wrapper
 
 asdf = wrapper.SceGrafanalibWrapper("hello world", "testing wrapper class")
 
+asdf.DefineRow("first row")
 asdf.AddPanel("bing bong", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("bing bong1", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("bing bong2", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("bing bong3", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("bing bong4", [wrapper.ExpressionAndLegendPair(expression="time()")])
+asdf.DefineRow("i added another")
 asdf.AddPanel("another panel", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("another panel2", [wrapper.ExpressionAndLegendPair(expression="time()")])
 asdf.AddPanel("another panel3", [wrapper.ExpressionAndLegendPair(expression="time()")])
