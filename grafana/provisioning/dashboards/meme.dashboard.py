@@ -6,4 +6,4 @@ asdf.DefineRow("silly row")
 asdf.AddPanelToRow("bing bong", [wrapper.ExpressionAndLegendPair(expression="scalar(42)")])
 asdf.AddPanel("outside gang", [wrapper.ExpressionAndLegendPair(expression='scalar(42)')])
 
-asdf.Render()
+dashboard = asdf.Render()

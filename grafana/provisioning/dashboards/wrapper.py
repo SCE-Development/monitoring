@@ -119,7 +119,7 @@ class SceGrafanalibWrapper:
         self.x = 0
 
     def Render(self):
-        Dashboard(
+        return Dashboard(
             title=self.title,
             uid=self.uid,
             description=self.description,
