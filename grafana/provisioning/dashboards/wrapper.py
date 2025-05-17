@@ -18,7 +18,7 @@ class RefIdGenerator:
 @dataclass
 class ExpressionAndLegendPair:
     expression: str
-    legend: typing.Optional[str]
+    legend: typing.Optional[str] = None
 
 class SceGrafanalibWrapper:
     def __init__(
