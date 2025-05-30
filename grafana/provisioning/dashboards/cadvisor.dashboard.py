@@ -9,7 +9,7 @@ from common import PROMETHEUS_DATASOURCE_NAME
 
 
 dashboard = Dashboard(
-    title='Cadvisor HACKED',
+    title='Cadvisor',
     uid='cadvisor',
     description='Container metrics collected by Cadvisor',
     tags=[
