@@ -31,7 +31,7 @@ dashboard = Dashboard(
         Row(
             title='Quick CPU / Mem / Disk',
             panels=[
-                GuagePanel(
+                GaugePanel(
                     title='CPU Busy',
                     description='Overall CPU busy percentage (averaged across all cores)',
                     datasource=PROMETHEUS_DATASOURCE_NAME,
