@@ -1,4 +1,4 @@
-from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target, Row, GuagePanel
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target, Row, GaugePanel
 from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT, BYTES_SEC_IEC
 
 from common import PROMETHEUS_DATASOURCE_NAME
