@@ -34,7 +34,6 @@ dashboard = Dashboard(
                 GaugePanel(
                     title='CPU Busy',
                     description='Overall CPU busy percentage (averaged across all cores)',
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
                     gridPos=GridPos(h=4, w=3, x=3, y=1),
                     format='percent',
                     decimals=1,
@@ -193,3 +192,4 @@ dashboard = Dashboard(
         )
     ]
 ).auto_panel_ids()
+print(dashboard.to_json_data())
