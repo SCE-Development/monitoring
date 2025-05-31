@@ -143,14 +143,14 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum by (instance) (rate(node_network_receive_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval]))',
-                    legendFormat="rx total",
+                    expr='rate(node_network_receive_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
+                    legendFormat="rx {{ device }}",
                     refId='A',
                 ),
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='-sum by (instance) (rate(node_network_transmit_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval]))',
-                    legendFormat="tx total",
+                    expr='-rate(node_network_transmit_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
+                    legendFormat="tx {{ device }}",
                     refId='B',
                 ),
             ],
