@@ -6,3 +6,4 @@ game\ plan
 venv
 __pycache__
 grafana/provisioning/dashboards/*.json
+!grafana/provisioning/dashboards/node_exporter.json
