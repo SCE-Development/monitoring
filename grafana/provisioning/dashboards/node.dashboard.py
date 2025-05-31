@@ -54,7 +54,106 @@ dashboard = Dashboard(
                             refId='A',
                         )
                     ]
-                )
+                ),
+                GaugePanel(
+                    title='Sys Load',
+                    description='System load over all CPU cores together',
+                    gridPos=GridPos(h=4, w=3, x=6, y=1),
+                    format='percent',
+                    decimals=1,
+                    min=0,
+                    max=100,
+                    thresholdType='absolute',
+                    thresholds=[
+                        {"color": "rgba(50, 172, 45, 0.97)", "value": None},
+                        {"color": "rgba(237, 129, 40, 0.89)", "value": 85},
+                        {"color": "rgba(245, 54, 54, 0.9)", "value": 95}
+                    ],
+                    calc='lastNotNull',
+                    targets=[
+                        Target(
+                            datasource=PROMETHEUS_DATASOURCE_NAME,
+                            expr='scalar(node_load1{instance="$instance",job="$job"}) * 100 / count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu))',
+                            format='time_series',
+                            instant=True,
+                            refId='A'
+                        )
+                    ]
+                ),
+                GaugePanel(
+                    title='RAM Used',
+                    description='Real RAM usage excluding cache and reclaimable memory',
+                    gridPos=GridPos(h=4, w=3, x=9, y=1),
+                    format='percent',
+                    decimals=1,
+                    min=0,
+                    max=100,
+                    thresholdType='absolute',
+                    thresholds=[
+                        {"color": "rgba(50, 172, 45, 0.97)", "value": None},
+                        {"color": "rgba(237, 129, 40, 0.89)", "value": 80},
+                        {"color": "rgba(245, 54, 54, 0.9)", "value": 90}
+                    ],
+                    calc='lastNotNull',
+                    targets=[
+                        Target(
+                            datasource=PROMETHEUS_DATASOURCE_NAME,
+                            expr='(1 - (node_memory_MemAvailable_bytes{instance="$instance", job="$job"} / node_memory_MemTotal_bytes{instance="$instance", job="$job"})) * 100',
+                            format='time_series',
+                            instant=True,
+                            refId='B'
+                        )
+                    ]
+                ),
+                GaugePanel(
+                    title='SWAP Used',
+                    description='Percentage of swap space currently used by the system',
+                    gridPos=GridPos(h=4, w=3, x=12, y=1),
+                    format='percent',
+                    decimals=1,
+                    min=0,
+                    max=100,
+                    thresholdType='absolute',
+                    thresholds=[
+                        {"color": "rgba(50, 172, 45, 0.97)", "value": None},
+                        {"color": "rgba(237, 129, 40, 0.89)", "value": 10},
+                        {"color": "rgba(245, 54, 54, 0.9)", "value": 25}
+                    ],
+                    calc='lastNotNull',
+                    targets=[
+                        Target(
+                            datasource=PROMETHEUS_DATASOURCE_NAME,
+                            expr='((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / (node_memory_SwapTotal_bytes{instance="$instance",job="$job"})) * 100',
+                            instant=True,
+                            refId='A'
+                        )
+                    ]
+                ),
+                GaugePanel(
+                    title='Root FS Used',
+                    description='Used Root FS',
+                    gridPos=GridPos(h=4, w=3, x=15, y=1),
+                    format='percent',
+                    decimals=1,
+                    min=0,
+                    max=100,
+                    thresholdType='absolute',
+                    thresholds=[
+                        {"color": "rgba(50, 172, 45, 0.97)", "value": None},
+                        {"color": "rgba(237, 129, 40, 0.89)", "value": 80},
+                        {"color": "rgba(245, 54, 54, 0.9)", "value": 90}
+                    ],
+                    calc='lastNotNull',
+                    targets=[
+                        Target(
+                            datasource=PROMETHEUS_DATASOURCE_NAME,
+                            expr='(\n  (node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}\n   - node_filesystem_avail_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"})\n  / node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}\n) * 100\n',
+                            format='time_series',
+                            instant=True,
+                            refId='A'
+                        )
+                    ]
+                ),
             ],
         ),
         Row(
