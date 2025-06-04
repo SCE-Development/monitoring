@@ -485,3 +485,46 @@ MEMORY_BASIC_COLORS = {
         ]
     }
 }
+
+# Gauge panel configurations for the Quick CPU/Mem/Disk row
+GAUGE_CONFIGS = [
+    {
+        'title': 'CPU Busy',
+        'description': 'Overall CPU busy percentage (averaged across all cores)',
+        'x_pos': 3,
+        'thresholds': [85, 95],
+        'expr': '100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle", instance="$instance", job="$job"}[$__rate_interval])))'
+    },
+    {
+        'title': 'Sys Load',
+        'description': 'System load over all CPU cores together',
+        'x_pos': 6,
+        'thresholds': [85, 95],
+        'expr': 'scalar(node_load1{instance="$instance",job="$job"}) * 100 / count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu))'
+    },
+    {
+        'title': 'RAM Used',
+        'description': 'Real RAM usage excluding cache and reclaimable memory',
+        'x_pos': 9,
+        'thresholds': [80, 90],
+        'expr': '(1 - (node_memory_MemAvailable_bytes{instance="$instance", job="$job"} / node_memory_MemTotal_bytes{instance="$instance", job="$job"})) * 100'
+    },
+    {
+        'title': 'SWAP Used',
+        'description': 'Percentage of swap space currently used by the system',
+        'x_pos': 12,
+        'thresholds': [10, 25],
+        'expr': '((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / (node_memory_SwapTotal_bytes{instance="$instance",job="$job"})) * 100'
+    },
+    {
+        'title': 'Root FS Used',
+        'description': 'Used Root FS',
+        'x_pos': 15,
+        'thresholds': [80, 90],
+        'expr': '''(
+  (node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}
+   - node_filesystem_avail_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"})
+  / node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}
+) * 100'''
+    }
+]
