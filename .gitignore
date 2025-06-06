@@ -4,6 +4,7 @@ game\ plan
 .DS_Store
 .bundle
 venv
+.venv
 __pycache__
 grafana/provisioning/dashboards/*.json
 !grafana/provisioning/dashboards/node_exporter.json
