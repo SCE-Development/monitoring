@@ -542,37 +542,31 @@ TIMESERIES_CONFIGS = [
         'stacking': {'mode': 'percent', 'group': 'A'},
         'targets': [
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Busy System',
                 'refId': 'A',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Busy User',
                 'refId': 'B',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Busy Iowait',
                 'refId': 'C',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Busy IRQs',
                 'refId': 'D',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Busy Other',
                 'refId': 'E',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
                 'legendFormat': 'Idle',
                 'refId': 'F',
@@ -588,33 +582,28 @@ TIMESERIES_CONFIGS = [
         'stacking': {'mode': 'normal', 'group': 'A'},
         'targets': [
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
                 'format': 'time_series',
                 'legendFormat': 'RAM Total',
                 'refId': 'A',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
                 'format': 'time_series',
                 'legendFormat': 'RAM Used',
                 'refId': 'B',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
                 'legendFormat': 'RAM Cache + Buffer',
                 'refId': 'C',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'node_memory_MemFree_bytes{instance="$instance",job="$job"}',
                 'legendFormat': 'RAM Free',
                 'refId': 'D',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': '(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
                 'legendFormat': 'SWAP Used',
                 'refId': 'E',
@@ -631,13 +620,11 @@ TIMESERIES_CONFIGS = [
         'fillOpacity': 10,
         'targets': [
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': 'rate(node_network_receive_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
                 'legendFormat': 'rx {{ device }}',
                 'refId': 'A',
             },
             {
-                'datasource': PROMETHEUS_DATASOURCE_NAME,
                 'expr': '-rate(node_network_transmit_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
                 'legendFormat': 'tx {{ device }}',
                 'refId': 'B',

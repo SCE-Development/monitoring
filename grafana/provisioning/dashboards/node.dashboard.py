@@ -1,7 +1,7 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target, Row, GaugePanel
 from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT, BYTES_SEC_IEC
 
-PROMETHEUS_DATASOURCE_NAME = 'Prometheus'
+from common import PROMETHEUS_DATASOURCE_NAME
 from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS, GAUGE_CONFIGS, TIMESERIES_CONFIGS 
 
 def create_timeseries_panel(config):
@@ -17,7 +17,7 @@ def create_timeseries_panel(config):
         stacking=config.get('stacking', {'mode': 'none'}),
         tooltipMode='all',
         tooltipSort='desc',
-        targets=[Target(**target) for target in config['targets']],
+        targets=[Target(datasource=PROMETHEUS_DATASOURCE_NAME, **target) for target in config['targets']],
         extraJson=config.get('extraJson', {})
     )
 
