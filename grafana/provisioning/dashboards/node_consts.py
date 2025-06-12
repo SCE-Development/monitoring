@@ -1,5 +1,7 @@
 from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT, BYTES_SEC_IEC
 from common import PROMETHEUS_DATASOURCE_NAME
+from gauge_dataclass import GaugeConfig
+from timeseries_dataclass import TimeSeriesConfig, TimeSeriesTarget, TimeSeriesStacking
 
 # TODO: Question life decisions (I'm not sure if this is good)
 
@@ -491,144 +493,142 @@ MEMORY_BASIC_COLORS = {
 
 # Gauge panel configurations for the Quick CPU/Mem/Disk row
 GAUGE_CONFIGS = [
-    {
-        'title': 'CPU Busy',
-        'description': 'Overall CPU busy percentage (averaged across all cores)',
-        'x_pos': 3,
-        'thresholds': [85, 95],
-        'expr': '100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle", instance="$instance", job="$job"}[$__rate_interval])))'
-    },
-    {
-        'title': 'Sys Load',
-        'description': 'System load over all CPU cores together',
-        'x_pos': 6,
-        'thresholds': [85, 95],
-        'expr': 'scalar(node_load1{instance="$instance",job="$job"}) * 100 / count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu))'
-    },
-    {
-        'title': 'RAM Used',
-        'description': 'Real RAM usage excluding cache and reclaimable memory',
-        'x_pos': 9,
-        'thresholds': [80, 90],
-        'expr': '(1 - (node_memory_MemAvailable_bytes{instance="$instance", job="$job"} / node_memory_MemTotal_bytes{instance="$instance", job="$job"})) * 100'
-    },
-    {
-        'title': 'SWAP Used',
-        'description': 'Percentage of swap space currently used by the system',
-        'x_pos': 12,
-        'thresholds': [10, 25],
-        'expr': '((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / (node_memory_SwapTotal_bytes{instance="$instance",job="$job"})) * 100'
-    },
-    {
-        'title': 'Root FS Used',
-        'description': 'Used Root FS',
-        'x_pos': 15,
-        'thresholds': [80, 90],
-        'expr': '''(
+    GaugeConfig(
+        title='CPU Busy',
+        description='Overall CPU busy percentage (averaged across all cores)',
+        x_pos=3,
+        thresholds=[85, 95],
+        expr='100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle", instance="$instance", job="$job"}[$__rate_interval])))'
+    ),
+    GaugeConfig(
+        title='Sys Load',
+        description='System load over all CPU cores together',
+        x_pos=6,
+        thresholds=[85, 95],
+        expr='scalar(node_load1{instance="$instance",job="$job"}) * 100 / count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu))'
+    ),
+    GaugeConfig(
+        title='RAM Used',
+        description='Real RAM usage excluding cache and reclaimable memory',
+        x_pos=9,
+        thresholds=[80, 90],
+        expr='(1 - (node_memory_MemAvailable_bytes{instance="$instance", job="$job"} / node_memory_MemTotal_bytes{instance="$instance", job="$job"})) * 100'
+    ),
+    GaugeConfig(
+        title='SWAP Used',
+        description='Percentage of swap space currently used by the system',
+        x_pos=12,
+        thresholds=[10, 25],
+        expr='((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / (node_memory_SwapTotal_bytes{instance="$instance",job="$job"})) * 100'
+    ),
+    GaugeConfig(
+        title='Root FS Used',
+        description='Used Root FS',
+        x_pos=15,
+        thresholds=[80, 90],
+        expr='''(
   (node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}
    - node_filesystem_avail_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"})
   / node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}
 ) * 100'''
-    }
+    )
 ]
 
 # TimeSeries panel configurations
 TIMESERIES_CONFIGS = [
-    {
-        'title': 'CPU Basic',
-        'description': 'Basic CPU usage info',
-        'unit': PERCENT_UNIT,
-        'x_pos': 0,
-        'stacking': {'mode': 'percent', 'group': 'A'},
-        'targets': [
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Busy System',
-                'refId': 'A',
-            },
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Busy User',
-                'refId': 'B',
-            },
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Busy Iowait',
-                'refId': 'C',
-            },
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Busy IRQs',
-                'refId': 'D',
-            },
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Busy Other',
-                'refId': 'E',
-            },
-            {
-                'expr': 'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                'legendFormat': 'Idle',
-                'refId': 'F',
-            },
+    TimeSeriesConfig(
+        title='CPU Basic',
+        description='Basic CPU usage info',
+        unit=PERCENT_UNIT,
+        x_pos=0,
+        stacking=TimeSeriesStacking(mode='percent', group='A'),
+        targets=[
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Busy System',
+                refId='A',
+            ),
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Busy User',
+                refId='B',
+            ),
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Busy Iowait',
+                refId='C',
+            ),
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Busy IRQs',
+                refId='D',
+            ),
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Busy Other',
+                refId='E',
+            ),
+            TimeSeriesTarget(
+                expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+                legendFormat='Idle',
+                refId='F',
+            ),
         ],
-        'extraJson': CPU_BASIC_COLORS,
-    },
-    {
-        'title': 'Memory Basic',
-        'description': 'Basic memory usage',
-        'unit': BYTES_IEC,
-        'x_pos': 12,
-        'stacking': {'mode': 'normal', 'group': 'A'},
-        'targets': [
-            {
-                'expr': 'node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
-                'format': 'time_series',
-                'legendFormat': 'RAM Total',
-                'refId': 'A',
-            },
-            {
-                'expr': 'node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
-                'format': 'time_series',
-                'legendFormat': 'RAM Used',
-                'refId': 'B',
-            },
-            {
-                'expr': 'node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
-                'legendFormat': 'RAM Cache + Buffer',
-                'refId': 'C',
-            },
-            {
-                'expr': 'node_memory_MemFree_bytes{instance="$instance",job="$job"}',
-                'legendFormat': 'RAM Free',
-                'refId': 'D',
-            },
-            {
-                'expr': '(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
-                'legendFormat': 'SWAP Used',
-                'refId': 'E',
-            },
+        extraJson=CPU_BASIC_COLORS,
+    ),
+    TimeSeriesConfig(
+        title='Memory Basic',
+        description='Basic memory usage',
+        unit=BYTES_IEC,
+        x_pos=12,
+        stacking=TimeSeriesStacking(mode='normal', group='A'),
+        targets=[
+            TimeSeriesTarget(
+                expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
+                legendFormat='RAM Total',
+                refId='A',
+            ),
+            TimeSeriesTarget(
+                expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
+                legendFormat='RAM Used',
+                refId='B',
+            ),
+            TimeSeriesTarget(
+                expr='node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
+                legendFormat='RAM Cache + Buffer',
+                refId='C',
+            ),
+            TimeSeriesTarget(
+                expr='node_memory_MemFree_bytes{instance="$instance",job="$job"}',
+                legendFormat='RAM Free',
+                refId='D',
+            ),
+            TimeSeriesTarget(
+                expr='(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
+                legendFormat='SWAP Used',
+                refId='E',
+            ),
         ],
-        'extraJson': MEMORY_BASIC_COLORS,
-    },
-    {
-        'title': 'Network Traffic',
-        'unit': BYTES_SEC_IEC,
-        'x_pos': 0,
-        'y_pos': 8,
-        'lineWidth': 2,
-        'fillOpacity': 10,
-        'targets': [
-            {
-                'expr': 'rate(node_network_receive_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
-                'legendFormat': 'rx {{ device }}',
-                'refId': 'A',
-            },
-            {
-                'expr': '-rate(node_network_transmit_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
-                'legendFormat': 'tx {{ device }}',
-                'refId': 'B',
-            },
+        extraJson=MEMORY_BASIC_COLORS,
+    ),
+    TimeSeriesConfig(
+        title='Network Traffic',
+        unit=BYTES_SEC_IEC,
+        x_pos=0,
+        y_pos=8,
+        lineWidth=2,
+        fillOpacity=10,
+        targets=[
+            TimeSeriesTarget(
+                expr='rate(node_network_receive_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
+                legendFormat='rx {{ device }}',
+                refId='A',
+            ),
+            TimeSeriesTarget(
+                expr='-rate(node_network_transmit_bytes_total{instance="$instance",job="$job",device!="lo"}[$__rate_interval])',
+                legendFormat='tx {{ device }}',
+                refId='B',
+            ),
         ],
-    },
+    ),
 ]
