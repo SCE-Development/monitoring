@@ -1,30 +1,29 @@
-from grafanalib.core import (
-    Row, Panel, Dashboard, Target, TimeSeries, GridPos
-)
-
-class Iterator:
-    def __init__(self, start='A', end='Z', range=26):
-        self.start = start
-        self.end = end
-        self.range = range
-        self.count = 0
-
-    def next(self):
-        self.char = chr(ord(self.start) + self.count % self.range)
-        self.count += 1
-        return self.char
-    
 from dataclasses import dataclass
 from typing import Optional, Final
 
-@dataclass
-class ExpressionAndLegend:
-    expression: str
-    legend: Optional[str] = None
+from grafanalib.core import (
+    Row, Dashboard, Target, TimeSeries, GridPos
+)
 
 from common import PROMETHEUS_DATASOURCE_NAME
 
-class Wrapper:
+class RefIdGenerator:
+    STARTING_CHAR_INTEGER = ord('A')
+
+    def __init__(self):
+        self.offset = 0
+
+    def next(self) -> str:
+        result = chr(self.STARTING_CHAR_INTEGER + self.offset)
+        self.offset += 1
+        return result
+
+@dataclass
+class ExpressionAndLegendPair:
+    expression: str
+    legend: Optional[str] = None
+
+class SceGrafanalibWrapper:
     MAX_WIDTH: Final[int] = 24
 
     def __init__(self, title, panel_width=12, panel_height=8):
@@ -36,24 +35,9 @@ class Wrapper:
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
 
-    def DefineRow(self, title):
-        self.rows.append(Row(title=title, panels=[]))
-
-    def AddPanelToRow(self, title, queries: list[ExpressionAndLegend]):
-        if (len(self.rows) == 0):
-            return ValueError
+    def AddPanel(self, title, queries: list[ExpressionAndLegendPair]):
         targets = []
-        iterator = Iterator()
-        for query in queries:
-            query_text = query.expression
-            query_label = query.legend
-            refId = iterator.next()
-            targets.append(Target(expr=query_text, legendFormat=query_label, refId=refId, datasource=PROMETHEUS_DATASOURCE_NAME))
-        self.rows[-1].panels.append(TimeSeries(title=title, targets=targets))
-
-    def AddPanel(self, title, queries: list[ExpressionAndLegend]):
-        targets = []
-        iterator = Iterator()
+        iterator = RefIdGenerator()
         for query in queries:
             query_text = query.expression
             query_label = query.legend
