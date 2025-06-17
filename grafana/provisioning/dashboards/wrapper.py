@@ -36,7 +36,7 @@ class SceGrafanalibWrapper:
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
 
-    def AddPanel(self, title, queries: list[ExpressionAndLegendPair]):
+    def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit):
         targets = []
         iterator = RefIdGenerator()
         for query in queries:
@@ -61,14 +61,16 @@ class SceGrafanalibWrapper:
                     x=self.current_x,
                     y=self.current_y,
                 ),
+                lineWidth=2,
+                unit=unit
             )
         )
         self.current_x += self.panel_width
-        if self.current_x >= self.MAX_WIDTH / 2:
+        if self.current_x > self.MAX_WIDTH / 2:
             self.current_y += self.panel_height
             self.current_x = 0
 
     def Render(self):
         return Dashboard(
-            title=self.title, rows=self.rows, panels=self.panels
+            title=self.title, rows=self.rows, panels=self.panels, timezone='browser'
         ).auto_panel_ids()
