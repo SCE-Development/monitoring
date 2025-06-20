@@ -51,7 +51,7 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        self.panels.append(
+        self.panels.append(     
             TimeSeries(
                 title=title,
                 targets=targets,
@@ -63,6 +63,53 @@ class SceGrafanalibWrapper:
                 ),
                 lineWidth=2,
                 unit=unit
+            )
+        )
+        self.current_x += self.panel_width
+        if self.current_x > self.MAX_WIDTH / 2:
+            self.current_y += self.panel_height
+            self.current_x = 0
+
+    def AddDyDtPanel(self, title, query: ExpressionAndLegendPair):
+        targets = []
+        iterator = RefIdGenerator()
+        query_text = query.expression
+        query_label = query.legend
+        total_query = f"sum({query_text})"
+        rate_query = f"sum(rate({query_text}[1h]))"
+        total_label = "total"
+        rate_label = "dY/dt [hourly]"
+        if query_label:
+            total_query += f' by ({query_label.strip("{}")})'
+            rate_query += f' by ({query_label.strip("{}")})'
+            total_label = f"{query_label} " + total_label
+            rate_label = f"{query_label} " + rate_label
+        targets.append(
+            Target(
+                expr=total_query,
+                legendFormat=total_label,
+                refId=iterator.next(),
+                datasource=PROMETHEUS_DATASOURCE_NAME,
+            )
+        )
+        targets.append(
+            Target(
+                expr=rate_query + " * 3600",
+                legendFormat=rate_label,
+                refId=iterator.next(),
+                datasource=PROMETHEUS_DATASOURCE_NAME,
+            )
+        )
+        self.panels.append(
+            TimeSeries(
+                title=title,
+                targets=targets,
+                gridPos=GridPos(
+                    h=self.panel_height,
+                    w=self.panel_width,
+                    x=self.current_x,
+                    y=self.current_y,
+                ),
             )
         )
         self.current_x += self.panel_width
