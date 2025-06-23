@@ -3,6 +3,7 @@ from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 from grafanalib.formatunits import NUMBER_FORMAT
 
 wrapper = SceGrafanalibWrapper("Clark")
+wrapper.DefineRow("Office Access Card")
 wrapper.AddPanel(
     title="Office Access Card - 200 Responses",
     queries=[
@@ -23,6 +24,7 @@ wrapper.AddPanel(
     ],
     dydt=True,
 )
+wrapper.DefineRow("Endpoint Requests")
 wrapper.AddPanel(
     title="All main-endpoints traffic",
     queries=[
