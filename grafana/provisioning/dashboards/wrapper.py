@@ -42,33 +42,7 @@ class SceGrafanalibWrapper:
         for query in queries:
             query_text = query.expression
             query_label = query.legend
-            if dydt:
-                total_query = f"sum({query_text})"
-                rate_query = f"sum(rate({query_text}[1h]))"
-                total_label = "total"
-                rate_label = "dY/dt [hourly]"
-                if query_label:
-                    total_query += f' by ({query_label.strip("{}")})'
-                    rate_query += f' by ({query_label.strip("{}")})'
-                    total_label = f"{query_label} " + total_label
-                    rate_label = f"{query_label} " + rate_label
-                targets.append(
-                    Target(
-                        expr=total_query,
-                        legendFormat=total_label,
-                        refId=iterator.next(),
-                        datasource=PROMETHEUS_DATASOURCE_NAME,
-                    )
-                )
-                targets.append(
-                    Target(
-                        expr=rate_query + " * 3600",
-                        legendFormat=rate_label,
-                        refId=iterator.next(),
-                        datasource=PROMETHEUS_DATASOURCE_NAME,
-                    )
-                )
-            else:
+            if not dydt:
                 targets.append(
                     Target(
                         expr=query_text,
@@ -77,6 +51,32 @@ class SceGrafanalibWrapper:
                         datasource=PROMETHEUS_DATASOURCE_NAME,
                     )
                 )
+                continue
+            total_query = f"sum({query_text})"
+            rate_query = f"sum(rate({query_text}[1h]))"
+            total_label = "total"
+            rate_label = "dY/dt [hourly]"
+            if query_label:
+                total_query += f' by ({query_label.strip("{}")})'
+                rate_query += f' by ({query_label.strip("{}")})'
+                total_label = f"{query_label} " + total_label
+                rate_label = f"{query_label} " + rate_label
+            targets.append(
+                Target(
+                    expr=total_query,
+                    legendFormat=total_label,
+                    refId=iterator.next(),
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                )
+            )
+            targets.append(
+                Target(
+                    expr=rate_query + " * 3600",
+                    legendFormat=rate_label,
+                    refId=iterator.next(),
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                )
+            )
         self.panels.append(     
             TimeSeries(
                 title=title,
