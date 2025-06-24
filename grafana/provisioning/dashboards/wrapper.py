@@ -36,22 +36,48 @@ class SceGrafanalibWrapper:
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
 
-    def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit):
+    def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit='', dydt=False):
         targets = []
         iterator = RefIdGenerator()
         for query in queries:
             query_text = query.expression
             query_label = query.legend
-            refId = iterator.next()
+            if not dydt:
+                targets.append(
+                    Target(
+                        expr=query_text,
+                        legendFormat=query_label,
+                        refId=iterator.next(),
+                        datasource=PROMETHEUS_DATASOURCE_NAME,
+                    )
+                )
+                continue
+            total_query = f"sum({query_text})"
+            rate_query = f"sum(rate({query_text}[1h]))"
+            total_label = "total"
+            rate_label = "dY/dt [hourly]"
+            if query_label:
+                total_query += f' by ({query_label.strip("{}")})'
+                rate_query += f' by ({query_label.strip("{}")})'
+                total_label = f"{query_label} " + total_label
+                rate_label = f"{query_label} " + rate_label
             targets.append(
                 Target(
-                    expr=query_text,
-                    legendFormat=query_label,
-                    refId=refId,
+                    expr=total_query,
+                    legendFormat=total_label,
+                    refId=iterator.next(),
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        self.panels.append(
+            targets.append(
+                Target(
+                    expr=rate_query + " * 3600",
+                    legendFormat=rate_label,
+                    refId=iterator.next(),
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                )
+            )
+        self.panels.append(     
             TimeSeries(
                 title=title,
                 targets=targets,
