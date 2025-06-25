@@ -80,8 +80,8 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        panel_assignment = self.rows[-1].panels if self.rows else self.panels
-        panel_assignment.append(     
+        row_or_panel = self.rows[-1].panels if self.rows else self.panels
+        row_or_panel.append(
             TimeSeries(
                 title=title,
                 targets=targets,
