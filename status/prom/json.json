@@ -1,0 +1,13 @@
+[
+    {
+      "hostname": "localhost:3000/metrics",
+      "queries": [
+       
+        {
+            "serviceName": "Coin-API",
+            "query": "up"
+        }
+       
+      ]
+    }
+]
