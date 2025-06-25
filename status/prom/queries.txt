@@ -1,0 +1,21 @@
+{
+      "hostname": "localhost:9090/metrics",
+      "queries": [
+        {
+            "serviceName": "My FastAPI API - CPU Usage",
+            "query": "rate(node_cpu_seconds_total[5m])"
+        },
+        {
+          "serviceName": "Prometheus - Memory Usage",
+          "query": "node_memory_MemAvailable_bytes"
+        },
+        {
+          "serviceName": "My FastAPI API - Uptime",
+          "query": "time() - process_start_time_seconds"
+        },
+        {
+            "serviceName": "Last Down::",
+            "query": "down"
+        }
+      ]
+    }
