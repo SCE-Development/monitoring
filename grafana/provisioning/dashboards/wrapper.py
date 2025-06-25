@@ -36,6 +36,9 @@ class SceGrafanalibWrapper:
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
 
+    def DefineRow(self, title):
+        self.rows.append(Row(title=title, panels=[]))
+
     def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit='', dydt=False):
         targets = []
         iterator = RefIdGenerator()
@@ -77,7 +80,8 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        self.panels.append(     
+        row_or_panel = self.rows[-1].panels if self.rows else self.panels
+        row_or_panel.append(
             TimeSeries(
                 title=title,
                 targets=targets,
