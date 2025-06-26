@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prometheus Metrics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .healthy {
+            color: green;
+        }
+        .tie {
+            color: blue;
+        }
+        .unhealthy {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prometheus Metrics</h1>
+    <p>Last updated: {{ timestamp }}</p>
+    <table>
+        <tr>
+            <th>Instance</th>
+            <th>Value</th>
+        </tr>
+        {% for item in metrics %}
+        <tr>
+            <td>{{ item.instance }}</td>
+            <td class="{% if item.status == 'Healthy' %}healthy{% else %}unhealthy{% endif %}">
+                {{ item.status }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
