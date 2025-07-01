@@ -1,7 +1,12 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional, Union
 from grafanalib.core import Dashboard, Panel, Row, GridPos, TimeSeries, Target
 import string
+
+@dataclass
+class QueryDef:
+    query: str
+    title: Optional[str] = None
 
 @dataclass
 class DashboardWrapper:
@@ -25,17 +30,21 @@ class DashboardWrapper:
         self._current_row += 1
         return self
 
-    def add_time_series_panel(self, title: str, queries: list[tuple[str, str]], unit=None, lineWidth=2, datasource='Prometheus'):
+    def add_time_series_panel(self, title: str, queries: List[QueryDef], unit=None, lineWidth=2, datasource='Prometheus'):
         gridPos = GridPos(h=self._panel_height, w=self._panel_width, x=self._panel_x, y=self._panel_y)
-        targets = [
-            Target(
+        targets = []
+        for i, q in enumerate(queries):
+            if isinstance(q, QueryDef):
+                expr = q.query
+                legendFormat = q.title
+            else:
+                raise ValueError("Each query must be a QueryDef or a (query, title) tuple")
+            targets.append(Target(
                 datasource=datasource,
-                expr=query,
-                legendFormat=label,
+                expr=expr,
+                legendFormat=legendFormat,
                 refId=string.ascii_uppercase[i]
-            )
-            for i, (query, label) in enumerate(queries)
-        ]
+            ))
         panel = TimeSeries(
             title=title,
             unit=unit,
