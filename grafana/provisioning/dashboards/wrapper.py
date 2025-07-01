@@ -8,7 +8,7 @@ from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos, GaugePa
 from common import PROMETHEUS_DATASOURCE_NAME
 
 
-class Panel(Enum):
+class PanelType(Enum):
     TIME_SERIES = TimeSeries
     GAUGE = GaugePanel
 
@@ -52,7 +52,7 @@ class SceGrafanalibWrapper:
         queries: list[ExpressionAndLegendPair],
         unit="",
         dydt=False,
-        panel_type=Panel.TIME_SERIES,
+        panel_type_enum=PanelType.TIME_SERIES,
     ):
         targets = []
         iterator = RefIdGenerator()
@@ -94,7 +94,7 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        panel = panel_type.value(
+        panel = panel_type_enum.value(
             title=title,
             targets=targets,
             gridPos=GridPos(
@@ -104,7 +104,8 @@ class SceGrafanalibWrapper:
                 y=self.current_y,
             ),
         )
-        unit_var = "unit" if hasattr(panel_type.value, "unit") else "format"
+        # maybe only a few of the panel types are missing the unit field
+        unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
         setattr(panel, unit_var, unit)
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
