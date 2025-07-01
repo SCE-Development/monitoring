@@ -4,14 +4,16 @@ from typing import Optional, Final
 from enum import Enum
 
 from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos, GaugePanel
+from enum import Enum
+
+from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos, GaugePanel
 
 from common import PROMETHEUS_DATASOURCE_NAME
 
 
-class PanelType(Enum):
+class Panel(Enum):
     TIME_SERIES = TimeSeries
     GAUGE = GaugePanel
-
 
 class RefIdGenerator:
     STARTING_CHAR_INTEGER = ord("A")
@@ -54,6 +56,7 @@ class SceGrafanalibWrapper:
         dydt=False,
         panel_type_enum=PanelType.TIME_SERIES,
     ):
+    def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit='', dydt=False, panel_type=Panel.TIME_SERIES):
         targets = []
         iterator = RefIdGenerator()
         for query in queries:
@@ -94,18 +97,17 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        panel = panel_type_enum.value(
-            title=title,
-            targets=targets,
-            gridPos=GridPos(
-                h=self.panel_height,
-                w=self.panel_width,
-                x=self.current_x,
-                y=self.current_y,
-            ),
-        )
-        # maybe only a few of the panel types are missing the unit field
-        unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
+        panel = panel_type.value(
+                title=title,
+                targets=targets,
+                gridPos=GridPos(
+                    h=self.panel_height,
+                    w=self.panel_width,
+                    x=self.current_x,
+                    y=self.current_y,
+                ),
+            )
+        unit_var = 'unit' if hasattr(panel_type.value, 'unit') else 'format'
         setattr(panel, unit_var, unit)
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
