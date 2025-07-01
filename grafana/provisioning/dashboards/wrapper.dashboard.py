@@ -1,12 +1,8 @@
 from wrapper import DashboardWrapper
 from grafanalib.core import (
     Dashboard,
-    TimeSeries,
-    Target,
     Stat,
-    GridPos,
 )
-# see https://github.com/weaveworks/grafanalib/blob/main/grafanalib/formatunits.py
 from grafanalib.formatunits import (
     SECONDS,
     NUMBER_FORMAT,
@@ -16,20 +12,36 @@ from grafanalib.formatunits import (
 
 PROMETHEUS_DATASOURCE_NAME = 'Prometheus'
 
-
 dashboard = DashboardWrapper(
     title="wrapper generated",
     description="this dashboard was generated using the wrapper",
-).add_panel(TimeSeries(
+).define_row("Quick") \
+ .add_time_series_panel(
     title='CPU Usage',
+    queries=[
+        ('rate(process_cpu_seconds_total[1m])', None),
+    ],
     unit=NUMBER_FORMAT,
-    gridPos=GridPos(h=8, w=12, x=0, y=0),
-    lineWidth=2,
+) \
+ .add_time_series_panel(
+    title='Network Bytes',
+    queries=[
+        ('max by (name) (rate(container_network_receive_bytes_total[1m]))', 'rx {{ name }}'),
+        ('-max by (name) (rate(container_network_transmit_bytes_total[1m]))', 'tx {{ name }}'),
+    ],
+    unit=BYTES,
+) \
+ .define_row("Main") \
+ .add_panel(Stat(
+    title='Uptime',
+    format=SECONDS,
+    gridPos=None,  
     targets=[
-        Target(
+        dict(
             datasource=PROMETHEUS_DATASOURCE_NAME,
-            expr='rate(process_cpu_seconds_total[1m])',
+            expr='time() - process_start_time_seconds',
             refId='A',
         ),
     ],
-)).generate().auto_panel_ids()
+)) \
+ .render().auto_panel_ids()
