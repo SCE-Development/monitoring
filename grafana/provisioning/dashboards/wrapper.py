@@ -1,9 +1,16 @@
 from dataclasses import dataclass
 from typing import Optional, Final
 
-from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos
+from enum import Enum
+
+from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos, GaugePanel
 
 from common import PROMETHEUS_DATASOURCE_NAME
+
+
+class PanelType(Enum):
+    TIME_SERIES = TimeSeries
+    GAUGE = GaugePanel
 
 
 class RefIdGenerator:
@@ -39,7 +46,14 @@ class SceGrafanalibWrapper:
     def DefineRow(self, title):
         self.rows.append(Row(title=title, panels=[]))
 
-    def AddPanel(self, title, queries: list[ExpressionAndLegendPair], unit='', dydt=False):
+    def AddPanel(
+        self,
+        title,
+        queries: list[ExpressionAndLegendPair],
+        unit="",
+        dydt=False,
+        panel_type_enum=PanelType.TIME_SERIES,
+    ):
         targets = []
         iterator = RefIdGenerator()
         for query in queries:
@@ -80,21 +94,21 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-        row_or_panel = self.rows[-1].panels if self.rows else self.panels
-        row_or_panel.append(
-            TimeSeries(
-                title=title,
-                targets=targets,
-                gridPos=GridPos(
-                    h=self.panel_height,
-                    w=self.panel_width,
-                    x=self.current_x,
-                    y=self.current_y,
-                ),
-                lineWidth=2,
-                unit=unit
-            )
+        panel = panel_type_enum.value(
+            title=title,
+            targets=targets,
+            gridPos=GridPos(
+                h=self.panel_height,
+                w=self.panel_width,
+                x=self.current_x,
+                y=self.current_y,
+            ),
         )
+        # maybe only a few of the panel types are missing the unit field
+        unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
+        setattr(panel, unit_var, unit)
+        row_or_panel = self.rows[-1].panels if self.rows else self.panels
+        row_or_panel.append(panel)
         self.current_x += self.panel_width
         if self.current_x > self.MAX_WIDTH / 2:
             self.current_y += self.panel_height
@@ -102,5 +116,5 @@ class SceGrafanalibWrapper:
 
     def Render(self):
         return Dashboard(
-            title=self.title, rows=self.rows, panels=self.panels, timezone='browser'
+            title=self.title, rows=self.rows, panels=self.panels, timezone="browser"
         ).auto_panel_ids()
