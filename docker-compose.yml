@@ -46,8 +46,8 @@ services:
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
-    environment:
-      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+    # environment:
+    #   - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
     build:
       context: ./grafana/
       dockerfile: ./Dockerfile
@@ -56,6 +56,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
 
   poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
