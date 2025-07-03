@@ -4,33 +4,71 @@
     <title>Prometheus Metrics</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            color: #333;
         }
         h1 {
-            color: #333;
+            color: #222;
+            font-size: 28px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        p {
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
         }
         table {
             border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
+            width: 90%;
+            margin: 0 auto;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            padding: 15px;
+            text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #007BFF;
+            color: white;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        td {
+            font-size: 16px;
         }
         .healthy {
-            color: green;
-        }
-        .tie {
-            color: blue;
+            color: #28a745;
+            font-weight: bold;
         }
         .unhealthy {
-            color: red;
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .tie {
+            color: #17a2b8;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
@@ -39,12 +77,12 @@
     <p>Last updated: {{ timestamp }}</p>
     <table>
         <tr>
-            <th>Instance</th>
-            <th>Value</th>
+            <th>Job</th>
+            <th>Status</th>
         </tr>
         {% for item in metrics %}
         <tr>
-            <td>{{ item.instance }}</td>
+            <td>{{ item.job }}</td>
             <td class="{% if item.status == 'Healthy' %}healthy{% else %}unhealthy{% endif %}">
                 {{ item.status }}
             </td>

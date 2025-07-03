@@ -54,8 +54,8 @@ def check_status(query):
         return None
 
 def polling_loop(interval, config):
+        global metrics_data
         while True: 
-            global metrics_data
             metrics_data = []
             for hosts in config:
                 service_name = hosts["job-id"]
@@ -83,20 +83,22 @@ def process_up_query(query, service_name):
             return
         
         for metric in result:
-            job_name = metric.get('metric',{}).get('job', "")#for later use in dataclass
-            time_stamp = metric.get('value', [])[0]#for later use in dataclass
+            instance = metric["metric"].get("instance", "unknown")
+            job_name = metric["metric"].get("job", "unknown")#for later use in dataclass
             value = metric.get('value', [])[1]
             # last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
             status = "Healthy" if float(value) > 0 else "Unhealthy"
             if status == "Unhealthy":
                 current = get_first_match_time(prom=prom, prom_query="up", match_value=0, hours=up_hours)
                 metrics_data.append({
-                    "instance": service_name,
+                    "instance": instance,
+                    "job":job_name,
                     "status": current
                 })
             else:
                 metrics_data.append({
-                    "instance": service_name,
+                    "instance": instance,
+                    "job": job_name,
                     "status": "Healthy"
                 })
     except Exception as e:
@@ -112,11 +114,13 @@ def process_time_query(query, service_name):
     try:
         result = prom.custom_query(query=query)
         if result and len(result) > 0:
-            first_result = result[0]
-            uptime_seconds = float(first_result["value"][1])
-            up_hours = int(uptime_seconds/3600)
-            if up_hours == 0:
-                up_hours = 1
+            for metric in result:  
+                instance = metric["metric"].get("instance", "unknown")
+                job_name = metric["metric"].get("job", "unknown")
+                uptime_seconds = float(metric["value"][1])
+                up_hours = int(uptime_seconds / 3600)
+                if up_hours == 0:
+                    up_hours = 1
     except Exception as e:
         print(f"Error processing time query '{query}': {e}")
 
