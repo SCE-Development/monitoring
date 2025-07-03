@@ -21,5 +21,11 @@ def get_args():
         required = True,
         help = "argument to a json file, where the json file specifies what services we need to query"
     )
+    parser.add_argument(
+        "--promurl",
+        type = str,
+        default= "http://prometheus:9090",
+        help = "the url for the promtheus container thats running that has to be scraped"
+    )
 
     return parser.parse_args()

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from fastapi.responses import HTMLResponse
 from prometheus_api_client import PrometheusConnect
 from fastapi import FastAPI, Request
@@ -11,8 +12,9 @@ import threading
 import os
 from datetime import datetime, timedelta
 import pytz
+import requests
 
-prom = PrometheusConnect(url = "http://prometheus:9090", disable_ssl=True)#this will query "http://prometheus:9090/api/v1/query?query=up"
+
 
 app = FastAPI()
 
@@ -21,19 +23,45 @@ pacific_tz = pytz.timezone('US/Pacific')
 templates = Jinja2Templates(directory="templates")
 
 args = get_args()
+
+prom = PrometheusConnect(url = args.promurl, disable_ssl=True)#this will query "http://prometheus:9090/api/v1/query?query=up"
+
 metrics_data = []
 up_hours = 24  
+
+@dataclass
+class metrics:
+    job_name: str
+    timestamp: float
+    value: float
+
+def check_status(query):
+    params = {"query" : query}
+    try:
+        response = requests.get("http://prometheus:9090/api/v1/query", params = params)
+        response.raise_for_status()# Raise an error for HTTP issues
+        json_response = response.json()
+        if json_response["status"]=="success":
+            return True
+        elif json_response["status"]==None:
+            print("the status key does not exist!")
+            return False
+        else:
+            return False
+
+    except Exception as e:
+        print(f"Error querying Prometheus: {e}")
+        return None
 
 def polling_loop(interval, config):
         while True: 
             global metrics_data
             metrics_data = []
             for hosts in config:
-                for query in hosts["queries"]:
-                    service_name = query["serviceName"]
-                    prom_query = query["query"]
-                    if prom_query == "up":  
-                        process_up_query(prom_query, service_name)  
+                service_name = hosts["job-id"]
+                prom_query = hosts["query"]
+                if prom_query == "up":  
+                    process_up_query(prom_query, service_name)  
             time.sleep(interval)
 
 service_data = {}
@@ -41,7 +69,8 @@ service_data = {}
 def process_up_query(query, service_name):
     global metrics_data, service_data
     process_time_query("time() - process_start_time_seconds", service_name)
-    
+    if not check_status(query="up"):
+        print("status is not success, please look into it!!")
     try:
         result = prom.custom_query(query=query)
         if not result:
@@ -54,9 +83,10 @@ def process_up_query(query, service_name):
             return
         
         for metric in result:
-            instance = metric['metric'].get('instance', 'unknown')
-            value = metric['value'][1]
-            last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
+            job_name = metric.get('metric',{}).get('job', "")#for later use in dataclass
+            time_stamp = metric.get('value', [])[0]#for later use in dataclass
+            value = metric.get('value', [])[1]
+            # last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
             status = "Healthy" if float(value) > 0 else "Unhealthy"
             if status == "Unhealthy":
                 current = get_first_match_time(prom=prom, prom_query="up", match_value=0, hours=up_hours)
