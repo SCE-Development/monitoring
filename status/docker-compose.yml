@@ -1,14 +1,6 @@
 version: '2'
 
 services:
-  coin-api:
-    container_name: coin-api
-    build:
-      context: .
-      dockerfile: ./dockerfile
-    restart: 'on-failure'  
-    ports:
-      - "5000:5000"
   prometheus:
     image: prom/prometheus:latest
     restart: always
@@ -31,7 +23,8 @@ services:
     ports:
       - "8000:8000"
     restart: 'on-failure'
-    command: python3 scraper.py --json json.json
+    command: python3 scraper.py --json json.json --promurl "http://one.sce/prometheus/metrics"
+
 
   nginx:
     image: nginx:1.25.3
