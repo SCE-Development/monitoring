@@ -23,7 +23,7 @@ services:
     ports:
       - "8000:8000"
     restart: 'on-failure'
-    command: python3 scraper.py --json json.json --promurl "http://one.sce/prometheus/metrics"
+    command: python3 scraper.py --json json.json --promurl "http://one.sce/prometheus"
 
 
   nginx:
