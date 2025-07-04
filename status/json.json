@@ -1,6 +1,0 @@
-[
-    {
-      "job-id": "prometheus-aggregation",
-      "query": "up"
-    }
-]
