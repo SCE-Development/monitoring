@@ -20,6 +20,8 @@ wrapper.AddPanel(
     dydt=True
 )
 
+wrapper.DefineRow("SQLite latency")
+
 wrapper.AddPanel(
     title="SQLite latency by query",
     queries=[
@@ -31,6 +33,8 @@ wrapper.AddPanel(
     unit=NUMBER_FORMAT,
     dydt=False
 )
+
+wrapper.DefineRow("HTTP Status Codes")
 
 # HTTP status codes panel
 wrapper.AddPanel(
@@ -45,6 +49,8 @@ wrapper.AddPanel(
     dydt=True
 )
 
+wrapper.DefineRow("Cache Hits and Misses")
+
 wrapper.AddPanel(
     title="Cache hits and misses",
     queries=[
@@ -56,6 +62,9 @@ wrapper.AddPanel(
     unit=NUMBER_FORMAT,
     dydt=True
 )
+
+wrapper.DefineRow("Container Uptime")
+
 
 wrapper.AddPanel(
     title="Container Uptime",
