@@ -3,7 +3,16 @@ from typing import Optional, Final
 
 from enum import Enum
 
-from grafanalib.core import Row, Dashboard, Target, TimeSeries, GridPos, GaugePanel
+from grafanalib.core import (
+    Row,
+    Dashboard,
+    Target,
+    TimeSeries,
+    GridPos,
+    GaugePanel,
+    Template,
+    Templating,
+)
 
 from common import PROMETHEUS_DATASOURCE_NAME
 
@@ -42,9 +51,21 @@ class SceGrafanalibWrapper:
         self.current_y = 0
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
+        self.templates = []
 
     def DefineRow(self, title):
         self.rows.append(Row(title=title, panels=[]))
+
+    def DefineTemplating(self, name, label, query, type='query'):
+        self.templates.append(
+            Template(
+                name=name,
+                label=label,
+                query=query,
+                type=type,
+                dataSource=PROMETHEUS_DATASOURCE_NAME,
+            )
+        )
 
     def AddPanel(
         self,
@@ -116,5 +137,9 @@ class SceGrafanalibWrapper:
 
     def Render(self):
         return Dashboard(
-            title=self.title, rows=self.rows, panels=self.panels, timezone="browser"
+            title=self.title,
+            rows=self.rows,
+            panels=self.panels,
+            timezone="browser",
+            templating=Templating(list=self.templates),
         ).auto_panel_ids()
