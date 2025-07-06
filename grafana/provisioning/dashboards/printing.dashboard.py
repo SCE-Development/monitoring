@@ -2,97 +2,79 @@ from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target,
 from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
 
 from common import PROMETHEUS_DATASOURCE_NAME
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
 
-dashboard = Dashboard(
-    title='Quasar',
-    uid='quasar',
-    description='Printer metrics',
-    timezone='browser',
-    panels=[
-        TimeSeries(
-            title='Ink Level',
-            unit=PERCENT_UNIT,
-            gridPos=GridPos(h=8, w=12, x=0, y=0),
-            lineWidth=2,
-            stacking={'group': 'A','mode': 'none'},
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_metric{name=\"ink_level\",ip=\"192.168.69.149\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.149\"}',
-                    legendFormat='Left Printer {{ip}}',
-                    refId='A',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_metric{name=\"ink_level\",ip=\"192.168.69.208\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.208\"}',
-                    legendFormat='Right Printer {{ip}}',
-                    refId='B',
-                ),
-            ],
+wrapper = SceGrafanalibWrapper("Quasar")
+
+wrapper.DefineRow("Printer Metrics")
+
+wrapper.AddPanel(
+    title="Ink Level",
+    queries=[
+        ExpressionAndLegendPair(
+            'snmp_metric{name="ink_level",ip="192.168.69.149"} / ignoring(name) group_left() snmp_metric{name="ink_capacity",ip="192.168.69.149"}',
+            "Left Printer {{ip}}"
         ),
-        TimeSeries(
-            title='# of Pages Printed',
-            gridPos=GridPos(h=8, w=12, x=12, y=0),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_metric{name=\"page_count\"}',
-                    legendFormat='{{ip}}',
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='SNMP Request Duration',
-            unit=SECONDS,
-            gridPos=GridPos(h=8, w=12, x=0, y=8),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_request_duration_sum/snmp_request_duration_count',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Print Jobs Recieved',
-            gridPos=GridPos(h=8, w=12, x=12, y=8),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='rate(print_jobs_recieved_total[$__rate_interval])',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Active SNMP Errors',
-            gridPos=GridPos(h=8, w=12, x=0, y=16),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='snmp_error == 1',
-                    legendFormat='{{ip}} {{name}}',
-                    refId='A',
-                ),
-            ],
-        ),
+        ExpressionAndLegendPair(
+            'snmp_metric{name="ink_level",ip="192.168.69.208"} / ignoring(name) group_left() snmp_metric{name="ink_capacity",ip="192.168.69.208"}',
+            "Right Printer {{ip}}"
+        )
     ],
-).auto_panel_ids()
+    unit=PERCENT_UNIT,
+    dydt=False
+)
+
+wrapper.AddPanel(
+    title="# of Pages Printed",
+    queries=[
+        ExpressionAndLegendPair(
+            'snmp_metric{name="page_count"}',
+            "{{ip}}"
+        )
+    ],
+    unit="",
+    dydt=True
+)
+
+wrapper.DefineRow("SNMP Metrics")
+
+wrapper.AddPanel(
+    title="SNMP Request Duration",
+    queries=[
+        ExpressionAndLegendPair(
+            'snmp_request_duration_sum/snmp_request_duration_count',
+            "__auto"
+        )
+    ],
+    unit=SECONDS,
+    dydt=False
+)
+
+wrapper.AddPanel(
+    title="Print Jobs Received",
+    queries=[
+        ExpressionAndLegendPair(
+            'rate(print_jobs_recieved_total[$__rate_interval])',
+            "__auto"
+        )
+    ],
+    unit="",
+    dydt=False
+)
+
+wrapper.DefineRow("Error Monitoring")
+
+wrapper.AddPanel(
+    title="Active SNMP Errors",
+    queries=[
+        ExpressionAndLegendPair(
+            'snmp_error == 1',
+            "{{ip}} {{name}}"
+        )
+    ],
+    unit="",
+    dydt=False
+)
+
+dashboard = wrapper.Render()
