@@ -19,68 +19,56 @@ from grafanalib.formatunits import (
 )
 
 from common import PROMETHEUS_DATASOURCE_NAME
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
+wrapper = SceGrafanalibWrapper("SCE Infra")
 
-dashboard = Dashboard(
-    title='SCE Infra',
-    uid='sceinfra',
-    description='SCE services',
-    timezone='browser',
-    panels=[
-        Stat(
-            title='Container Uptime',
-            reduceCalc='lastNotNull',
-            gridPos=GridPos(h=16, w=24, x=0, y=0),
-            thresholds=[
-                Threshold('green', 0, 0.0),
-            ],
-            format=SECONDS,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - process_start_time_seconds',
-                    legendFormat='{{job}}',
-                    refId='A',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - container_start_time_seconds{image=~\"clark.*|nginx|mongo\"}',
-                    legendFormat='{{name}}',
-                    refId='B',
-                ),
-            ],
+wrapper.DefineRow("Container Uptime")
+
+wrapper.AddPanel(
+    title="Container Uptime",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - process_start_time_seconds',
+            '{{job}}'
         ),
-        TimeSeries(
-            title='Metric Health',
-            unit=NUMBER_FORMAT,
-            gridPos=GridPos(h=8, w=12, x=0, y=16),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='up',
-                    legendFormat="{{instance}}",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Container Last Seen (Clark Only)',
-            unit=SECONDS,
-            gridPos=GridPos(h=8, w=12, x=12, y=16),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - container_last_seen{image=~\"clark.*|nginx|mongo\"}',
-                    legendFormat="{{image}}",
-                    refId='A',
-                ),
-            ],
-        ),
+        ExpressionAndLegendPair(
+            'time() - container_start_time_seconds{image=~\"clark.*|nginx|mongo\"}',
+            '{{name}}'
+        )
     ],
-).auto_panel_ids()
+    unit=SECONDS,
+    dydt=False
+)
+
+wrapper.DefineRow("Metric Health")
+
+wrapper.AddPanel(
+    title="Metric Health",
+    queries=[
+        ExpressionAndLegendPair(
+            'up',
+            '{{instance}}'
+        )
+    ], 
+    unit=NUMBER_FORMAT,
+    dydt=True
+)
+
+wrapper.DefineRow("Container Last Seen (Clark Only)")
+
+
+wrapper.AddPanel(
+    title="Container Last Seen (Clark Only)",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - container_last_seen{image=~\"clark.*|nginx|mongo\"}',
+            '{{image}}'
+        )
+    ],
+    unit=SECONDS,
+    dydt=False
+)
+
+dashboard = wrapper.Render()
+
