@@ -1,136 +1,102 @@
-from grafanalib.core import Dashboard, Templating, Template, TimeSeries, GridPos, Target
-from grafanalib.formatunits import BYTES_IEC, PERCENT_UNIT
+from grafanalib.core import (
+    Dashboard, TimeSeries, GaugePanel,
+    Target, GridPos,
+    OPS_FORMAT, Templating, Template, REFRESH_ON_TIME_RANGE_CHANGE, Logs
+)
+from grafanalib.formatunits import BYTES_IEC, SECONDS, BYTES_SEC_IEC, PERCENT_UNIT
 
 from common import PROMETHEUS_DATASOURCE_NAME
-from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
+# Color definitions for panels
+CPU_BASIC_COLORS = {
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "fillOpacity": 30,
+                "lineWidth": 1,
+                "showPoints": "never"
+            }
+        }
+    }
+}
 
-dashboard = Dashboard(
-    title='Node Exporter',
-    uid='node',
-    description='Node Exporter (not quite full)',
-    tags=[
-        'linux',
+MEMORY_BASIC_COLORS = {
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "fillOpacity": 30,
+                "lineWidth": 1,
+                "showPoints": "never"
+            }
+        }
+    }
+}
+
+wrapper = SceGrafanalibWrapper("Node Exporter")
+
+wrapper.DefineRow("CPU Metrics")
+
+wrapper.AddPanel(
+    title="CPU Basic",
+    queries=[
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Busy System"
+        ),
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Busy User"
+        ),
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Busy Iowait"
+        ),
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Busy IRQs"
+        ),
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Busy Other"
+        ),
+        ExpressionAndLegendPair(
+            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
+            "Idle"
+        )
     ],
-    timezone='browser',
-    templating=Templating(list=[
-        Template(
-            name='job',
-            label='Job',
-            dataSource=PROMETHEUS_DATASOURCE_NAME,
-            query='label_values(node_uname_info, job)',
+    unit=PERCENT_UNIT,
+    dydt=False
+)
+
+wrapper.DefineRow("Memory Metrics")
+
+wrapper.AddPanel(
+    title="Memory Basic",
+    queries=[
+        ExpressionAndLegendPair(
+            'node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
+            "RAM Total"
         ),
-        Template(
-            name='instance',
-            label='Instance',
-            dataSource=PROMETHEUS_DATASOURCE_NAME,
-            query='label_values(node_uname_info{job="$job"}, instance)',
+        ExpressionAndLegendPair(
+            'node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
+            "RAM Used"
         ),
-    ]),
-    panels=[
-        # CPU Basic
-        TimeSeries(
-            title='CPU Basic',
-            description='Basic CPU usage info',
-            unit=PERCENT_UNIT,
-            gridPos=GridPos(h=8, w=12, x=0, y=0),
-            lineWidth=1,
-            fillOpacity=30,
-            showPoints='never',
-            stacking={'mode': 'percent', 'group': 'A'},
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Busy System',
-                    refId='A',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Busy User',
-                    refId='B',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Busy Iowait',
-                    refId='C',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Busy IRQs',
-                    refId='D',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Busy Other',
-                    refId='E',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-                    legendFormat='Idle',
-                    refId='F',
-                ),
-            ],
-            # Extra JSON for the colors
-            extraJson=CPU_BASIC_COLORS,
+        ExpressionAndLegendPair(
+            'node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
+            "RAM Cache + Buffer"
         ),
-        # Memory Basic
-        TimeSeries(
-            title='Memory Basic',
-            description='Basic memory usage',
-            unit=BYTES_IEC,
-            gridPos=GridPos(h=8, w=12, x=12, y=0),
-            lineWidth=1,
-            fillOpacity=30,
-            showPoints='never',
-            stacking={'mode': 'normal', 'group': 'A'},
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"}',
-                    format='time_series',
-                    legendFormat='RAM Total',
-                    refId='A',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='node_memory_MemTotal_bytes{instance="$instance",job="$job"} - node_memory_MemFree_bytes{instance="$instance",job="$job"} - (node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"})',
-                    format='time_series',
-                    legendFormat='RAM Used',
-                    refId='B',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='node_memory_Cached_bytes{instance="$instance",job="$job"} + node_memory_Buffers_bytes{instance="$instance",job="$job"} + node_memory_SReclaimable_bytes{instance="$instance",job="$job"}',
-                    legendFormat='RAM Cache + Buffer',
-                    refId='C',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='node_memory_MemFree_bytes{instance="$instance",job="$job"}',
-                    legendFormat='RAM Free',
-                    refId='D',
-                ),
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
-                    legendFormat='SWAP Used',
-                    refId='E',
-                ),
-            ],
-            # Extra JSON for the colors
-            extraJson=MEMORY_BASIC_COLORS,
+        ExpressionAndLegendPair(
+            'node_memory_MemFree_bytes{instance="$instance",job="$job"}',
+            "RAM Free"
         ),
-        # TODO: Network Basic
-        # TODO: Disk Basic
+        ExpressionAndLegendPair(
+            '(node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"})',
+            "SWAP Used"
+        )
     ],
-).auto_panel_ids()
+    unit=BYTES_IEC,
+    dydt=False
+)
+
+dashboard = wrapper.Render()
