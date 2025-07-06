@@ -19,174 +19,139 @@ from grafanalib.formatunits import (
 )
 
 from common import PROMETHEUS_DATASOURCE_NAME
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
 
-dashboard = Dashboard(
-    title='SCE TV',
-    uid='scetv',
-    description='SCE video streaming service',
-    timezone='browser',
-    panels=[
-        BarGauge(
-            title='HTTP Requests',
-            calc='lastNotNull',
-            thresholds=[
-                Threshold('green', 0, 0.0),
-            ],
-            gridPos=GridPos(h=8, w=12, x=0, y=0),
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='http_request_count_total{endpoint!=\"/metrics\"}',
-                    legendFormat='{{endpoint}}',
-                    refId='A',
-                ),
-            ],
-        ),
-        Stat(
-            title='Container Uptime',
-            reduceCalc='lastNotNull',
-            gridPos=GridPos(h=8, w=12, x=12, y=0),
-            thresholds=[
-                Threshold('green', 0, 0.0),
-            ],
-            format=SECONDS,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='time() - process_start_time_seconds{job=\"sce-tv\"}',
-                    legendFormat='{{job}}',
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Data Downloaded',
-            unit=BYTES,
-            gridPos=GridPos(h=8, w=12, x=0, y=8),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='data_downloaded_total',
-                    legendFormat="{{job}}",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='API data rate',
-            gridPos=GridPos(h=8, w=12, x=12, y=8),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=BITS_SEC,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='data_downloaded_total{job=\"sce-tv\"} * 8 / download_time_sum',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Download Time',
-            gridPos=GridPos(h=8, w=12, x=0, y=16),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=SECONDS,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='download_time_sum',
-                    legendFormat="{{job}}",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Cache Hit/Miss',
-            gridPos=GridPos(h=8, w=12, x=12, y=16),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=NUMBER_FORMAT,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='cache_miss_count_total',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Total Videos Downloaded',
-            gridPos=GridPos(h=8, w=12, x=0, y=24),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=NUMBER_FORMAT,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='video_download_count_total',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Cache Size Bytes',
-            gridPos=GridPos(h=8, w=12, x=12, y=24),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=BYTES,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='cache_size_bytes',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Total YouTube Videos Played',
-            gridPos=GridPos(h=8, w=12, x=0, y=32),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=BYTES,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='video_count_total',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
-        TimeSeries(
-            title='Cache Size',
-            gridPos=GridPos(h=8, w=12, x=12, y=32),
-            lineWidth=2,
-            tooltipMode='all',
-            tooltipSort='desc',
-            unit=NUMBER_FORMAT,
-            targets=[
-                Target(
-                    datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='cache_size{job=\"sce-tv\"}',
-                    legendFormat="__auto",
-                    refId='A',
-                ),
-            ],
-        ),
+wrapper = SceGrafanalibWrapper("SCE TV")
+
+wrapper.DefineRow("Service Overview")
+
+wrapper.AddPanel(
+    title="HTTP Requests",
+    queries=[
+        ExpressionAndLegendPair(
+            'http_request_count_total{endpoint!="/metrics"}',
+            "{{endpoint}}"
+        )
     ],
-).auto_panel_ids()
+    unit="",
+    dydt=True
+)
+
+wrapper.AddPanel(
+    title="Container Uptime",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - process_start_time_seconds{job="sce-tv"}',
+            "{{job}}"
+        )
+    ],
+    unit=SECONDS,
+    dydt=False
+)
+
+wrapper.DefineRow("Data Metrics")
+
+wrapper.AddPanel(
+    title="Data Downloaded",
+    queries=[
+        ExpressionAndLegendPair(
+            'data_downloaded_total',
+            "{{job}}"
+        )
+    ],
+    unit=BYTES,
+    dydt=True
+)
+
+wrapper.AddPanel(
+    title="API data rate",
+    queries=[
+        ExpressionAndLegendPair(
+            'data_downloaded_total{job="sce-tv"} * 8 / download_time_sum',
+            "__auto"
+        )
+    ],
+    unit=BITS_SEC,
+    dydt=False
+)
+
+wrapper.DefineRow("Performance Metrics")
+
+wrapper.AddPanel(
+    title="Download Time",
+    queries=[
+        ExpressionAndLegendPair(
+            'download_time_sum',
+            "{{job}}"
+        )
+    ],
+    unit=SECONDS,
+    dydt=False
+)
+
+wrapper.AddPanel(
+    title="Cache Hit/Miss",
+    queries=[
+        ExpressionAndLegendPair(
+            'cache_miss_count_total',
+            "__auto"
+        )
+    ],
+    unit=NUMBER_FORMAT,
+    dydt=True
+)
+
+wrapper.DefineRow("Cache Metrics")
+
+wrapper.AddPanel(
+    title="Total Videos Downloaded",
+    queries=[
+        ExpressionAndLegendPair(
+            'video_download_count_total',
+            "__auto"
+        )
+    ],
+    unit=NUMBER_FORMAT,
+    dydt=True
+)
+
+wrapper.AddPanel(
+    title="Cache Size Bytes",
+    queries=[
+        ExpressionAndLegendPair(
+            'cache_size_bytes',
+            "__auto"
+        )
+    ],
+    unit=BYTES,
+    dydt=False
+)
+
+wrapper.DefineRow("Video Metrics")
+
+wrapper.AddPanel(
+    title="Total YouTube Videos Played",
+    queries=[
+        ExpressionAndLegendPair(
+            'video_count_total',
+            "__auto"
+        )
+    ],
+    unit=BYTES,
+    dydt=True
+)
+
+wrapper.AddPanel(
+    title="Cache Size",
+    queries=[
+        ExpressionAndLegendPair(
+            'cache_size{job="sce-tv"}',
+            "__auto"
+        )
+    ],
+    unit=NUMBER_FORMAT,
+    dydt=False
+)
+
+dashboard = wrapper.Render()
