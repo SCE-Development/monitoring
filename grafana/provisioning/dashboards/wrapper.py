@@ -56,10 +56,10 @@ class SceGrafanalibWrapper:
     def DefineRow(self, title):
         self.rows.append(Row(title=title, panels=[]))
 
-    def DefineTemplating(self, name, label, query, type='query'):
+    def DefineTemplating(self, label, query, type='query'):
         self.templates.append(
             Template(
-                name=name,
+                name=label.lower().replace(" ", "_"),
                 label=label,
                 query=query,
                 type=type,

@@ -7,19 +7,19 @@ wrapper = SceGrafanalibWrapper(
 )
 wrapper.DefineRow("Quick CPU / Mem / Disk")
 wrapper.DefineTemplating(
-    "datasource",
     "Datasource",
     "prometheus",
     'datasource'
 )
-wrapper.DefineTemplating("job", "Job", "label_values(node_uname_info, job)")
 wrapper.DefineTemplating(
-    "nodename",
+    "Job",
+    "label_values(node_uname_info, job)"
+)
+wrapper.DefineTemplating(
     "Nodename",
     'label_values(node_uname_info{job="$job"}, nodename)'
 )
 wrapper.DefineTemplating(
-    "node",
     "Instance",
     'label_values(node_uname_info{job="$job", nodename="$nodename"}, instance)'
 )
@@ -29,7 +29,7 @@ wrapper.AddPanel(
         ExpressionAndLegendPair(
             '(1 - avg(rate(' +
             'node_cpu_seconds_total{' +
-            'mode="idle", instance="$node"}' +
+            'mode="idle", instance="$instance"}' +
             '[$__rate_interval]' +
             ')))'
         )
@@ -42,9 +42,9 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'scalar(node_load1{' +
-            'instance="$node",job="$job"}) / ' +
+            'instance="$instance",job="$job"}) / ' +
             'count(count(node_cpu_seconds_total{' +
-            'instance="$node",job="$job"}) ' +
+            'instance="$instance",job="$job"}) ' +
             'by (cpu))'
         )
     ],
@@ -56,8 +56,8 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             '(1 - (node_memory_MemAvailable_bytes{' +
-            'instance="$node", job="$job"} / node_memory_MemTotal_bytes{' +
-            'instance="$node", job="$job"}))'
+            'instance="$instance", job="$job"} / node_memory_MemTotal_bytes{' +
+            'instance="$instance", job="$job"}))'
         )
     ],
     unit=PERCENT_UNIT,
@@ -67,9 +67,9 @@ wrapper.AddPanel(
     title="SWAP Used",
     queries=[
         ExpressionAndLegendPair(
-            '((node_memory_SwapTotal_bytes{instance="$node",job="$job"} - ' +
-            'node_memory_SwapFree_bytes{instance="$node",job="$job"}) / ' +
-            '(node_memory_SwapTotal_bytes{instance="$node",job="$job"}))'
+            '((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - ' +
+            'node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / ' +
+            '(node_memory_SwapTotal_bytes{instance="$instance",job="$job"}))'
         )
     ],
     unit=PERCENT_UNIT,
@@ -80,13 +80,13 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             '(\n  (node_filesystem_size_bytes{' +
-            'instance="$node", job="$job", mountpoint="/", fstype!="rootfs"' +
+            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
             '}\n   - ' +
             'node_filesystem_avail_bytes{' +
-            'instance="$node", job="$job", mountpoint="/", fstype!="rootfs"' +
+            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
             '})\n  / ' +
             'node_filesystem_size_bytes{' +
-            'instance="$node", job="$job", mountpoint="/", fstype!="rootfs"' +
+            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
             '}\n)\n'
         )
     ],
