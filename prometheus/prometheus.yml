@@ -15,10 +15,6 @@ scrape_configs:
     static_configs:
       - targets: ['gyat_server:5001']
   
-  - job_name: 'snmp-collector'
-    static_configs:
-      - targets: ['snmp-collector:5000']
-
   - job_name: 'poweredge-2950-node-exporter'
     static_configs:
       - targets: [ 'poweredge-2950-node-exporter:9100' ]
