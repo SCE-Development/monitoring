@@ -7,11 +7,6 @@ wrapper = SceGrafanalibWrapper(
 )
 wrapper.DefineRow("Quick CPU / Mem / Disk")
 wrapper.DefineTemplating(
-    "Datasource",
-    "prometheus",
-    'datasource'
-)
-wrapper.DefineTemplating(
     "Job",
     "label_values(node_uname_info, job)"
 )

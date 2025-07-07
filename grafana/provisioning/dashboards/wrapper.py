@@ -56,13 +56,12 @@ class SceGrafanalibWrapper:
     def DefineRow(self, title):
         self.rows.append(Row(title=title, panels=[]))
 
-    def DefineTemplating(self, label, query, type='query'):
+    def DefineTemplating(self, label, query):
         self.templates.append(
             Template(
                 name=label.lower().replace(" ", "_"),
                 label=label,
                 query=query,
-                type=type,
                 dataSource=PROMETHEUS_DATASOURCE_NAME,
             )
         )
