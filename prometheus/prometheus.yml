@@ -19,11 +19,6 @@ scrape_configs:
     static_configs:
       - targets: [ 'poweredge-2950-node-exporter:9100' ]
 
-#  - job_name: 'sceats'
-#    metrics_path: '/api/v1/inventory/metrics'
-#   static_configs:
-#      - targets: ['sceats:6969']
-
 alerting:
   alertmanagers:
     - scheme: http
