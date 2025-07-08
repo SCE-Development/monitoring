@@ -20,7 +20,7 @@ app = FastAPI()
 
 pacific_tz = pytz.timezone('US/Pacific')
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=".")
 
 args = get_args()
 

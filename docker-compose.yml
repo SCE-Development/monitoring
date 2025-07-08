@@ -78,8 +78,7 @@ services:
       context: .
       dockerfile: ./status/dockerfile.scraper
     volumes:
-      - ./status/output:/app/output
-      - ./status/templates:/app/templates
+      - ./status/health.html:/app/health.html
       - ./status/json.json:/app/json.json
     ports:
       - "8000:8000"
