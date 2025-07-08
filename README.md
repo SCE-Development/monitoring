@@ -86,3 +86,5 @@ docker-compose up -d
 ```sh
 docker-compose up -build
 ```
+
+- Connect to your OVPN, and head to `http://localhost:3000/dashboards`
