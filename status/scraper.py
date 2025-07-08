@@ -71,6 +71,8 @@ def process_up_query(query, service_name):
     process_time_query("time() - process_start_time_seconds", service_name)
     if not check_status(query="up"):
         print("status is not success, please look into it!!")
+    else:
+        print("status is success in the query!!")
     try:
         result = prom.custom_query(query=query)
         if not result:
