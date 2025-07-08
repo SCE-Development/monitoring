@@ -73,25 +73,18 @@ services:
       - portainer_data:/data
 
   scraper:
-    container_name: scraper
+    container_name: system_status
     build:
       context: .
-      dockerfile: ./status/dockerfile.scraper
+      dockerfile: ./status/dockerfile
     volumes:
       - ./status/health.html:/app/health.html
       - ./status/json.json:/app/json.json
-    ports:
-      - "8000:8000"
     restart: 'on-failure'
-    command: python3 scraper.py --json json.json --promurl "http://one.sce/prometheus"
+    command: python3 scraper.py 
+      --json json.json 
+      --promurl "http://one.sce/prometheus"
 
-
-  nginx:
-    image: nginx:1.25.3
-    ports:
-      - 80:80
-    volumes:
-      - ./status/nginx.conf:/etc/nginx/nginx.conf
 
 volumes:
   alertmanager-data:

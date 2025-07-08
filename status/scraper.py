@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn 
-from flags import get_args
+# from flags import get_args
 import json
 import time
 import threading
@@ -13,7 +13,38 @@ import os
 from datetime import datetime, timedelta
 import pytz
 import requests
+import argparse
 
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--interval",
+        "-int",
+        type= int,
+        default = 15,
+        help = "interval for how often queries should be done"
+    )
+    parser.add_argument(
+        "--port",
+        type = int,
+        default = 8000,
+        help = "port for server to be hosted on, defaults to 8000"
+    )
+    parser.add_argument(
+        "--json",
+        type = str,
+        required = True,
+        help = "argument to a json file, where the json file specifies what services we need to query"
+    )
+    parser.add_argument(
+        "--promurl",
+        type = str,
+        default= "http://prometheus:9090",
+        help = "the url for the promtheus container thats running that has to be scraped"
+    )
+
+    return parser.parse_args()
 
 
 app = FastAPI()
@@ -41,7 +72,7 @@ def check_status(query):
         response = requests.get("http://prometheus:9090/api/v1/query", params = params)
         response.raise_for_status()# Raise an error for HTTP issues
         json_response = response.json()
-        if json_response["status"]=="success":
+        if json_response.get("status")=="success":
             return True
         elif json_response["status"]==None:
             print("the status key does not exist!")
@@ -85,8 +116,8 @@ def process_up_query(query, service_name):
             return
         
         for metric in result:
-            instance = metric["metric"].get("instance", "unknown")
-            job_name = metric["metric"].get("job", "unknown")#for later use in dataclass
+            instance = metric.get("metric",{}).get("instance", "unknown")
+            job_name = metric.get("metric",{}).get("job", "unknown")#for later use in dataclass
             value = metric.get('value', [])[1]
             # last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
             status = "Healthy" if float(value) > 0 else "Unhealthy"
@@ -117,8 +148,8 @@ def process_time_query(query, service_name):
         result = prom.custom_query(query=query)
         if result and len(result) > 0:
             for metric in result:  
-                instance = metric["metric"].get("instance", "unknown")
-                job_name = metric["metric"].get("job", "unknown")
+                instance = metric.get("metric",{}).get("instance", "unknown")
+                job_name = metric.get("metric",{}).get("job", "unknown")
                 uptime_seconds = float(metric["value"][1])
                 up_hours = int(uptime_seconds / 3600)
                 if up_hours == 0:
@@ -174,3 +205,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# nginx:
+# image: nginx:1.25.3
+# ports:
+#   - 80:80
+# volumes:
+#   - ./status/nginx.conf:/etc/nginx/nginx.conf

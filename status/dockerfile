@@ -11,4 +11,4 @@ COPY ./status/flags.py .
 COPY ./status/scraper.py .
 COPY ./status/health.html /app/health.html
 
-CMD ["python3", "scraper.py", "--json", "json.json"]
+ENTRYPOINT ["python3", "scraper.py"]
