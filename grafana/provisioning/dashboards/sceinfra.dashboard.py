@@ -52,7 +52,7 @@ wrapper.AddPanel(
         )
     ], 
     unit=NUMBER_FORMAT,
-    dydt=True
+    dydt=False
 )
 
 wrapper.DefineRow("Container Last Seen (Clark Only)")
