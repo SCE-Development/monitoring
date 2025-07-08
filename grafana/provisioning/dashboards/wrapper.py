@@ -10,6 +10,8 @@ from grafanalib.core import (
     TimeSeries,
     GridPos,
     GaugePanel,
+    BarGauge,
+    Stat,
     Template,
     Templating,
 )
@@ -20,6 +22,8 @@ from common import PROMETHEUS_DATASOURCE_NAME
 class PanelType(Enum):
     TIME_SERIES = TimeSeries
     GAUGE = GaugePanel
+    BARGAUGE = BarGauge
+    STAT = Stat
 
 
 class RefIdGenerator:
