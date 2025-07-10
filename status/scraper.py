@@ -74,6 +74,7 @@ up_hours = 24
 logging.Formatter.converter = time.gmtime
 
 logging.basicConfig(
+    # in mondo we trust
     format="%(asctime)s.%(msecs)03dZ %(levelname)s:%(name)s:%(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S",
     level=logging.ERROR - (args.verbose * 10),
