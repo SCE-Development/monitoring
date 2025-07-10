@@ -15,12 +15,13 @@ from datetime import datetime, timedelta
 import pytz
 import requests
 import argparse
+import logging
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--interval",
+        "--query-interval-seconds",
         "-int",
         type=int,
         default=15,
@@ -33,16 +34,23 @@ def get_args():
         help="port for server to be hosted on, defaults to 8000",
     )
     parser.add_argument(
-        "--json",
+        "--config",
         type=str,
         required=True,
         help="argument to a json file, where the json file specifies what services we need to query",
     )
     parser.add_argument(
-        "--promurl",
+        "--prometheus-url",
         type=str,
-        default="http://prometheus:9090",
+        default="http://one.sce/prometheus",
         help="the url for the promtheus container thats running that has to be scraped",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="count",
+        default=0,
+        help="increase output verbosity)",
     )
 
     return parser.parse_args()
@@ -57,11 +65,19 @@ templates = Jinja2Templates(directory=".")
 args = get_args()
 
 prom = PrometheusConnect(
-    url=args.promurl, disable_ssl=True
+    url=args.prometheus_url, disable_ssl=True
 )  # this will query "http://prometheus:9090/api/v1/query?query=up"
 
 metrics_data = []
 up_hours = 24
+
+logging.Formatter.converter = time.gmtime
+
+logging.basicConfig(
+    format="%(asctime)s.%(msecs)03dZ %(levelname)s:%(name)s:%(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+    level=logging.ERROR - (args.verbose * 10),
+)
 
 
 @dataclass
@@ -74,19 +90,19 @@ class metrics:
 def check_status(query):
     params = {"query": query}
     try:
-        response = requests.get("http://prometheus:9090/api/v1/query", params=params)
+        response = requests.get(f"{args.prometheus_url}/api/v1/query", params=params)
         response.raise_for_status()  # Raise an error for HTTP issues
         json_response = response.json()
         if json_response.get("status") == "success":
             return True
         elif json_response["status"] == None:
-            print("the status key does not exist!")
+            logging.info("the status key does not exist!")
             return False
         else:
             return False
 
     except Exception as e:
-        print(f"Error querying Prometheus: {e}")
+        logging.exception(f"Error querying Prometheus: {e}")
         return None
 
 
@@ -95,8 +111,8 @@ def polling_loop(interval, config):
     while True:
         metrics_data = []
         for hosts in config:
-            service_name = hosts["job-id"]
-            prom_query = hosts["query"]
+            service_name = hosts.get("job-id", "prometheus-aggregation")
+            prom_query = hosts.get("query", "up")
             if prom_query == "up":
                 process_up_query(prom_query, service_name)
         time.sleep(interval)
@@ -109,13 +125,13 @@ def process_up_query(query, service_name):
     global metrics_data, service_data
     process_time_query("time() - process_start_time_seconds", service_name)
     if not check_status(query="up"):
-        print("status is not success, please look into it!!")
+        logging.warning("status is not success, please look into it!!")
     else:
-        print("status is success in the query!!")
+        logging.info("status is success in the query!!")
     try:
         result = prom.custom_query(query=query)
         if not result:
-            print(f"No results for query: {query}")
+            logging.info(f"No results for query: {query}")
             last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
             metrics_data.append(
                 {"instance": service_name, "status": "Error in querying"}
@@ -142,7 +158,7 @@ def process_up_query(query, service_name):
                     {"instance": instance, "job": job_name, "status": "Healthy"}
                 )
     except Exception as e:
-        print(f"Error processing query '{query}': {e}")
+        logging.exception(f"Error processing query '{query}': {e}")
         metrics_data.append(
             {"instance": service_name, "status": "Unhealthy due to error!"}
         )
@@ -161,7 +177,7 @@ def process_time_query(query, service_name):
                 if up_hours == 0:
                     up_hours = 1
     except Exception as e:
-        print(f"Error processing time query '{query}': {e}")
+        logging.exception(f"Error processing time query '{query}': {e}")
 
 
 def get_first_match_time(prom, prom_query, match_value=0, hours=24):
@@ -190,7 +206,7 @@ def get_first_match_time(prom, prom_query, match_value=0, hours=24):
                     status = f"Unhealthy as of {readable_time}"
                     return status
     except Exception as e:
-        print(f"Error in get_first_match_time: {e}")
+        logging.exception(f"Error in get_first_match_time: {e}")
         return "Error checking status history"
 
 
@@ -207,23 +223,25 @@ async def get_metrics(request: Request):
 
 
 def main():
-    with open(args.json, "r") as file:
-        config = json.load(file)
+    try:
+        with open(args.config, "r") as file:
+            config = json.load(file)
+            polling_thread = threading.Thread(
+                target=polling_loop, args=(args.query_interval_seconds, config), daemon=True
+            )  # The daemon=True ensures the thread exits when the main program exits.
+            polling_thread.start()
 
-    polling_thread = threading.Thread(
-        target=polling_loop, args=(args.interval, config), daemon=True
-    )  # The daemon=True ensures the thread exits when the main program exits.
-    polling_thread.start()
-
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+            uvicorn.run(app, host="0.0.0.0", port=args.port)
+    except FileNotFoundError:
+        logging.critical(f"Configuration file '{args.config}' not found!")
+        exit(1)
+    except Exception as e:
+        logging.exception("Unexpected error occurred!")
+        exit(1)
+    
+    
 
 
 if __name__ == "__main__":
     main()
 
-# nginx:
-# image: nginx:1.25.3
-# ports:
-#   - 80:80
-# volumes:
-#   - ./status/nginx.conf:/etc/nginx/nginx.conf

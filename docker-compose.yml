@@ -81,9 +81,10 @@ services:
       - ./status/health.html:/app/health.html
       - ./status/json.json:/app/json.json
     restart: 'on-failure'
-    command: python3 scraper.py 
-      --json json.json 
-      --promurl "http://one.sce/prometheus"
+    command:  
+      - --config json.json 
+      - --prometheus_url "http://one.sce/prometheus"
+      - -vvv
 
 
 volumes:
