@@ -40,7 +40,8 @@ class SceGrafanalibWrapper:
         self.title = title
         self.current_x = 0
         self.current_y = 0
-        self.panel_width = min(panel_width, self.MAX_WIDTH)
+        # Force panel width to be exactly 12 (50% of 24)
+        self.panel_width = 12
         self.panel_height = panel_height
 
     def DefineRow(self, title):
@@ -107,14 +108,19 @@ class SceGrafanalibWrapper:
         # maybe only a few of the panel types are missing the unit field
         unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
         setattr(panel, unit_var, unit)
-        row_or_panel = self.rows[-1].panels if self.rows else self.panels
-        row_or_panel.append(panel)
-        self.current_x += self.panel_width
-        if self.current_x > self.MAX_WIDTH / 2:
-            self.current_y += self.panel_height
+        # Add panel directly to main panels list - no rows to avoid width override
+        self.panels.append(panel)
+        
+        # Update positioning for next panel - ignore row boundaries, just fill left-to-right
+        if self.current_x == 0:
+            # Current panel is on left, next panel goes on right at same Y
+            self.current_x = 12
+        else:
+            # Current panel is on right, next panel goes to left of next visual row
             self.current_x = 0
+            self.current_y += self.panel_height
 
     def Render(self):
         return Dashboard(
-            title=self.title, rows=self.rows, panels=self.panels, timezone="browser"
+            title=self.title, panels=self.panels, timezone="browser"
         ).auto_panel_ids()
