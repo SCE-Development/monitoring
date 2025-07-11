@@ -10,7 +10,6 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'cache_size',
-            "",
         )
     ],
 )
@@ -40,7 +39,6 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'cache_hits_total',
-            "{{__name__}}",
         )
     ],
 )
@@ -50,7 +48,6 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'time() - process_start_time_seconds{job="cleezy"}',
-            "",
         )
     ],
 )
