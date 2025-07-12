@@ -166,10 +166,42 @@ class SceGrafanalibWrapper:
             self.current_x = 0
 
     def Render(self):
-        return Dashboard(
+        # Collect all panels from rows
+        all_panels = []
+        for row in self.rows:
+            all_panels.extend(row.panels)
+        all_panels.extend(self.panels)
+        
+        
+        panel_width = self.MAX_WIDTH // 2  
+        current_x = 0
+        current_y = 0
+        
+        for i, panel in enumerate(all_panels):
+            # Update panel to have 50% width and correct position
+            panel.gridPos = GridPos(
+                h=self.panel_height,
+                w=panel_width,
+                x=current_x,
+                y=current_y,
+            )
+            
+            # Move to next position
+            current_x += panel_width
+            if current_x >= self.MAX_WIDTH:
+                # Move to next row
+                current_x = 0
+                current_y += self.panel_height
+        
+        # Create dashboard with rearranged panels
+        dashboard = Dashboard(
             title=self.title,
-            rows=self.rows,
-            panels=self.panels,
+            panels=all_panels,  # Use the rearranged panels
             timezone="browser",
             templating=Templating(list=self.templates),
-        ).auto_panel_ids()
+        )
+        
+        # Store original row structure for future features
+        dashboard._original_rows = self.rows
+        
+        return dashboard.auto_panel_ids()
