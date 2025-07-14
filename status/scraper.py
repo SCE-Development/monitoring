@@ -140,7 +140,7 @@ def process_up_query(query, service_name):
             job_name = metric.get("metric", {}).get(
                 "job", "unknown"
             )  # for later use in dataclass
-            value = metric.get("value", [])[1]
+            value = metric.get("value", [None, None])[1]
             # last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
             status = "Healthy" if float(value) > 0 else "Unhealthy"
             if status == "Unhealthy":
@@ -169,7 +169,7 @@ def process_time_query(query, service_name):
             for metric in result:
                 instance = metric.get("metric", {}).get("instance", "unknown")
                 job_name = metric.get("metric", {}).get("job", "unknown")
-                uptime_seconds = float(metric["value"][1])
+                uptime_seconds = float(metric.get("value", [None,None])[1] or 0)
                 up_hours = int(uptime_seconds / 3600)
                 if up_hours == 0:
                     up_hours = 1
@@ -192,7 +192,7 @@ def get_first_match_time(prom, prom_query, match_value=0, hours=24):
 
         for series in result:
             saw_up = False
-            for timestamp, value in reversed(series["values"]):
+            for timestamp, value in reversed(series.get("values", [])):
                 v = float(value)
                 if v == 1:
                     saw_up = True
