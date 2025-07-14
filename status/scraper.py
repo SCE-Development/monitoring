@@ -94,12 +94,8 @@ def check_status(query):
         response = requests.get(f"{args.prometheus_url}/api/v1/query", params=params)
         response.raise_for_status()  # Raise an error for HTTP issues
         json_response = response.json()
-        if json_response.get("status") == "success":
-            return True
-        elif json_response["status"] == None:
-            logging.info("the status key does not exist!")
-            return False
-        else:
+        if json_response.get("status") != "success":
+            print(f"json response did not include success in status key, {json_response}")
             return False
 
     except Exception as e:
