@@ -54,6 +54,9 @@ class SceGrafanalibWrapper:
         self.title = title
         self.current_x = 0
         self.current_y = 0
+        # Global position tracking for cross-row panel positioning
+        self.global_current_x = 0
+        self.global_current_y = 0
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
         self.templates = []
@@ -131,14 +134,18 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
+
+        # Calculate panel width dynamically for 50% width layout
+        panel_width = self.MAX_WIDTH // 2
+        
         panel = panel_type_enum.value(
             title=title,
             targets=targets,
             gridPos=GridPos(
                 h=self.panel_height,
-                w=self.panel_width,
-                x=self.current_x,
-                y=self.current_y,
+                w=panel_width,
+                x=self.global_current_x,
+                y=self.global_current_y,
             ),
         )
         if isinstance(panel, TimeSeries):
@@ -160,10 +167,13 @@ class SceGrafanalibWrapper:
             panel.format = unit
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
-        self.current_x += self.panel_width
-        if self.current_x > self.MAX_WIDTH / 2:
-            self.current_y += self.panel_height
-            self.current_x = 0
+        
+        # Update global position tracking for cross-row positioning
+        self.global_current_x += panel_width
+        if self.global_current_x >= self.MAX_WIDTH:
+            # Move to next row
+            self.global_current_x = 0
+            self.global_current_y += self.panel_height
 
     def Render(self):
         # Collect all panels from rows
@@ -172,31 +182,10 @@ class SceGrafanalibWrapper:
             all_panels.extend(row.panels)
         all_panels.extend(self.panels)
         
-        
-        panel_width = self.MAX_WIDTH // 2  
-        current_x = 0
-        current_y = 0
-        
-        for i, panel in enumerate(all_panels):
-            # Update panel to have 50% width and correct position
-            panel.gridPos = GridPos(
-                h=self.panel_height,
-                w=panel_width,
-                x=current_x,
-                y=current_y,
-            )
-            
-            # Move to next position
-            current_x += panel_width
-            if current_x >= self.MAX_WIDTH:
-                # Move to next row
-                current_x = 0
-                current_y += self.panel_height
-        
-        # Create dashboard with rearranged panels
+        # Create dashboard - panels already have correct positioning from AddPanel
         dashboard = Dashboard(
             title=self.title,
-            panels=all_panels,  # Use the rearranged panels
+            panels=all_panels,
             timezone="browser",
             templating=Templating(list=self.templates),
         )
