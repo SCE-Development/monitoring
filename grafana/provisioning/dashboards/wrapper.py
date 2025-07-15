@@ -14,6 +14,7 @@ from grafanalib.core import (
     Stat,
     Template,
     Templating,
+    REFRESH_ON_TIME_RANGE_CHANGE,
 )
 
 from common import PROMETHEUS_DATASOURCE_NAME
@@ -60,13 +61,21 @@ class SceGrafanalibWrapper:
     def DefineRow(self, title):
         self.rows.append(Row(title=title, panels=[]))
 
-    def DefineTemplating(self, label, query):
+    def DefineTemplating(
+            self, 
+            label, 
+            query,
+            name = None,
+            ):
         self.templates.append(
             Template(
-                name=label.lower().replace(" ", "_"),
+                name=name or label.lower().replace(" ", "_"),
                 label=label,
                 query=query,
                 dataSource=PROMETHEUS_DATASOURCE_NAME,
+                includeAll=True,
+                multi=True,
+                refresh=REFRESH_ON_TIME_RANGE_CHANGE,
             )
         )
 
@@ -77,6 +86,10 @@ class SceGrafanalibWrapper:
         unit="",
         dydt=False,
         panel_type_enum=PanelType.TIME_SERIES,
+        lineWidth=None,
+        fillOpacity=None,
+        showPoints=None,
+        stacking=None,
     ):
         targets = []
         iterator = RefIdGenerator()
@@ -128,9 +141,23 @@ class SceGrafanalibWrapper:
                 y=self.current_y,
             ),
         )
+        if isinstance(panel, TimeSeries):
+            if fillOpacity is not None:
+                panel.fillOpacity = fillOpacity
+            if showPoints is not None:
+                panel.showPoints = showPoints
+            if stacking is not None:
+                panel.stacking = stacking
+            if lineWidth is not None:
+                panel.lineWidth = lineWidth
+
         # maybe only a few of the panel types are missing the unit field
-        unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
-        setattr(panel, unit_var, unit)
+        # unit_var = "unit" if hasattr(panel_type_enum.value, "unit") else "format"
+        # setattr(panel, unit_var, unit)
+        if hasattr(panel, "unit"):
+            panel.unit = unit
+        elif hasattr(panel, "format"):
+            panel.format = unit
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
         self.current_x += self.panel_width
