@@ -65,11 +65,11 @@ class SceGrafanalibWrapper:
             self, 
             label, 
             query,
-            name = None,
+ 
             ):
         self.templates.append(
             Template(
-                name=name or label.lower().replace(" ", "_"),
+                name= label.lower().replace(" ", "_"),
                 label=label,
                 query=query,
                 dataSource=PROMETHEUS_DATASOURCE_NAME,
