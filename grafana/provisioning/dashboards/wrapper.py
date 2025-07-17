@@ -54,9 +54,6 @@ class SceGrafanalibWrapper:
         self.title = title
         self.current_x = 0
         self.current_y = 0
-        # Global position tracking for cross-row panel positioning
-        self.global_current_x = 0
-        self.global_current_y = 0
         self.panel_width = min(panel_width, self.MAX_WIDTH)
         self.panel_height = panel_height
         self.templates = []
@@ -144,8 +141,8 @@ class SceGrafanalibWrapper:
             gridPos=GridPos(
                 h=self.panel_height,
                 w=panel_width,
-                x=self.global_current_x,
-                y=self.global_current_y,
+                x=self.current_x,
+                y=self.current_y,
             ),
         )
         if isinstance(panel, TimeSeries):
@@ -168,12 +165,12 @@ class SceGrafanalibWrapper:
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
         
-        # Update global position tracking for cross-row positioning
-        self.global_current_x += panel_width
-        if self.global_current_x >= self.MAX_WIDTH:
+        # Update position for next panel
+        self.current_x += panel_width
+        if self.current_x >= self.MAX_WIDTH:
             # Move to next row
-            self.global_current_x = 0
-            self.global_current_y += self.panel_height
+            self.current_x = 0
+            self.current_y += self.panel_height
 
     def Render(self):
         # Collect all panels from rows
