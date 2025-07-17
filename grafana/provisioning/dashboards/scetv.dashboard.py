@@ -188,14 +188,13 @@ dashboard = Dashboard(
                 ),
             ],
         ),
-        Stat(
+        TimeSeries(
             title='SCE TV PI Uptime',
             gridPos=GridPos(h=8, w=12, x=0, y=40),
-            reduceCalc='lastNotNull',
-            thresholds=[
-                Threshold('red', 0, 0.0),
-                Threshold('green', 1, 1.0),
-            ],
+            lineWidth=2,
+            tooltipMode='all',
+            tooltipSort='desc',
+            unit='short',
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
