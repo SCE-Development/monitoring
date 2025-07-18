@@ -119,15 +119,12 @@ class SceGrafanalibWrapper:
                 )
             )
 
-        # Calculate panel width dynamically for 50% width layout
-        panel_width = self.MAX_WIDTH // 2
-        
         panel = panel_type_enum.value(
             title=title,
             targets=targets,
             gridPos=GridPos(
                 h=self.panel_height,
-                w=panel_width,
+                w=self.panel_width,
                 x=self.current_x,
                 y=self.current_y,
             ),
@@ -139,7 +136,7 @@ class SceGrafanalibWrapper:
         row_or_panel.append(panel)
         
         # Update position for next panel
-        self.current_x += panel_width
+        self.current_x += self.panel_width
         if self.current_x >= self.MAX_WIDTH:
             # Move to next row
             self.current_x = 0
@@ -160,7 +157,5 @@ class SceGrafanalibWrapper:
             templating=Templating(list=self.templates),
         )
         
-        # Store original row structure for future features
-        dashboard._original_rows = self.rows
         
         return dashboard.auto_panel_ids()
