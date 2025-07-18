@@ -188,5 +188,21 @@ dashboard = Dashboard(
                 ),
             ],
         ),
+        TimeSeries(
+            title='SCE TV PI Uptime',
+            gridPos=GridPos(h=8, w=12, x=0, y=40),
+            lineWidth=2,
+            tooltipMode='all',
+            tooltipSort='desc',
+            unit='short',
+            targets=[
+                Target(
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                    expr='receive_stream_running{job=\"sce-tv-pi\"}',
+                    legendFormat="{{job}}",
+                    refId='A',
+                ),
+            ],
+        ),
     ],
 ).auto_panel_ids()

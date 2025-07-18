@@ -14,6 +14,10 @@ scrape_configs:
   - job_name: 'sce-tv'
     static_configs:
       - targets: ['gyat_server:5001']
+
+  - job_name: 'sce-tv-pi'
+    static_configs:
+      - targets: ['192.168.69.141:8000']
   
   - job_name: 'poweredge-2950-node-exporter'
     static_configs:
