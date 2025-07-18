@@ -33,6 +33,16 @@ services:
       - ./prometheus/prometheus.federate.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+
+  sys-stat:
+    container_name: sys-stat
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./system_status/Dockerfile
+    ports:
+      - "9100:9100"
+
   alertmanager:
     image: prom/alertmanager:v0.27.0
     restart: unless-stopped
@@ -46,15 +56,15 @@ services:
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
-    environment:
-      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+    #environment:
+    #  - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
     build:
-      context: ./grafana/
-      dockerfile: ./Dockerfile
+      context: grafana
+      dockerfile: ../grafana/Dockerfile
     restart: always
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
+      #  - /etc/localtime:/etc/localtime:ro
+      #  - /etc/timezone:/etc/timezone:ro
       - grafana-data:/var/lib/grafana
 
     ports:
@@ -67,29 +77,23 @@ services:
       - '--path.rootfs=/host'
     pid: host
     restart: unless-stopped
-    volumes:
-      - '/:/host:ro,rslave'
-  portainer:
-    image: portainer/portainer-ce:lts
-    container_name: portainer
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - portainer_data:/data
+    #volumes:
+    #  - '/:/host:ro,rslave'
+  #portainer:
+  #  image: portainer/portainer-ce:lts
+  #  container_name: portainer
+  #  volumes:
+  #    - "/var/run/docker.sock:/var/run/docker.sock"
+  #    - portainer_data:/data
 
-  fastapi_exporter:
-    container_name: fastapi_exporter
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "9100:9100"
+
 
 volumes:
   alertmanager-data:
   grafana-data:
   portainer_data:
 
-networks:
-  default:
-    external:
-      name: poweredge
+#networks:
+#  default:
+#    external:
+#      name: poweredge

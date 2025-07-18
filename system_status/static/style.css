@@ -1,0 +1,15 @@
+#sce_logo{
+    width: 800px;
+}
+
+#outside_container{
+    display:flex;
+}
+
+#range_data_container{
+    margin-left: 20px;
+}
+
+#range_headline{
+    padding: 1px;
+}

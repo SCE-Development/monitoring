@@ -26,3 +26,6 @@ COPY ./provisioning/dashboards/all.yml /etc/grafana/provisioning/dashboards/all.
 COPY --from=builder /dashboards/*.json /etc/grafana/provisioning/dashboards/
 
 COPY ./provisioning/dashboards/node_exporter.json /etc/grafana/provisioning/dashboards/
+
+
+# system status page

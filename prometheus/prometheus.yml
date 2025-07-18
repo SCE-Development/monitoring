@@ -19,6 +19,7 @@ scrape_configs:
     static_configs:
       - targets: [ 'poweredge-2950-node-exporter:9100' ]
 
+
 alerting:
   alertmanagers:
     - scheme: http
