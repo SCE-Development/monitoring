@@ -36,7 +36,7 @@ that is currently running in the SCE clubroom.</p>
 <span style="color: aqua;">sys-stat</span>           | INFO:     Uvicorn running on http://0.0.0.0:9100 (Press CTRL+C to quit)
         </code></pre>
     </li>
-<li>In a browser tab, go to  [http://localhost:9100/system_status/](http://localhost:9100/system_status/)<a>http://localhost:9100/system_status/</a> to see the status page
+    <li>In a browser tab, go to <a>http://localhost:9100/system_status/</a> to see the status page
         <ul>
             <li>Contact Sean or an SCE officer if there's any issue</li>
         </ul>
@@ -45,4 +45,3 @@ that is currently running in the SCE clubroom.</p>
 <hr>
 <h3>Example Run</h3>
 <img src="sample_run.jpg" alt="sample run screenshot">
-In a browser tab, go to  [http://localhost:9100/system_status/](http://localhost:9100/system_status/)
