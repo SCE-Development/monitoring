@@ -11,5 +11,7 @@
 }
 
 #range_headline{
+    display: flex;
+    align-items: normal;
     padding: 1px;
 }

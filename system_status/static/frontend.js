@@ -12,9 +12,9 @@ async function loadCurrentMetrics() {
 
     const head = document.createElement("tr")
     head.innerHTML = `
-        <th>Job Name</th>
-        <th>Status</th>
-        <th>Detail</th>`;
+        <th style="text-align: center">Job Name</th>
+        <th style="text-align: center">Status</th>
+        <th style="text-align: center">Detail</th>`;
     table.appendChild(head)
 
     for (const item of data) {
@@ -53,11 +53,13 @@ async function loadPastMetrics(){
     const head = document.createElement("tr")
     head.setAttribute('id', 'range_headline')
     head.innerHTML = `
-        <td>Prev. Day</td>
-        <td> <------------ </td>
-        <td>History of past 24 Hours</td>
-        <td> ------------> </td>     
-        <td>Now.</td>
+        <th>
+            <div style="display: inline">Prev. Day</div>
+            <div style="display: inline"> ◀➖➖➖➖➖➖ </div>
+            <div style="display: inline">History of past 24 Hours</div>
+            <div style="display: inline"> ➖➖➖➖➖➖▶ </div>
+            <div style="display: inline">Now</div>
+        </th>
     `;
     history.appendChild(head)
 
@@ -67,15 +69,13 @@ async function loadPastMetrics(){
         // necessary to align the auto_padding
         const cell = document.createElement('td');
 
-        const svgNS = "http://www.w3.org/2000/svg";
         //cell.textContent += job; //debug purposes
         let counter = 0; //calculate when to insert a separator
         for (const hour of datapoint.values){
-            // block = document.createElementNS(svgNS,"rect")
             const status = hour[1] === "1" ? "✅" : "❌";
             cell.textContent += status;
 
-            if (counter % 4 === 3){
+            if (counter % 4 === 3 && counter < 20){
                 cell.textContent += " | "
             }
             counter ++;
