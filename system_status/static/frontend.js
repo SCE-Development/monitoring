@@ -12,9 +12,9 @@ async function loadCurrentMetrics() {
 
     const head = document.createElement("tr")
     head.innerHTML = `
-        <th style="text-align: center">Job Name</th>
-        <th style="text-align: center">Status</th>
-        <th style="text-align: center">Detail</th>`;
+        <th style="text-align: left; padding-right: 2px">Job Name</th>
+        <th style="text-align: left; padding-right: 2px">Status</th>
+        <th style="text-align: left; padding-right: 2px">Detail</th>`;
     table.appendChild(head)
 
     for (const item of data) {
@@ -22,7 +22,7 @@ async function loadCurrentMetrics() {
         const status = item.value[1] === "1" ? "✅ UP" : "❌ DOWN";
 
         const entry = document.createElement('tr');
-
+        entry.classList.add("current_table_data")
         const jobEntry = document.createElement("td")
         jobEntry.textContent = `${job}`
 
@@ -42,6 +42,12 @@ async function loadCurrentMetrics() {
 async function loadPastMetrics(){
     const res = await fetch('/range_status_raw');
     const json_data = await res.json();
+
+    //update the fetch time
+    const now = new Date()
+    const timeObj = document.getElementById("fetch_time");
+    timeObj.textContent = "Fetch Time: "
+    timeObj.textContent += now.toLocaleString()
 
     const container = document.getElementById('range_data_container');
     container.innerHTML="" // Clear "Loading...,

@@ -1,3 +1,32 @@
+table {
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+    vertical-align: top;
+}
+
+
+th, td {
+    margin: 0;
+    padding: 4px 8px; /* consistent spacing */
+    vertical-align: top; /* or middle */
+    font-size: 16px; /* keep font sizes consistent */
+    line-height: 1.4;   /* helps alignment consistency */
+}
+
+
+
+.container {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
 #sce_logo{
     width: 800px;
 }
@@ -10,8 +39,13 @@
     margin-left: 20px;
 }
 
-#range_headline{
+/*#range_headline{
     display: flex;
-    align-items: normal;
+    justify-content: space-between;
+    text-align: center;
     padding: 1px;
+}*/
+
+.current_table_data{
+    margin-right: 2px;
 }
