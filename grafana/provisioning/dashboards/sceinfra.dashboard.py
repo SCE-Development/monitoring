@@ -23,7 +23,6 @@ from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
 wrapper = SceGrafanalibWrapper("SCE Infra")
 
-wrapper.DefineRow("Container Uptime")
 
 wrapper.AddPanel(
     title="Container Uptime",
@@ -41,8 +40,6 @@ wrapper.AddPanel(
     dydt=False
 )
 
-wrapper.DefineRow("Metric Health")
-
 wrapper.AddPanel(
     title="Metric Health",
     queries=[
@@ -55,7 +52,7 @@ wrapper.AddPanel(
     dydt=False
 )
 
-wrapper.DefineRow("Container Last Seen (Clark Only)")
+
 
 
 wrapper.AddPanel(
