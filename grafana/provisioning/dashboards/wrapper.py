@@ -170,19 +170,12 @@ class SceGrafanalibWrapper:
             self.current_y += self.panel_height
 
     def Render(self):
-        # Collect all panels from rows
-        all_panels = []
-        for row in self.rows:
-            all_panels.extend(row.panels)
-        all_panels.extend(self.panels)
-        
-        # Create dashboard - panels already have correct positioning from AddPanel
         dashboard = Dashboard(
             title=self.title,
-            panels=all_panels,
+            rows=self.rows,
+            panels=self.panels,
             timezone="browser",
             templating=Templating(list=self.templates),
         )
-        
         
         return dashboard.auto_panel_ids()
