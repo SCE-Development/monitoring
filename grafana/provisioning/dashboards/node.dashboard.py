@@ -35,8 +35,6 @@ MEMORY_BASIC_COLORS = {
 
 wrapper = SceGrafanalibWrapper("Node Exporter")
 
-wrapper.DefineRow("CPU Metrics")
-
 wrapper.AddPanel(
     title="CPU Basic",
     queries=[
@@ -69,7 +67,6 @@ wrapper.AddPanel(
     dydt=False
 )
 
-wrapper.DefineRow("Memory Metrics")
 
 wrapper.AddPanel(
     title="Memory Basic",
