@@ -29,10 +29,10 @@ that is currently running in the SCE clubroom.</p>
     </li>
     <li>Wait for the application to start up, look for 
         <pre><code>
-<p style="color: aqua; display: inline">sys-stat</p>           | INFO:     Started server process [1]
-<p style="color: aqua; display: inline">sys-stat</p>           | INFO:     Waiting for application startup.
-<p style="color: aqua; display: inline">sys-stat</p>           | INFO:     Application startup complete.                                                                           
-<p style="color: aqua; display: inline">sys-stat</p>           | INFO:     Uvicorn running on http://0.0.0.0:9100 (Press CTRL+C to quit)
+<span style="color: aqua;">sys-stat</span>           | INFO:     Started server process [1]
+<span style="color: aqua;">sys-stat</span>           | INFO:     Waiting for application startup.
+<span style="color: aqua;">sys-stat</span>           | INFO:     Application startup complete.                                                                           
+<span style="color: aqua;">sys-stat</span>           | INFO:     Uvicorn running on http://0.0.0.0:9100 (Press CTRL+C to quit)
         </code></pre>
     </li>
 <li>In a browser tab, go to <a>http://localhost:9100/system_status/</a> to see the status page
