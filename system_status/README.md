@@ -3,12 +3,13 @@
 <p style="font-size: 19px;">This service is to provide a single endpoint to quickly check the status of the services<br>
 that is currently running in the SCE clubroom.</p>
 <p style="font-size: 19px; color: darkorange;">This status page is NOT meant for public access.</p>
-
+<hr>
 <h3>Features</h3>
 <ul style="font-size: 19px;">
     <li>Provide the status information in a clean format</li>
     <li>Provide the status for the last 24 hours as additional information</li>
 </ul>
+<hr>
 <h3>Usage</h3>
 <ol style="font-size: 19px;">
     <li>You must have VPN access to be able to run the service locally.
@@ -41,5 +42,6 @@ that is currently running in the SCE clubroom.</p>
         </ul>
     </li>
 </ol>
+<hr>
 <h3>Example Run</h3>
 <img src="sample_run.jpg" alt="sample run screenshot">
