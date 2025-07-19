@@ -1,23 +1,43 @@
-from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
 
-from grafanalib.formatunits import PERCENT_UNIT
+from grafanalib.formatunits import PERCENT_UNIT, SHORT, TRUE_FALSE, SECONDS, BYTES_IEC
+
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
 
 wrapper = SceGrafanalibWrapper(
     title="Node Exporter Full (wrapper)", panel_height=4, panel_width=3
 )
+
+# to do: potential default value for job? no data shows unless a job is selected
+wrapper.DefineTemplating(
+    label='Job',
+    query='label_values(node_uname_info, job)',
+)
+
+wrapper.DefineTemplating(
+    label='Nodename',
+    query='label_values(node_uname_info{job="$job"}, nodename)',
+)
+
+wrapper.DefineTemplating(
+    label='Instance',
+    query='label_values(node_uname_info{job="$job", nodename="$nodename"}, instance)',
+)
+
+# to do: the panels need to have better formatting 
 wrapper.DefineRow("Quick CPU / Mem / Disk")
-wrapper.DefineTemplating(
-    "Job",
-    "label_values(node_uname_info, job)"
+
+wrapper.AddPanel(
+    title="Pressure",
+    queries=[
+        ExpressionAndLegendPair(
+            'irate(node_pressure_memory_waiting_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])',
+        )
+    ],
+    unit=PERCENT_UNIT,
+    panel_type_enum=PanelType.BARGAUGE,
 )
-wrapper.DefineTemplating(
-    "Nodename",
-    'label_values(node_uname_info{job="$job"}, nodename)'
-)
-wrapper.DefineTemplating(
-    "Instance",
-    'label_values(node_uname_info{job="$job", nodename="$nodename"}, instance)'
-)
+
 wrapper.AddPanel(
     title="CPU Busy",
     queries=[
@@ -32,6 +52,7 @@ wrapper.AddPanel(
     unit=PERCENT_UNIT,
     panel_type_enum=PanelType.GAUGE,
 )
+
 wrapper.AddPanel(
     title="Sys Load",
     queries=[
@@ -46,6 +67,7 @@ wrapper.AddPanel(
     unit=PERCENT_UNIT,
     panel_type_enum=PanelType.GAUGE,
 )
+
 wrapper.AddPanel(
     title="RAM Used",
     queries=[
@@ -58,6 +80,7 @@ wrapper.AddPanel(
     unit=PERCENT_UNIT,
     panel_type_enum=PanelType.GAUGE,
 )
+
 wrapper.AddPanel(
     title="SWAP Used",
     queries=[
@@ -70,6 +93,7 @@ wrapper.AddPanel(
     unit=PERCENT_UNIT,
     panel_type_enum=PanelType.GAUGE,
 )
+
 wrapper.AddPanel(
     title="Root FS Used",
     queries=[
@@ -88,4 +112,72 @@ wrapper.AddPanel(
     unit=PERCENT_UNIT,
     panel_type_enum=PanelType.GAUGE,
 )
+
+wrapper.AddPanel(
+    title="CPU Cores",
+    queries=[
+        ExpressionAndLegendPair(
+            "count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu))",
+        )
+    ],
+    unit=SHORT,
+    panel_type_enum=PanelType.STAT,
+)
+
+wrapper.AddPanel(
+    title="Reboot Required",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_reboot_required{instance=\"$instance\",job=\"$job\"}",
+        )
+    ],
+    unit=TRUE_FALSE,
+    panel_type_enum=PanelType.STAT,
+)
+
+wrapper.AddPanel(
+    title="Uptime",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_time_seconds{instance=\"$instance\",job=\"$job\"} - node_boot_time_seconds{instance=\"$instance\",job=\"$job\"}",
+        )
+    ],
+    unit=SECONDS,
+    panel_type_enum=PanelType.STAT,
+)
+
+wrapper.AddPanel(
+    title="RootFS Total",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_filesystem_size_bytes{instance=\"$instance\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"}",
+        )
+    ],
+    unit=BYTES_IEC,
+    panel_type_enum=PanelType.STAT,
+)
+
+wrapper.AddPanel(
+    title="RAM Total",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_MemTotal_bytes{instance=\"$instance\",job=\"$job\"}",
+        )
+    ],
+    unit=BYTES_IEC,
+    panel_type_enum=PanelType.STAT,
+)
+
+wrapper.AddPanel(
+    title="SWAP Total",
+    queries=[
+        ExpressionAndLegendPair(
+             "node_memory_SwapTotal_bytes{instance=\"$instance\",job=\"$job\"}",
+        )
+    ],
+    unit=BYTES_IEC,
+    panel_type_enum=PanelType.STAT,
+)
+
+
 dashboard = wrapper.Render()
