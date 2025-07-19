@@ -22,12 +22,10 @@ that is currently running in the SCE clubroom.</p>
         </ul>
     </li>
     <li>In a terminal window, go to the project directory root</li>
-    <li>Use 
-        <code style="border: 2px solid darkgray; background-color: transparent">
+    <li>Use <code style="border: 2px solid darkgray; background-color: transparent">
         docker compose -f docker-compose.syssts.yml build --no-cache</code> to clean build the project.
     </li>
-    <li>Use 
-        <code style="border: 2px solid darkgray; background-color: transparent">
+    <li>Use <code style="border: 2px solid darkgray; background-color: transparent">
         docker compose -f docker-compose.syssts.yml up</code>
          to run the service.
     </li>
