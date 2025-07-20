@@ -1,3 +1,4 @@
+Metric: {'__name__': 'up', 'instance': '192.168.69.141:8000', 'job': 'sce-tv-pi'}, Value: 1
 Metric: {'__name__': 'up', 'instance': '192.168.69.143:80', 'job': 'led-sign'}, Value: 1
 Metric: {'__name__': 'up', 'instance': 'cadvisor:8080', 'job': 'cadvisor'}, Value: 1
 Metric: {'__name__': 'up', 'instance': 'clark-node-exporter:9100', 'job': 'clark-node-exporter'}, Value: 1

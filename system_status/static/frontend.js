@@ -12,9 +12,9 @@ async function loadCurrentMetrics() {
 
     const head = document.createElement("tr")
     head.innerHTML = `
-        <th>Job Name</th>
-        <th>Status</th>
-        <th>Detail</th>`;
+        <th style="text-align: left; padding-right: 2px">Job Name</th>
+        <th style="text-align: left; padding-right: 2px">Status</th>
+        <th style="text-align: left; padding-right: 2px">Detail</th>`;
     table.appendChild(head)
 
     for (const item of data) {
@@ -22,7 +22,7 @@ async function loadCurrentMetrics() {
         const status = item.value[1] === "1" ? "✅ UP" : "❌ DOWN";
 
         const entry = document.createElement('tr');
-
+        entry.classList.add("current_table_data")
         const jobEntry = document.createElement("td")
         jobEntry.textContent = `${job}`
 
@@ -43,6 +43,12 @@ async function loadPastMetrics(){
     const res = await fetch('/range_status_raw');
     const json_data = await res.json();
 
+    //update the fetch time
+    const now = new Date()
+    const timeObj = document.getElementById("fetch_time");
+    timeObj.textContent = "Fetch Time: "
+    timeObj.textContent += now.toLocaleString()
+
     const container = document.getElementById('range_data_container');
     container.innerHTML="" // Clear "Loading...,
 
@@ -53,11 +59,13 @@ async function loadPastMetrics(){
     const head = document.createElement("tr")
     head.setAttribute('id', 'range_headline')
     head.innerHTML = `
-        <td>Prev. Day</td>
-        <td> <------------ </td>
-        <td>History of past 24 Hours</td>
-        <td> ------------> </td>     
-        <td>Now.</td>
+        <th>
+            <div style="display: inline">Prev. Day</div>
+            <div style="display: inline"> ◀➖➖➖➖➖➖ </div>
+            <div style="display: inline">History of past 24 Hours</div>
+            <div style="display: inline"> ➖➖➖➖➖➖▶ </div>
+            <div style="display: inline">Now</div>
+        </th>
     `;
     history.appendChild(head)
 
@@ -67,15 +75,13 @@ async function loadPastMetrics(){
         // necessary to align the auto_padding
         const cell = document.createElement('td');
 
-        const svgNS = "http://www.w3.org/2000/svg";
         //cell.textContent += job; //debug purposes
         let counter = 0; //calculate when to insert a separator
         for (const hour of datapoint.values){
-            // block = document.createElementNS(svgNS,"rect")
             const status = hour[1] === "1" ? "✅" : "❌";
             cell.textContent += status;
 
-            if (counter % 4 === 3){
+            if (counter % 4 === 3 && counter < 20){
                 cell.textContent += " | "
             }
             counter ++;
