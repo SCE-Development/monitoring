@@ -8,6 +8,7 @@ from grafanalib.core import (
     GridPos,
     BarGauge,
     Stat,
+    Time
 )
 # see https://github.com/weaveworks/grafanalib/blob/main/grafanalib/formatunits.py
 from grafanalib.formatunits import (
@@ -26,6 +27,7 @@ dashboard = Dashboard(
     uid='scetv',
     description='SCE video streaming service',
     timezone='browser',
+    time=Time(start="now-30m", end="now"),
     panels=[
         BarGauge(
             title='HTTP Requests',
