@@ -8,6 +8,7 @@ from grafanalib.core import (
     GridPos,
     BarGauge,
     Stat,
+    Time
 )
 # see https://github.com/weaveworks/grafanalib/blob/main/grafanalib/formatunits.py
 from grafanalib.formatunits import (
@@ -26,6 +27,7 @@ dashboard = Dashboard(
     uid='scetv',
     description='SCE video streaming service',
     timezone='browser',
+    time=Time(start="now-30m", end="now"),
     panels=[
         BarGauge(
             title='HTTP Requests',
@@ -189,7 +191,7 @@ dashboard = Dashboard(
             ],
         ),
         TimeSeries(
-            title='SCE TV PI Uptime',
+            title='SCE TV Stream State',
             gridPos=GridPos(h=8, w=12, x=0, y=40),
             lineWidth=2,
             tooltipMode='all',
@@ -198,9 +200,15 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='receive_stream_running{job=\"sce-tv-pi\"}',
+                    expr='receive_stream_running{job="sce-tv-pi"}',
                     legendFormat="{{job}}",
                     refId='A',
+                ),
+                Target(
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                    expr='stream_state{job="sce-tv"}',
+                    legendFormat="{{video_type}}",
+                    refId='B',
                 ),
             ],
         ),
