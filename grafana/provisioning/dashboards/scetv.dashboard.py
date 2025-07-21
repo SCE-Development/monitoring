@@ -189,7 +189,7 @@ dashboard = Dashboard(
             ],
         ),
         TimeSeries(
-            title='SCE TV PI Uptime',
+            title='SCE TV Stream State',
             gridPos=GridPos(h=8, w=12, x=0, y=40),
             lineWidth=2,
             tooltipMode='all',
