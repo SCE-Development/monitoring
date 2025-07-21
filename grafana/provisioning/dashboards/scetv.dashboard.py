@@ -198,9 +198,15 @@ dashboard = Dashboard(
             targets=[
                 Target(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
-                    expr='receive_stream_running{job=\"sce-tv-pi\"}',
+                    expr='receive_stream_running{job="sce-tv-pi"}',
                     legendFormat="{{job}}",
                     refId='A',
+                ),
+                Target(
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                    expr='stream_state{job="sce-tv"}',
+                    legendFormat="{{video_type}}",
+                    refId='B',
                 ),
             ],
         ),
