@@ -76,12 +76,12 @@ groups:
         annotations:
           summary: The printer has no more ink
           description: Percent is 0
-      - alert: SCETVPiInactive
+      - alert: StreamNotBeingReceived
         expr: receive_stream_running{job="sce-tv-pi"} != 1
         for: 1m
         labels:
           severity: critical
         annotations:
           summary: Pi is down CALL VIET
-          description: receive stream state on pi is 0 for more than 5 minutes.
+          description: The Raspberry Pi has not recieved an RTMP stream for over a minute.
 
