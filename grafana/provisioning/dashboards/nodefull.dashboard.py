@@ -519,31 +519,305 @@ wrapper.AddPanel(
     title="Pressure Stall Information",
     queries=[
         ExpressionAndLegendPair(
-            "rate(node_pressure_cpu_waiting_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_cpu_waiting_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "CPU - Some",
         ),
         ExpressionAndLegendPair(
-            "rate(node_pressure_memory_waiting_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_memory_waiting_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "Memory - Some",
         ),
         ExpressionAndLegendPair(
-            "rate(node_pressure_memory_stalled_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_memory_stalled_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "Memory - Full",
         ),
         ExpressionAndLegendPair(
-            "rate(node_pressure_io_waiting_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_io_waiting_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "I/O - Some",
         ),
         ExpressionAndLegendPair(
-            "rate(node_pressure_io_stalled_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_io_stalled_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "I/O - Full",
         ),
         ExpressionAndLegendPair(
-            "rate(node_pressure_irq_stalled_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "rate(node_pressure_irq_stalled_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
             "IRQ - Full",
         ),
     ],
     unit=PERCENT_UNIT,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.DefineRow("Memory Meminfo")
+
+wrapper.AddPanel(
+    title="Memory Committed",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_Committed_AS_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Committed_AS - Memory promised to processes (not necessarily used)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_CommitLimit_bytes{instance=\"$instance\",job=\"$job\"}", 
+            "CommitLimit - Max allowable committed memory",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Writeback and Dirty",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_Writeback_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Writeback - Memory currently being flushed to disk",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_WritebackTmp_bytes{instance=\"$instance\",job=\"$job\"}",
+            "WritebackTmp - FUSE temporary writeback buffers",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Dirty_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Dirty - Memory marked dirty (pending write to disk)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_NFS_Unstable_bytes{instance=\"$instance\",job=\"$job\"}",
+            "NFS Unstable - Pages sent to NFS server, awaiting storage commit",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Slab",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_SUnreclaim_bytes{instance=\"$instance\",job=\"$job\"}",
+            "SUnreclaim - Non-reclaimable slab memory (kernel objects)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_SReclaimable_bytes{instance=\"$instance\",job=\"$job\"}",
+            "SReclaimable - Potentially reclaimable slab memory (e.g., inode cache)",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Shared and Mapped",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_Mapped_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Mapped - Memory mapped from files (e.g., libraries, mmap)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Shmem_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Shmem - Shared memory used by processes and tmpfs",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_ShmemHugePages_bytes{instance=\"$instance\",job=\"$job\"}",
+            "ShmemHugePages - Shared memory (shmem/tmpfs) allocated with HugePages",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_ShmemPmdMapped_bytes{instance=\"$instance\",job=\"$job\"}",
+            "PMD Mapped - Shmem/tmpfs backed by Transparent HugePages (PMD)",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory LRU Active / Inactive (%)",
+    queries=[
+        ExpressionAndLegendPair(
+            "(node_memory_Inactive_bytes{instance=\"$instance\",job=\"$job\"}) \n/ \n(node_memory_MemTotal_bytes{instance=\"$instance\",job=\"$job\"})",
+            "Inactive - Less recently used memory, more likely to be reclaimed",
+        ),
+        ExpressionAndLegendPair(
+            "(node_memory_Active_bytes{instance=\"$instance\",job=\"$job\"}) \n/ \n(node_memory_MemTotal_bytes{instance=\"$instance\",job=\"$job\"})\n",
+            "Active - Recently used memory, retained unless under pressure",
+        ),
+    ],
+    unit=PERCENT_UNIT,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+              
+wrapper.AddPanel(
+    title="Memory LRU Active / Inactive Detail",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_Inactive_file_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Inactive_file - File-backed memory on inactive LRU list",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Inactive_anon_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Inactive_anon - Anonymous memory on inactive LRU (incl. tmpfs & swap cache)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Active_file_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Active_file - File-backed memory on active LRU list",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Active_anon_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Active_anon - Anonymous memory on active LRU (incl. tmpfs & swap cache)",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Kernel / CPU / IO",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_KernelStack_bytes{instance=\"$instance\",job=\"$job\"}",
+            "KernelStack - Kernel stack memory (per-thread, non-reclaimable)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Percpu_bytes{instance=\"$instance\",job=\"$job\"}",
+            "PerCPU - Dynamically allocated per-CPU memory (used by kernel modules)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Bounce_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Bounce Memory - I/O buffer for DMA-limited devices",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Vmalloc",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_VmallocChunk_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Vmalloc Free Chunk - Largest available block in vmalloc area",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_VmallocTotal_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Vmalloc Total - Total size of the vmalloc memory area",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_VmallocUsed_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Vmalloc Used - Portion of vmalloc area currently in use",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Anonymous",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_AnonHugePages_bytes{instance=\"$instance\",job=\"$job\"}",
+            "AnonHugePages - Anonymous memory using HugePages",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_AnonPages_bytes{instance=\"$instance\",job=\"$job\"}",
+            "AnonPages - Anonymous memory (non-file-backed)",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Unevicatble and MLocked",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_Unevictable_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Unevictable - Kernel-pinned memory (not swappable)",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_Mlocked_bytes{instance=\"$instance\",job=\"$job\"}",
+            "Mlocked - Application-locked memory via mlock()",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory DirectMap",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_DirectMap1G_bytes{instance=\"$instance\",job=\"$job\"}",
+            "DirectMap 1G - Memory mapped with 1GB pages",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_DirectMap2M_bytes{instance=\"$instance\",job=\"$job\"}",
+            "DirectMap 2M - Memory mapped with 2MB pages",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_DirectMap4k_bytes{instance=\"$instance\",job=\"$job\"}",
+            "DirectMap 4K - Memory mapped with 4KB pages",
+        ),
+    ],
+    unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory HugePages",
+    queries=[
+        ExpressionAndLegendPair(
+            "node_memory_HugePages_Free{instance=\"$instance\",job=\"$job\"} * node_memory_Hugepagesize_bytes{instance=\"$instance\",job=\"$job\"}",
+            "HugePages Used - Currently allocated",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_HugePages_Rsvd{instance=\"$instance\",job=\"$job\"} * node_memory_Hugepagesize_bytes{instance=\"$instance\",job=\"$job\"}",
+            "HugePages Reserved - Promised but unused",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_HugePages_Surp{instance=\"$instance\",job=\"$job\"} * node_memory_Hugepagesize_bytes{instance=\"$instance\",job=\"$job\"}",
+            "HugePages Surplus - Dynamic pool extension",
+        ),
+        ExpressionAndLegendPair(
+            "node_memory_HugePages_Total{instance=\"$instance\",job=\"$job\"} * node_memory_Hugepagesize_bytes{instance=\"$instance\",job=\"$job\"}",
+            "HugePages Total - Reserved memory",
+        ),
+    ],
+    unit=BYTES_IEC,
     lineWidth=2,
     fillOpacity=40,
     showPoints='never',
