@@ -7,7 +7,7 @@ COPY requirements.txt ./
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Now copy the rest of the app
+#copy the rest of the app
 COPY . ./
 
 EXPOSE 9100
