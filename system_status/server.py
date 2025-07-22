@@ -1,10 +1,15 @@
-from fastapi import FastAPI
+import json
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta, timezone
 import uvicorn
 import requests
 import sys
 from starlette.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from datetime import datetime
 
 app = FastAPI()
 
@@ -16,22 +21,54 @@ app.add_middleware(
     allow_headers=['*']
 )
 
+#default value, could be overridden by a parameter passed in
 PROMETHEUS_URL= "http://one.sce/prometheus"
-
+#http://one.sce/prometheus
 # Serve the static directory at the root
-app.mount("/system_status", StaticFiles(directory="static", html=True), name="index")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+templates = Jinja2Templates(directory="templates")
 
+#expects an optional parameter as the target URL
+@app.get("/system_status/", response_class=HTMLResponse)
+def page_generator(request: Request, target : str = "one.sce/prometheus"):
+
+    global PROMETHEUS_URL
+
+    # Get the current datetime
+    local_datetime = datetime.now().astimezone()
+
+    # Format the datetime object into a string, including the timezone offset
+    # %Y: Year with century (e.g., 2025)
+    # %m: Month as a zero-padded decimal number (e.g., 07)
+    # %d: Day of the month as a zero-padded decimal number (e.g., 21)
+    # %H: Hour (24-hour clock) as a zero-padded decimal number (e.g., 20)
+    # %M: Minute as a zero-padded decimal number (e.g., 43)
+    # %S: Second as a zero-padded decimal number (e.g., 55)
+    # %z: UTC offset in the form +HHMM or -HHMM (e.g., -0700 for PDT)
+    fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S") + " - Local Time Zone"
+
+    #print(datetime_string)
+
+    PROMETHEUS_URL = "http://" + target # override the URL if passed in a different value
+    #print(PROMETHEUS_URL) #working
+    current_data = default_access()
+    range_data = range_access()
+    return (templates.TemplateResponse
+            ("my_template.html",
+             {"request": request, "current_data": current_data,
+                    "range_data": range_data, "fetch_time": fetch_time}))
 
 @app.get("/current_status_raw")
 # return to the client as JSON file
 def default_access(query : str = "up" ):
-
+    #print(PROMETHEUS_URL) #working
     """Sends a PromQL query to Prometheus and returns the results."""
     url = f"{PROMETHEUS_URL}/api/v1/query"
     params = {'query': query}
     try:
         response = requests.get(url, params=params)
         response.raise_for_status() # Raise an exception for HTTP errors
+        print (response.json()['data']['result'])
         return response.json()['data']['result']
     except requests.exceptions.RequestException as e:
         print(f"Error querying Prometheus: {e}")
@@ -39,7 +76,7 @@ def default_access(query : str = "up" ):
 
 
 @app.get('/range_status_raw')
-def range_access(query: str='up', step: int = 1):
+def range_access(query: str='min_over_time(up{job!=""}[1h])', step: int = 1):
 
     # Get current time in UTC (RFC3339 format)
     now = datetime.now(timezone.utc)
@@ -59,43 +96,11 @@ def range_access(query: str='up', step: int = 1):
     try:
         response = requests.get(url, params=params)
         response.raise_for_status() # Raise an exception for HTTP errors
-        return response.json()#['data']['result']
+        return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error querying Prometheus: {e}")
         return None
 
-
-
-
-# Save original stdout
-o = sys.stdout
-
-# Redirect stdout to a file
-with open('output.txt', 'w') as f:
-    sys.stdout = f
-
-    def query_prometheus(query):
-        """Sends a PromQL query to Prometheus and returns the results."""
-        url = f"{PROMETHEUS_URL}/api/v1/query"
-        params = {'query': query}
-        try:
-            response = requests.get(url, params=params)
-            response.raise_for_status() # Raise an exception for HTTP errors
-            return response.json()['data']['result']
-        except requests.exceptions.RequestException as e:
-            print(f"Error querying Prometheus: {e}")
-            return None
-
-    # Example usage: Get the current value of a metric
-    query = 'up' # Example PromQL query
-    results = query_prometheus(query)
-
-    if results:
-        for result in results:
-            print(f"Metric: {result['metric']}, Value: {result['value'][1]}")
-
-# Restore stdout
-sys.stdout = o
-
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=9100)
+    print("service is running")
