@@ -8,6 +8,7 @@ that is currently running in the SCE clubroom.</p>
 <ul style="font-size: 19px;">
     <li>Provide the status information in a clean format</li>
     <li>Provide the status for the last 24 hours as additional information</li>
+    <li>The query target URL is parameterized, you can change it to any URL that can be queried</li>
 </ul>
 <hr>
 <h3>Usage</h3>
@@ -23,7 +24,17 @@ that is currently running in the SCE clubroom.</p>
         </ul>
     </li>
     <li>In a terminal window, go to the project directory root</li>
-    <li>Use <code style="border: 2px solid darkgray; background-color: transparent">docker compose -f docker-compose.yml build --no-cache</code> to clean build the project.
+    <li>Check your <code>docker-compose.yml</code> file, if the <code>sys-stat</code> is not in the service list, then
+    add <pre><code> 
+    sys-stat:
+        container_name: sys-stat
+        restart: unless-stopped
+        build:
+            context: ./system_status
+            dockerfile: Dockerfile
+        ports:
+            - "9100:9100"</code></pre> to the service list (the service flag)</li>
+    <li>Use <code style="border: 2px solid darkgray; background-color: transparent">docker compose -f docker-compose.yml build --no-cache</code> to clean-build the project.
     </li>
     <li>Use <code style="border: 2px solid darkgray; background-color: transparent">docker-compose up</code>
          to run the service.
@@ -36,7 +47,7 @@ that is currently running in the SCE clubroom.</p>
 <span style="color: aqua;">sys-stat</span>           | INFO:     Uvicorn running on http://0.0.0.0:9100 (Press CTRL+C to quit)
         </code></pre>
     </li>
-<li>In a browser tab, go to <a>http://localhost:9100/system_status/</a> to see the status page
+<li>In a browser tab, go to <a>http://localhost:9100/system_status/?target=one.sce/prometheus</a> to see the status page
         <ul>
             <li>Contact Sean or an SCE officer if there's any issue</li>
         </ul>
