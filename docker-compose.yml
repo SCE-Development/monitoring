@@ -46,15 +46,15 @@ services:
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
   grafana:
-#    environment:
-#      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+    environment:
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
     build:
       context: ./grafana/
       dockerfile: ./Dockerfile
     restart: always
     volumes:
-#      - /etc/localtime:/etc/localtime:ro
-#      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - grafana-data:/var/lib/grafana
 
   poweredge-2950-node-exporter:
@@ -63,24 +63,21 @@ services:
       - '--path.rootfs=/host'
     pid: host
     restart: unless-stopped
-#    volumes:
-#      - '/:/host:ro,rslave'
-#  portainer:
-#    image: portainer/portainer-ce:lts
-#    container_name: portainer
-#    volumes:
-#      - "/var/run/docker.sock:/var/run/docker.sock"
-#      - portainer_data:/data
-
+    volumes:
+      - '/:/host:ro,rslave'
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - portainer_data:/data
 
 volumes:
   alertmanager-data:
   grafana-data:
   portainer_data:
 
-
 networks: 
   default:
     external: 
       name: poweredge
-
