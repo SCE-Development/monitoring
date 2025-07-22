@@ -436,7 +436,7 @@ wrapper.AddPanel(
             "{{device}} - Write",
         ),
     ],
-    unit=SHORT,
+    unit='io/s',
     lineWidth=2,
     fillOpacity=40,
     showPoints='never',
@@ -818,6 +818,84 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.DefineRow("Memory Vmstat")
+
+wrapper.AddPanel(
+    title="Memory Pages In / Out",
+    queries=[
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pgpgin{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pagesin - Page in ops",
+        ),
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pgpgout{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pagesout - Page out ops",
+        ),
+    ],
+    unit='ops',
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Pages Swap In / Out",
+    queries=[
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pswpin{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pswpin - Pages swapped in",
+        ),
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pswpout{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pswpout - Pages swapped out",
+        ),
+    ],
+    unit='ops',
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="Memory Page Faults",
+    queries=[
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pgfault{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pgfault - Page major and minor fault ops",
+        ),
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pgmajfault{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "Pgmajfault - Major page fault ops",
+        ),
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_pgfault{instance=\"$node\",job=\"$job\"}[$__rate_interval])  - irate(node_vmstat_pgmajfault{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
+            "Pgminfault - Minor page fault ops",
+        ),
+    ],
+    unit='ops',
+    lineWidth=2,
+    fillOpacity=40,
+    showPoints='never',
+    stacking={'mode': 'normal'},
+)
+
+wrapper.AddPanel(
+    title="OOM Killer",
+    queries=[
+        ExpressionAndLegendPair(
+            "irate(node_vmstat_oom_kill{instance=\"$instance\",job=\"$job\"}[$__rate_interval])",
+            "OOM Kills",
+        ),
+    ],
+    unit='ops',
     lineWidth=2,
     fillOpacity=40,
     showPoints='never',
