@@ -67,6 +67,7 @@
 <body>
     <img id="sce_logo" alt="SCE_Logo">
     <h1>How are our services doing???</h1>
+    <h2>Current Time: <span id = "clock"></span></h2>
     <h3 id="fetch_time">Fetch time: {{ fetch_time }}</h3>
     <div id="outside_container">
         <div id="current_data_container">
@@ -127,6 +128,30 @@
         const img = document.getElementById('sce_logo');
         const imageUrl = new URL('static/img/sjsu.sce.trimed.jpg', window.location.href);
         img.src = imageUrl.href;
+
+        const timeElement = document.getElementById("clock");
+
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const date = now.getDate();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // Format the string with leading zeroes
+            const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
+            const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timeStr = `${dayStr} ${clockStr}`
+            timeElement.innerText = timeStr;
+        }
+
+        // Call initially to display time immediately
+        updateTime();
+
+        // Update every second
+        setInterval(updateTime, 1000);
     </script>
 
 </body>
