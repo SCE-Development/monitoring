@@ -184,5 +184,5 @@ def range_access_parsed():
 
 if __name__ == "__main__":
     #print("service is running")
-    uvicorn.run(app, host=args.host, port=args.port)
+    uvicorn.run("server:app", host=args.host, port=args.port, reload=True)
     #range_access_parsed()

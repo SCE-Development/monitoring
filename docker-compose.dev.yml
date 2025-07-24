@@ -50,6 +50,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 9100:9100
+    volumes:
+      - ./system_status/server.py:/app/server.py
+      - ./system_status/static:/app/static
+      - ./system_status/templates:/app/templates
 
   poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
