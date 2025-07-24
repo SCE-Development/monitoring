@@ -12,7 +12,7 @@ import sys
 from starlette.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from datetime import datetime
+from zoneinfo import ZoneInfo
 
 app = FastAPI()
 
@@ -74,7 +74,7 @@ def page_generator(request: Request):
     global PROMETHEUS_URL
 
     # Get the current datetime
-    local_datetime = datetime.now().astimezone()
+    local_datetime = datetime.now(ZoneInfo("America/Los_Angeles"))
 
     # Format the datetime object into a string, including the timezone offset
     # %Y: Year with century (e.g., 2025)
@@ -84,7 +84,7 @@ def page_generator(request: Request):
     # %M: Minute as a zero-padded decimal number (e.g., 43)
     # %S: Second as a zero-padded decimal number (e.g., 55)
     # %z: UTC offset in the form +HHMM or -HHMM (e.g., -0700 for PDT)
-    fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S") + " - Local Time Zone"
+    fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     #print(datetime_string)
 

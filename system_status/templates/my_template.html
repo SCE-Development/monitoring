@@ -66,9 +66,9 @@
 
 <body>
     <img id="sce_logo" alt="SCE_Logo">
-    <h1>How are our services doing???</h1>
+    <h1>How are our services doin 🤯🤯</h1>
     <h2>Current Time: <span id = "clock"></span></h2>
-    <h3 id="fetch_time">Fetch time: {{ fetch_time }}</h3>
+    <h2 id="fetch_time">Fetch Time: {{ fetch_time }}</h2>
     <div id="outside_container">
         <div id="current_data_container">
             <table id="status_table">
@@ -134,7 +134,7 @@
         function updateTime() {
             const now = new Date();
             const year = now.getFullYear();
-            const month = now.getMonth();
+            const month = now.getMonth() + 1 ;
             const date = now.getDate();
             const hours = now.getHours();
             const minutes = now.getMinutes();
@@ -143,8 +143,7 @@
             // Format the string with leading zeroes
             const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
             const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            const timeStr = `${dayStr} ${clockStr}`
-            timeElement.innerText = timeStr;
+            timeElement.innerText = `${dayStr} ${clockStr} - PDT/PST`;
         }
 
         // Call initially to display time immediately
