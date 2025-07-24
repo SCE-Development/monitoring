@@ -68,7 +68,7 @@ def get_args() -> argparse.Namespace:
 args = get_args()
 
 #expects an optional parameter as the target URL
-@app.get("/system_status/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 def page_generator(request: Request):
     target : str = args.target
     global PROMETHEUS_URL
