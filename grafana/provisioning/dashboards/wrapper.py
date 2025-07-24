@@ -131,7 +131,6 @@ class SceGrafanalibWrapper:
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                 )
             )
-
         panel = panel_type_enum.value(
             title=title,
             targets=targets,
@@ -161,21 +160,16 @@ class SceGrafanalibWrapper:
             panel.format = unit
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
-        
-        # Update position for next panel
         self.current_x += self.panel_width
         if self.current_x >= self.MAX_WIDTH:
-            # Move to next row
-            self.current_x = 0
             self.current_y += self.panel_height
+            self.current_x = 0
 
     def Render(self):
-        dashboard = Dashboard(
+        return Dashboard(
             title=self.title,
             rows=self.rows,
             panels=self.panels,
             timezone="browser",
             templating=Templating(list=self.templates),
-        )
-        
-        return dashboard.auto_panel_ids()
+        ).auto_panel_ids()
