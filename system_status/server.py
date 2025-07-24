@@ -58,7 +58,7 @@ def get_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--target",
-        default = "http://one.sce/prometheus",
+        default = "http://one.sce/prometheus/",
         help = "The URL of the Prometheus metrics exporter, default: http://one.sce/prometheus"
     )
 
@@ -102,7 +102,7 @@ def page_generator(request: Request):
 def default_access():
     #print(PROMETHEUS_URL) #working
     """Sends a PromQL query to Prometheus and returns the results."""
-    url = urljoin(args.target, "/api/v1/query")
+    url = urljoin(args.target, "api/v1/query")
     print(f"url queried: {url}")
     params = {'query': "up"}
     try:
@@ -124,8 +124,8 @@ def range_access():
     [start_str, end_str] = get_timestamps()
 
     """Sends a PromQL query to Prometheus and returns the results."""
-    #url = urljoin(args.target, "/prometheus/api/v1/query_range")
-    url = urljoin(args.target, "/api/v1/query_range")
+    #url = urljoin(args.target, "/prometheusapi/v1/query_range")
+    url = urljoin(args.target, "api/v1/query_range")
     print(f"url queried: {url}")
     params = {
         'query': query,

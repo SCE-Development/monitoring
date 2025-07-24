@@ -1,0 +1,64 @@
+version: '3.7'
+
+services:
+  prometheus-poweredge:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  prometheus-federated:
+    restart: always
+    image: prom/prometheus:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - ./prometheus/prometheus.federate.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    restart: unless-stopped
+    volumes:
+      - "./alertmanager:/config"
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug --cluster.advertise-address=0.0.0.0:9093
+  # discord-alerts:
+  #   image: benjojo/alertmanager-discord
+  #   restart: unless-stopped
+  #   environment:
+  #     - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
+  grafana:
+    build:
+      context: ./grafana/
+      dockerfile: ./Dockerfile.dev
+    restart: always
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+  status-page:
+    restart: unless-stopped
+    build:
+      context: ./system_status
+      dockerfile: Dockerfile
+    ports:
+      - 9100:9100
+
+  poweredge-2950-node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+
+volumes:
+  alertmanager-data:
+  grafana-data:
+  portainer_data:
