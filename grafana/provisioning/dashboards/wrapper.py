@@ -161,7 +161,7 @@ class SceGrafanalibWrapper:
         row_or_panel = self.rows[-1].panels if self.rows else self.panels
         row_or_panel.append(panel)
         self.current_x += self.panel_width
-        if self.current_x > self.MAX_WIDTH / 2:
+        if self.current_x >= self.MAX_WIDTH:
             self.current_y += self.panel_height
             self.current_x = 0
 

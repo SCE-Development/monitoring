@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SCE Service Status</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+            vertical-align: top;
+        }
+
+
+        th,
+        td {
+            margin: 0;
+            padding: 4px 8px;
+            /* consistent spacing */
+            vertical-align: top;
+            /* or middle */
+            font-size: 16px;
+            /* keep font sizes consistent */
+            line-height: 1.4;
+            /* helps alignment consistency */
+        }
+
+
+
+        .container {
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        #sce_logo {
+            width: 800px;
+        }
+
+        #outside_container {
+            display: flex;
+        }
+
+        #range_data_container {
+            margin-left: 20px;
+        }
+
+        /*#range_headline{
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            padding: 1px;
+        }*/
+
+        .current_table_data {
+            margin-right: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="sce_logo" alt="SCE_Logo">
+    <h1>How are our services doing???</h1>
+    <h2>Current Time: <span id = "clock"></span></h2>
+    <h3 id="fetch_time">Fetch time: {{ fetch_time }}</h3>
+    <div id="outside_container">
+        <div id="current_data_container">
+            <table id="status_table">
+                <tr>
+                    <th style="text-align: left; padding-right: 2px">Job Name</th>
+                    <th style="text-align: left; padding-right: 2px">Status</th>
+                    <th style="text-align: left; padding-right: 2px">Detail</th>
+                </tr>
+                {% for item in current_data %}
+                {% set instance = item.metric.instance %}
+                {% set job = item.metric.job %}
+                {% set status = "✅ UP" if item.value[1] == "1" else "❌ DOWN" %}
+                <tr class="current_table_data">
+                    <td>{{ job }}</td>
+                    <td>{{ status }}</td>
+                    <td>{{ instance }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div id="range_data_container">
+            <table>
+                <tr>
+                    <th>
+                        <div style="display: inline">Prev. Day</div>
+                        <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
+                        <div style="display: inline">History of past 24 Hours</div>
+                        <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
+                        <div style="display: inline">Now</div>
+                    </th>
+                </tr>
+                {% set ns = namespace(i=0) %}
+                {% for datapoint in range_data['data']['result'] %}
+                <tr>
+                    <td>
+                        {% for hour in datapoint['values'] %}
+                        {% if hour[1] == "1" %}
+                        ✅
+                        {% else %}
+                        ❌
+                        {% endif %}
+                        {% if ns.i % 4 == 3%}
+                        |
+                        {% endif %}
+                        {% set ns.i = ns.i + 1 %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+
+            </table>
+        </div>
+    </div>
+    <script>
+        const img = document.getElementById('sce_logo');
+        const imageUrl = new URL('static/img/sjsu.sce.trimed.jpg', window.location.href);
+        img.src = imageUrl.href;
+
+        const timeElement = document.getElementById("clock");
+
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const date = now.getDate();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // Format the string with leading zeroes
+            const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
+            const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timeStr = `${dayStr} ${clockStr}`
+            timeElement.innerText = timeStr;
+        }
+
+        // Call initially to display time immediately
+        updateTime();
+
+        // Update every second
+        setInterval(updateTime, 1000);
+    </script>
+
+</body>
+
+</html>
