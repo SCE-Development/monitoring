@@ -56,6 +56,13 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - grafana-data:/var/lib/grafana
+  status-page:
+    restart: unless-stopped
+    build:
+      context: ./system_status
+      dockerfile: Dockerfile
+    command:
+      - '--target=http://prometheus-federated:9090'
 
   poweredge-2950-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
@@ -77,7 +84,7 @@ volumes:
   grafana-data:
   portainer_data:
 
-networks: 
+networks:
   default:
-    external: 
+    external:
       name: poweredge
