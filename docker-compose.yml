@@ -17,7 +17,7 @@ services:
       - ~/.ssh/id_ed25519-tunnel:/app/ssh_key
       - ~/.ssh/known_hosts:/app/known_hosts
     environment:
-      - REMOTE_HOST=127.0.0.1
+      - REMOTE_HOST=localhost
       - REMOTE_PORT=9100
       - TUNNEL_HOST=sce@10.31.5.15
       - TUNNEL_PORT=22
