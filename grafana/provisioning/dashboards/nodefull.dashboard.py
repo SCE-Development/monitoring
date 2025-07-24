@@ -38,80 +38,23 @@ wrapper.AddPanel(
     panel_type_enum=PanelType.BARGAUGE,
 )
 
-wrapper.AddPanel(
-    title="CPU Busy",
-    queries=[
-        ExpressionAndLegendPair(
-            '(1 - avg(rate(' +
-            'node_cpu_seconds_total{' +
-            'mode="idle", instance="$instance"}' +
-            '[$__rate_interval]' +
-            ')))'
-        )
-    ],
-    unit=PERCENT_UNIT,
-    panel_type_enum=PanelType.GAUGE,
-)
+gauge_panels = [
+    ("CPU Busy", '(1 - avg(rate(\node_cpu_seconds_total{mode="idle", instance="$instance"}[$__rate_interval])))'),
+    ("Sys Load", 'scalar(node_load1{instance="$instance",job="$job"}) / count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu))'),
+    ("RAM Used", '(1 - (node_memory_MemAvailable_bytes{instance="$instance", job="$job"} / node_memory_MemTotal_bytes{instance="$instance", job="$job"}))'),
+    ("SWAP Used", '((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / (node_memory_SwapTotal_bytes{instance="$instance",job="$job"}))'),
+    ("Root FS Used", '((node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"} - node_filesystem_avail_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"}) / node_filesystem_size_bytes{instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"})'),
+]
 
-wrapper.AddPanel(
-    title="Sys Load",
-    queries=[
-        ExpressionAndLegendPair(
-            'scalar(node_load1{' +
-            'instance="$instance",job="$job"}) / ' +
-            'count(count(node_cpu_seconds_total{' +
-            'instance="$instance",job="$job"}) ' +
-            'by (cpu))'
-        )
-    ],
-    unit=PERCENT_UNIT,
-    panel_type_enum=PanelType.GAUGE,
-)
-
-wrapper.AddPanel(
-    title="RAM Used",
-    queries=[
-        ExpressionAndLegendPair(
-            '(1 - (node_memory_MemAvailable_bytes{' +
-            'instance="$instance", job="$job"} / node_memory_MemTotal_bytes{' +
-            'instance="$instance", job="$job"}))'
-        )
-    ],
-    unit=PERCENT_UNIT,
-    panel_type_enum=PanelType.GAUGE,
-)
-
-wrapper.AddPanel(
-    title="SWAP Used",
-    queries=[
-        ExpressionAndLegendPair(
-            '((node_memory_SwapTotal_bytes{instance="$instance",job="$job"} - ' +
-            'node_memory_SwapFree_bytes{instance="$instance",job="$job"}) / ' +
-            '(node_memory_SwapTotal_bytes{instance="$instance",job="$job"}))'
-        )
-    ],
-    unit=PERCENT_UNIT,
-    panel_type_enum=PanelType.GAUGE,
-)
-
-wrapper.AddPanel(
-    title="Root FS Used",
-    queries=[
-        ExpressionAndLegendPair(
-            '(\n  (node_filesystem_size_bytes{' +
-            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
-            '}\n   - ' +
-            'node_filesystem_avail_bytes{' +
-            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
-            '})\n  / ' +
-            'node_filesystem_size_bytes{' +
-            'instance="$instance", job="$job", mountpoint="/", fstype!="rootfs"' +
-            '}\n)\n'
-        )
-    ],
-    unit=PERCENT_UNIT,
-    panel_type_enum=PanelType.GAUGE,
-)
+for title, query in gauge_panels:
+    wrapper.AddPanel(
+        title=title,
+        queries=[
+            ExpressionAndLegendPair(query)
+        ],
+        unit=PERCENT_UNIT,
+        panel_type_enum=PanelType.GAUGE,
+    )
 
 stat_panels = [
     ("CPU Cores", "count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu))", SHORT),
