@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>SCE Service Status</title>
@@ -13,12 +14,17 @@
         }
 
 
-        th, td {
+        th,
+        td {
             margin: 0;
-            padding: 4px 8px; /* consistent spacing */
-            vertical-align: top; /* or middle */
-            font-size: 16px; /* keep font sizes consistent */
-            line-height: 1.4;   /* helps alignment consistency */
+            padding: 4px 8px;
+            /* consistent spacing */
+            vertical-align: top;
+            /* or middle */
+            font-size: 16px;
+            /* keep font sizes consistent */
+            line-height: 1.4;
+            /* helps alignment consistency */
         }
 
 
@@ -33,15 +39,15 @@
         }
 
 
-        #sce_logo{
+        #sce_logo {
             width: 800px;
         }
 
-        #outside_container{
-            display:flex;
+        #outside_container {
+            display: flex;
         }
 
-        #range_data_container{
+        #range_data_container {
             margin-left: 20px;
         }
 
@@ -52,14 +58,14 @@
             padding: 1px;
         }*/
 
-        .current_table_data{
+        .current_table_data {
             margin-right: 2px;
         }
-
     </style>
 </head>
+
 <body>
-    <img id="sce_logo" src = "../static/img/sjsu.sce.trimed.jpg" alt="SCE_Logo">
+    <img id="sce_logo" alt="SCE_Logo">
     <h1>How are our services doing???</h1>
     <h3 id="fetch_time">Fetch time: {{ fetch_time }}</h3>
     <div id="outside_container">
@@ -85,13 +91,15 @@
 
         <div id="range_data_container">
             <table>
-                <tr><th>
-                    <div style="display: inline">Prev. Day</div>
-                    <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
-                    <div style="display: inline">History of past 24 Hours</div>
-                    <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
-                    <div style="display: inline">Now</div>
-                </th></tr>
+                <tr>
+                    <th>
+                        <div style="display: inline">Prev. Day</div>
+                        <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
+                        <div style="display: inline">History of past 24 Hours</div>
+                        <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
+                        <div style="display: inline">Now</div>
+                    </th>
+                </tr>
                 {% set ns = namespace(i=0) %}
                 {% for datapoint in range_data['data']['result'] %}
                 <tr>
@@ -115,6 +123,12 @@
             </table>
         </div>
     </div>
+    <script>
+        const img = document.getElementById('sce_logo');
+        const imageUrl = new URL('static/img/sjsu.sce.trimed.jpg', window.location.href);
+        img.src = imageUrl.href;
+    </script>
 
 </body>
+
 </html>

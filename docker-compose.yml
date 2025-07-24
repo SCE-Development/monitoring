@@ -10,6 +10,20 @@ services:
       - ./prometheus:/etc/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+  status-page-sshtunnel:
+    image: nowsci/sshtunnel
+    volumes:
+      - ~/.ssh/id_ed25519-tunnel.pub:/app/ssh_key.pub
+      - ~/.ssh/id_ed25519-tunnel:/app/ssh_key
+      - ~/.ssh/known_hosts:/app/known_hosts
+    environment:
+      - REMOTE=true
+      - TUNNEL_HOST=sce@10.31.5.15
+      - TUNNEL_PORT=22
+      - CONTAINER_HOST=status-page
+      - CONTAINER_PORT=9100
+      - REMOTE_PORT=17000
+      - KEY=/app/ssh_key
   prometheus-clark-sshtunnel:
     image: nowsci/sshtunnel
     volumes:
