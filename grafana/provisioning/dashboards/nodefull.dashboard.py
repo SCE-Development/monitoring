@@ -113,71 +113,24 @@ wrapper.AddPanel(
     panel_type_enum=PanelType.GAUGE,
 )
 
-wrapper.AddPanel(
-    title="CPU Cores",
-    queries=[
-        ExpressionAndLegendPair(
-            "count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu))",
-        )
-    ],
-    unit=SHORT,
-    panel_type_enum=PanelType.STAT,
-)
+stat_panels = [
+    ("CPU Cores", "count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu))", SHORT),
+    ("Reboot Required", "node_reboot_required{instance=\"$instance\",job=\"$job\"}", TRUE_FALSE),
+    ("Uptime", "node_time_seconds{instance=\"$instance\",job=\"$job\"} - node_boot_time_seconds{instance=\"$instance\",job=\"$job\"}", SECONDS),
+    ("RootFS Total", "node_filesystem_size_bytes{instance=\"$instance\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"}", BYTES_IEC),
+    ("RAM Total", "node_memory_MemTotal_bytes{instance=\"$instance\",job=\"$job\"}", BYTES_IEC),
+    ("SWAP Total", "node_memory_SwapTotal_bytes{instance=\"$instance\",job=\"$job\"}", BYTES_IEC),
+]
 
-wrapper.AddPanel(
-    title="Reboot Required",
-    queries=[
-        ExpressionAndLegendPair(
-            "node_reboot_required{instance=\"$instance\",job=\"$job\"}",
-        )
-    ],
-    unit=TRUE_FALSE,
-    panel_type_enum=PanelType.STAT,
-)
-
-wrapper.AddPanel(
-    title="Uptime",
-    queries=[
-        ExpressionAndLegendPair(
-            "node_time_seconds{instance=\"$instance\",job=\"$job\"} - node_boot_time_seconds{instance=\"$instance\",job=\"$job\"}",
-        )
-    ],
-    unit=SECONDS,
-    panel_type_enum=PanelType.STAT,
-)
-
-wrapper.AddPanel(
-    title="RootFS Total",
-    queries=[
-        ExpressionAndLegendPair(
-            "node_filesystem_size_bytes{instance=\"$instance\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"}",
-        )
-    ],
-    unit=BYTES_IEC,
-    panel_type_enum=PanelType.STAT,
-)
-
-wrapper.AddPanel(
-    title="RAM Total",
-    queries=[
-        ExpressionAndLegendPair(
-            "node_memory_MemTotal_bytes{instance=\"$instance\",job=\"$job\"}",
-        )
-    ],
-    unit=BYTES_IEC,
-    panel_type_enum=PanelType.STAT,
-)
-
-wrapper.AddPanel(
-    title="SWAP Total",
-    queries=[
-        ExpressionAndLegendPair(
-             "node_memory_SwapTotal_bytes{instance=\"$instance\",job=\"$job\"}",
-        )
-    ],
-    unit=BYTES_IEC,
-    panel_type_enum=PanelType.STAT,
-)
+for title, query, unit in stat_panels:
+    wrapper.AddPanel(
+        title=title,
+        queries=[
+            ExpressionAndLegendPair(query)
+        ],
+        unit=unit,
+        panel_type_enum=PanelType.STAT,
+    )
 
 # to do: fix coloring? (from old dashboard "# Extra JSON for the colors extraJson=CPU_BASIC_COLORS, ") , from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
 # there could be a better way to show the stacking of the panels, (can create in wrapper class in the future?)
