@@ -4,6 +4,13 @@ from grafanalib.formatunits import PERCENT_UNIT, SHORT, TRUE_FALSE, SECONDS, BYT
 
 from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
 
+STACKED_STYLE = {
+    'lineWidth': 2,
+    'fillOpacity': 40,
+    'showPoints': 'never',
+    'stacking': {'mode': 'normal'},
+}
+
 wrapper = SceGrafanalibWrapper(
     title="Node Exporter Full (wrapper)", panel_height=4, panel_width=3
 )
@@ -93,10 +100,7 @@ wrapper.AddPanel(
     title="CPU Basic",
     queries=cpu_basic_queries,
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -124,10 +128,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )          
 
 wrapper.AddPanel(
@@ -143,10 +144,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_SEC_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
     
 )
 
@@ -159,10 +157,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 # doesnt have calcs yet, ex: "calcs": [ "min", "mean","max", "lastNotNull" ],
@@ -194,10 +189,7 @@ wrapper.AddPanel(
     title="CPU",
     queries=cpu_queries,
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -241,10 +233,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
             
 wrapper.AddPanel(
@@ -260,10 +249,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_SEC_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -279,10 +265,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -298,10 +281,7 @@ wrapper.AddPanel(
         ),
     ],
     unit='io/s',
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -317,10 +297,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )         
             
 wrapper.AddPanel(
@@ -340,10 +317,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -355,10 +329,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
             
 wrapper.AddPanel(
@@ -370,10 +341,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -405,10 +373,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.DefineRow("Memory Meminfo")
@@ -426,10 +391,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -453,10 +415,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -472,10 +431,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -499,10 +455,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -518,10 +471,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=PERCENT_UNIT,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
               
 wrapper.AddPanel(
@@ -545,10 +495,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -568,10 +515,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -591,10 +535,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -610,10 +551,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -629,10 +567,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -652,10 +587,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -679,10 +611,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=BYTES_IEC,
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.DefineRow("Memory Vmstat")
@@ -700,10 +629,7 @@ wrapper.AddPanel(
         ),
     ],
     unit='ops',
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -719,10 +645,7 @@ wrapper.AddPanel(
         ),
     ],
     unit='ops',
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -742,10 +665,7 @@ wrapper.AddPanel(
         ),
     ],
     unit='ops',
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 wrapper.AddPanel(
@@ -757,10 +677,7 @@ wrapper.AddPanel(
         ),
     ],
     unit='ops',
-    lineWidth=2,
-    fillOpacity=40,
-    showPoints='never',
-    stacking={'mode': 'normal'},
+    **STACKED_STYLE,
 )
 
 dashboard = wrapper.Render()
