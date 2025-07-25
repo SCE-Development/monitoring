@@ -8,7 +8,6 @@ wrapper = SceGrafanalibWrapper(
     title="Node Exporter Full (wrapper)", panel_height=4, panel_width=3
 )
 
-# to do: potential default value for job? no data shows unless a job is selected
 wrapper.DefineTemplating(
     label='Job',
     query='label_values(node_uname_info, job)',
@@ -24,7 +23,6 @@ wrapper.DefineTemplating(
     query='label_values(node_uname_info{job="$job", nodename="$nodename"}, instance)',
 )
 
-# to do: the panels need to have better formatting (someone may be working on this already?)
 wrapper.DefineRow("Quick CPU / Mem / Disk")
 
 wrapper.AddPanel(
@@ -75,40 +73,25 @@ for title, query, unit in stat_panels:
         panel_type_enum=PanelType.STAT,
     )
 
-# to do: fix coloring? (from old dashboard "# Extra JSON for the colors extraJson=CPU_BASIC_COLORS, ") , from node_consts import CPU_BASIC_COLORS, MEMORY_BASIC_COLORS
-# there could be a better way to show the stacking of the panels, (can create in wrapper class in the future?)
-# ex:  lineWidth=2, fillOpacity=40,  showPoints='never', stacking={'mode': 'normal'}, ... are often repeated
-
 wrapper.DefineRow("Basic CPU / Mem / Net / Disk")
+
+cpu_basic_modes = [
+    ('mode="system"', "Busy System"),
+    ('mode="user"', "Busy User"),
+    ('mode="iowait"', "Busy Iowait"),
+    ('mode=~".*irq"', "Busy IRQs"),
+    ('mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"', "Busy Other"),
+    ('mode="idle"', "Idle"),
+]
+
+cpu_basic_queries = []
+for mode, legend in cpu_basic_modes:
+    query = f'sum(irate(node_cpu_seconds_total{{instance="$instance",job="$job", {mode} }}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{{instance="$instance",job="$job"}}) by (cpu)))'
+    cpu_basic_queries.append(ExpressionAndLegendPair(query, legend))
 
 wrapper.AddPanel(
     title="CPU Basic",
-    queries=[
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="system"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Busy System",
-        ),
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="user"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Busy User",
-        ),
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="iowait"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Busy Iowait",
-        ),
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode=~".*irq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Busy IRQs",
-        ),
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job",  mode!="idle",mode!="user",mode!="system",mode!="iowait",mode!="irq",mode!="softirq"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Busy Other",
-        ),
-        ExpressionAndLegendPair(
-            'sum(irate(node_cpu_seconds_total{instance="$instance",job="$job", mode="idle"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance="$instance",job="$job"}) by (cpu)))',
-            "Idle",
-        ),
-    ],
+    queries=cpu_basic_queries,
     unit=PERCENT_UNIT,
     lineWidth=2,
     fillOpacity=40,
@@ -183,51 +166,33 @@ wrapper.AddPanel(
 )
 
 # doesnt have calcs yet, ex: "calcs": [ "min", "mean","max", "lastNotNull" ],
-# may need more custom stacking as well? 
 
 wrapper.DefineRow("CPU / Mem / Net / Disk")
 
+cpu_modes = [
+    ("system", "System - Processes executing in kernel mode"),
+    ("user", "User - Normal processes executing in user mode"),
+    ("nice", "Nice - Niced processes executing in user mode"),
+    ("iowait", "Iowait - Waiting for I/O to complete"),
+    ("irq", "Irq - Servicing interrupts"),
+    ("softirq", "Softirq - Servicing softirqs"),
+    ("steal", "Steal - Time spent in other operating systems when running in a virtualized environment"),
+    ("idle", "Idle - Waiting for something to happen"),
+]
+
+cpu_queries = []
+for mode, legend in cpu_modes:
+    query = f'sum(irate(node_cpu_seconds_total{{mode="{mode}",instance="$instance",job="$job"}}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{{instance="$instance",job="$job"}}) by (cpu)))'
+    cpu_queries.append(ExpressionAndLegendPair(query, legend))
+
+cpu_queries.append(ExpressionAndLegendPair(
+    "sum by(instance) (irate(node_cpu_guest_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval]))) > 0",
+    "Guest CPU usage",
+))
+
 wrapper.AddPanel(
     title="CPU",
-    queries=[
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"system\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "System - Processes executing in kernel mode",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"user\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "User - Normal processes executing in user mode",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"nice\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Nice - Niced processes executing in user mode",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"iowait\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Iowait - Waiting for I/O to complete",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"irq\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Irq - Servicing interrupts",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"softirq\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Softirq - Servicing softirqs",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"steal\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Steal - Time spent in other operating systems when running in a virtualized environment",
-        ),
-        ExpressionAndLegendPair(
-            "sum(irate(node_cpu_seconds_total{mode=\"idle\",instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}) by (cpu)))",
-            "Idle - Waiting for something to happen",
-
-        ),
-        ExpressionAndLegendPair(
-            "sum by(instance) (irate(node_cpu_guest_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=\"$instance\",job=\"$job\"}[$__rate_interval]))) > 0",
-            "Guest CPU usage",
-        ),
-    ],
+    queries=cpu_queries,
     unit=PERCENT_UNIT,
     lineWidth=2,
     fillOpacity=40,
