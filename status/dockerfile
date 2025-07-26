@@ -1,0 +1,16 @@
+# filepath: /Users/vineet/Projects/sce_system_status/prom/Dockerfile.scraper
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY ./status/requirements.txt .
+
+RUN pip3 install -r requirements.txt
+
+COPY ./status/flags.py .
+
+COPY ./status/scraper.py .
+
+COPY ./status/health.html /app/health.html
+
+ENTRYPOINT ["python3", "scraper.py"]
