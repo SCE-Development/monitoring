@@ -111,8 +111,14 @@ def default_access():
         return None
 
 def default_access_parsed():
+    #debugging
+    #import debug_data
+    #default_list = debug_data.non_input
     default_list = default_access()
     parse_dict = {}
+    if not default_list:
+        return {"service_0": {"job": "no job found", "detail": "-", "current_status": "-"}}
+
     for i in range(len(default_list)):
         parse_dict[f"service_{i}"] = {
             "job": default_list[i]["metric"]["job"],
@@ -152,8 +158,14 @@ def range_access():
 
 def range_access_parsed():
     #debugging
-    #from debug_data import special_input
-    #result = special_input["data"]["result"]
+    #import debug_data
+    #result = debug_data.non_input
+    result = range_access()
+    if not result: # if the result is a falsy value
+        return[{"detail": "-", "status": "-"}]
+
+    #only do the rest if the input is not None
+    #result = debug_data.non_input["data"]["result"]
     result = range_access()["data"]["result"]
     print(result) #working
     #find out the start time string
