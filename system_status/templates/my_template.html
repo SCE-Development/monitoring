@@ -31,9 +31,18 @@
             border-bottom: 1px solid #ddd;
         }
 
+        tr:hover{
+            background-color: #ADD8E6
+        }
+
+        .highlighted {
+            background-color: #ADD8E6;
+        }
 
         h1{
             margin-block-start: 0.0em;
+            margin-block-end: 0.0em;
+            display: inline-block;
         }
 
 
@@ -52,7 +61,8 @@
         }
 
         #sce_logo {
-            width: 350px;
+            width: 53px;
+            margin-right: 20px;
         }
 
         #outside_container {
@@ -81,12 +91,14 @@
 </head>
 
 <body>
+
     <div id = "info_container">
+        <img id="sce_logo" alt="SCE_Logo">
         <h1>How are our services doing 🤯🤯</h1>
         <h2>Current Time: <span id = "clock"></span></h2>
         <h2 id="fetch_time">Fetch Time: {{ fetch_time }}</h2>
     </div>
-    <img id="sce_logo" alt="SCE_Logo">
+
 
     <div id="outside_container">
         <div id="current_data_container">
@@ -105,10 +117,18 @@
                 </tr>
                 {% for item in data.values() %}
                 {% set job = item.job %}
-                {% set status = "✅ UP" if item.current_status == '1' else "❌ DOWN" %}
+
+                {% if item.current_status == '1' %}
+                {% set status = "✅ UP" %}
+                {% elif item.current_status == '0' %}
+                {% set status = "❌ DOWN" %}
+                {% else %}
+                {% set status = "⚠️ NO DATA" %}
+                {% endif %}
+
                 {% set detail = item.detail %}
 
-                <tr class="current_table_data">
+                <tr class="current_table_data" onclick="highlightRow(this)">
                     <td>{{ job }}</td>
                     <td>{{ status }}</td>
                     <td>{{ detail }}</td>
@@ -123,7 +143,7 @@
                         {% else %}
                         ⚠️
                         {% endif %}
-                        {% if ns.i % 4 == 3%}
+                        {% if ns.i % 4 == 3 and ns.i < 20%}
                         |
                         {% endif %}
                         {% set ns.i = ns.i + 1 %}
@@ -162,6 +182,19 @@
 
         // Update every second
         setInterval(updateTime, 1000);
+        function highlightRow(clickedRow) {
+            if (clickedRow.classList.contains('highlighted')){
+                clickedRow.classList.remove("highlighted");
+                return;
+            }
+
+            document.querySelectorAll("tr").forEach(row => {
+                row.classList.remove("highlighted");
+            });
+
+            clickedRow.classList.add("highlighted");
+
+        }
     </script>
 
 </body>
