@@ -32,7 +32,6 @@ now = datetime.now() # this variable will hold the datetime object at fetching t
 def get_timestamps():
     global now
     start = now - timedelta(hours=23)
-
     # Format to UNIX timestamp
     now_str = int(now.timestamp())
     start_str = int(start.timestamp())
@@ -74,25 +73,25 @@ def page_generator(request: Request):
     local_datetime = datetime.now(ZoneInfo("America/Los_Angeles"))
 
     # Format the datetime object into a string, including the timezone offset
-    # %Y: Year with century (e.g., 2025)
-    # %m: Month as a zero-padded decimal number (e.g., 07)
-    # %d: Day of the month as a zero-padded decimal number (e.g., 21)
-    # %H: Hour (24-hour clock) as a zero-padded decimal number (e.g., 20)
-    # %M: Minute as a zero-padded decimal number (e.g., 43)
-    # %S: Second as a zero-padded decimal number (e.g., 55)
-    # %z: UTC offset in the form +HHMM or -HHMM (e.g., -0700 for PDT)
+    # %Y: Year # %m: Month as int  # %d: Day of month as int # %H: Hour as int
+    # %M: Minute as int # %S: Second as int
     fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     #print(datetime_string)
 
     #PROMETHEUS_URL = "http://" + target # override the URL if passed in a different value
     #print(PROMETHEUS_URL) #working
-    current_data = default_access()
-    range_data = range_access()
+    current_data = default_access_parsed() # a dict
+    range_data = range_access_parsed() # a list
+    key_list = current_data.keys()
+    for i in range(len(current_data)):
+        if (current_data[f"service_{i}"]["detail"] == range_data[i]["detail"]):
+            current_data[f"service_{i}"]["range_status"] =  range_data[i]["status"]
+    print(current_data)
+
     return (templates.TemplateResponse
             ("my_template.html",
-             {"request": request, "current_data": current_data,
-                    "range_data": range_data, "fetch_time": fetch_time}))
+             {"request": request, "data": current_data, "fetch_time": fetch_time}))
 
 @app.get("/current_status_raw")
 # return to the client as JSON file
@@ -110,6 +109,19 @@ def default_access():
     except requests.exceptions.RequestException as e:
         print(f"Error querying Prometheus: {e}")
         return None
+
+def default_access_parsed():
+    default_list = default_access()
+    parse_dict = {}
+    for i in range(len(default_list)):
+        parse_dict[f"service_{i}"] = {
+            "job": default_list[i]["metric"]["job"],
+            "detail": default_list[i]["metric"]["instance"],
+            "current_status": default_list[i]["value"][1]
+        }
+    print(default_list)
+    print(parse_dict)
+    return parse_dict
 
 
 @app.get('/range_status_raw')
@@ -140,33 +152,38 @@ def range_access():
 
 def range_access_parsed():
     #debugging
-    from debug_data import special_input
-    result = special_input["data"]["result"]
-    #print(result) working
+    #from debug_data import special_input
+    #result = special_input["data"]["result"]
+    result = range_access()["data"]["result"]
+    print(result) #working
     #find out the start time string
     #1753161586
     #1753244386
-    [start_str, end_str] = [1753161586, 1753244386]#get_timestamps()
+    [start_str, end_str] = get_timestamps()#[1753161586, 1753244386]#
     key_list = []
     for i in range(24):
         key_list.append(int(start_str) + i * 3600)
-    print(key_list) # working
+
+    #print(key_list) # working
+    if end_str == key_list[-1]:
+        print("working") #check if the last key matches the end key of the actual data
 
     string_list = []
     for element in result:
+        #continue
         status_str = ""
         key_list_counter = 0
         value_list_counter = 0
         value_list = element["values"]
         while (value_list_counter < len(value_list)): #since we have data for 24 hours
-            if value_list[0] != key_list[key_list_counter]:
+            if value_list[value_list_counter][0] != key_list[key_list_counter]:
                 # this means there's a missing metric from the value
                 key_list_counter += 1
                 status_str += "N" #insert an N representing no value
                 continue
 
-            if value[0] == key_list[key_list_counter]:
-                if value[1] == "1":
+            if value_list[value_list_counter][0] == key_list[key_list_counter]:
+                if value_list[value_list_counter][1] == "1":
                     status_str += "U" #append an U representing Up
                 else:
                     status_str += "D" #append a D representing Down
@@ -175,11 +192,15 @@ def range_access_parsed():
             value_list_counter += 1
 
         #after the for loop, status_str is now holding the status
-        string_list.append({element["metric"]["instance"], status_str})
+        string_list.append({"detail": element["metric"]["instance"], "status":status_str})
+
 
     print(string_list)
+    return string_list
 
 if __name__ == "__main__":
     #print("service is running")
     uvicorn.run("server:app", host=args.host, port=args.port, reload=True)
     #range_access_parsed()
+    #default_access_parsed()
+    #page_generator()
