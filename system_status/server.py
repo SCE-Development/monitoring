@@ -1,6 +1,4 @@
-import json
 import argparse
-import os
 
 from urllib.parse import urljoin
 from fastapi import FastAPI, Request
@@ -8,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta, timezone
 import uvicorn
 import requests
-import sys
 from starlette.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
