@@ -26,7 +26,15 @@
             line-height: 1.4;
             /* helps alignment consistency */
         }
+        tr{
+            /* Adds a 1px solid gray bottom border to each row */
+            border-bottom: 1px solid #ddd;
+        }
 
+
+        h1{
+            margin-block-start: 0.0em;
+        }
 
 
         .container {
@@ -38,9 +46,13 @@
             box-sizing: border-box;
         }
 
+        #status_table {
+            overflow-x: auto; /* Enables horizontal scrolling when content exceeds container width */
+            white-space: nowrap; /* Prevents content from wrapping to the next line */
+        }
 
         #sce_logo {
-            width: 800px;
+            width: 350px;
         }
 
         #outside_container {
@@ -61,14 +73,21 @@
         .current_table_data {
             margin-right: 2px;
         }
+
+        #info_container{
+            display: inline-block;
+        }
     </style>
 </head>
 
 <body>
+    <div id = "info_container">
+        <h1>How are our services doin 🤯🤯</h1>
+        <h2>Current Time: <span id = "clock"></span></h2>
+        <h2 id="fetch_time">Fetch Time: {{ fetch_time }}</h2>
+    </div>
     <img id="sce_logo" alt="SCE_Logo">
-    <h1>How are our services doing???</h1>
-    <h2>Current Time: <span id = "clock"></span></h2>
-    <h3 id="fetch_time">Fetch time: {{ fetch_time }}</h3>
+
     <div id="outside_container">
         <div id="current_data_container">
             <table id="status_table">
@@ -76,23 +95,6 @@
                     <th style="text-align: left; padding-right: 2px">Job Name</th>
                     <th style="text-align: left; padding-right: 2px">Status</th>
                     <th style="text-align: left; padding-right: 2px">Detail</th>
-                </tr>
-                {% for item in current_data %}
-                {% set instance = item.metric.instance %}
-                {% set job = item.metric.job %}
-                {% set status = "✅ UP" if item.value[1] == "1" else "❌ DOWN" %}
-                <tr class="current_table_data">
-                    <td>{{ job }}</td>
-                    <td>{{ status }}</td>
-                    <td>{{ instance }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-
-        <div id="range_data_container">
-            <table>
-                <tr>
                     <th>
                         <div style="display: inline">Prev. Day</div>
                         <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
@@ -101,15 +103,25 @@
                         <div style="display: inline">Now</div>
                     </th>
                 </tr>
-                {% set ns = namespace(i=0) %}
-                {% for datapoint in range_data['data']['result'] %}
-                <tr>
+                {% for item in data.values() %}
+                {% set job = item.job %}
+                {% set status = "✅ UP" if item.current_status == '1' else "❌ DOWN" %}
+                {% set detail = item.detail %}
+
+                <tr class="current_table_data">
+                    <td>{{ job }}</td>
+                    <td>{{ status }}</td>
+                    <td>{{ detail }}</td>
+                    {% set ns = namespace(i=0) %}
                     <td>
-                        {% for hour in datapoint['values'] %}
-                        {% if hour[1] == "1" %}
+                        {% set statusStr = item.range_status %}
+                        {% for char in statusStr %}
+                        {% if char == "U" %}
                         ✅
-                        {% else %}
+                        {% elif char == "D" %}
                         ❌
+                        {% else %}
+                        ⚠️
                         {% endif %}
                         {% if ns.i % 4 == 3%}
                         |
@@ -117,10 +129,9 @@
                         {% set ns.i = ns.i + 1 %}
                         {% endfor %}
                     </td>
+                    {% endfor %}
+
                 </tr>
-                {% endfor %}
-
-
             </table>
         </div>
     </div>
@@ -134,7 +145,7 @@
         function updateTime() {
             const now = new Date();
             const year = now.getFullYear();
-            const month = now.getMonth();
+            const month = now.getMonth() + 1 ;
             const date = now.getDate();
             const hours = now.getHours();
             const minutes = now.getMinutes();
@@ -143,8 +154,7 @@
             // Format the string with leading zeroes
             const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
             const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            const timeStr = `${dayStr} ${clockStr}`
-            timeElement.innerText = timeStr;
+            timeElement.innerText = `${dayStr} ${clockStr} - PDT/PST`;
         }
 
         // Call initially to display time immediately

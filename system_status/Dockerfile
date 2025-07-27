@@ -7,8 +7,6 @@ COPY requirements.txt ./
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-#copy the rest of the app
-COPY . ./
-
 EXPOSE 9100
+
 ENTRYPOINT ["python", "./server.py"]
