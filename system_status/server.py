@@ -198,6 +198,10 @@ def range_access_parsed():
     print(string_list)
     return string_list
 
+@app.get('/hello')
+def hello():
+    return 'hello!'
+
 if __name__ == "__main__":
     #print("service is running")
     uvicorn.run("server:app", host=args.host, port=args.port, reload=True)
