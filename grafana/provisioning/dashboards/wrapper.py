@@ -90,6 +90,7 @@ class SceGrafanalibWrapper:
         fillOpacity=None,
         showPoints=None,
         stacking=None,
+        extraJson=None,
     ):
         targets = []
         iterator = RefIdGenerator()
@@ -140,6 +141,7 @@ class SceGrafanalibWrapper:
                 x=self.current_x,
                 y=self.current_y,
             ),
+            extraJson=extraJson,
         )
         if isinstance(panel, TimeSeries):
             if fillOpacity is not None:
