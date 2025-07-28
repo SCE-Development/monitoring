@@ -110,8 +110,7 @@ def polling_loop(interval, config):
         for hosts in config:
             service_name = hosts.get("job-id", "prometheus-aggregation")
             prom_query = hosts.get("query", "up")
-            if prom_query == "up":
-                process_up_query(prom_query, service_name)
+            process_up_query(prom_query, service_name)
         time.sleep(interval)
 
 
@@ -142,7 +141,10 @@ def process_up_query(query, service_name):
             )  # for later use in dataclass
             value = metric.get("value", [None, None])[1]
             # last_active = datetime.now(pacific_tz).strftime("%Y-%m-%d %H:%M:%S %Z")
-            status = "Healthy" if float(value) > 0 else "Unhealthy"
+            if float(value) > 0:
+                status = "Healthy"  
+            else:
+                status = "Unhealthy"
             if status == "Unhealthy":
                 current = get_first_match_time(
                     prom=prom, prom_query="up", match_value=0, hours=up_hours
@@ -150,10 +152,10 @@ def process_up_query(query, service_name):
                 metrics_data.append(
                     {"instance": instance, "job": job_name, "status": current}
                 )
-            else:
-                metrics_data.append(
-                    {"instance": instance, "job": job_name, "status": "Healthy"}
-                )
+                continue
+            metrics_data.append(
+                {"instance": instance, "job": job_name, "status": "Healthy"}
+            )
     except Exception as e:
         logging.exception(f"Error processing query '{query}': {e}")
         metrics_data.append(
@@ -170,7 +172,7 @@ def process_time_query(query, service_name):
                 instance = metric.get("metric", {}).get("instance", "unknown")
                 job_name = metric.get("metric", {}).get("job", "unknown")
                 uptime_seconds = float(metric.get("value", [None,None])[1] or 0)
-                up_hours = int(uptime_seconds / 3600)
+                up_hours = uptime_seconds // 3600
                 if up_hours == 0:
                     up_hours = 1
     except Exception as e:
