@@ -31,9 +31,25 @@
             border-bottom: 1px solid #ddd;
         }
 
+        tr:hover{
+            background-color: #ADD8E6
+        }
+
+        .highlighted {
+            background-color: #ADD8E6;
+        }
+
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background: #f9f9f9; /* or any background to cover overlap */
+            z-index: 1; /* make sure it stays above other columns */
+        }
 
         h1{
             margin-block-start: 0.0em;
+            margin-block-end: 0.0em;
+            display: inline-block;
         }
 
 
@@ -52,7 +68,8 @@
         }
 
         #sce_logo {
-            width: 350px;
+            width: 53px;
+            margin-right: 20px;
         }
 
         #outside_container {
@@ -81,18 +98,21 @@
 </head>
 
 <body>
+
     <div id = "info_container">
-        <h1>How are our services doin 🤯🤯</h1>
+        <img id="sce_logo" alt="SCE_Logo">
+        <h1>How are our services doing ???</h1>
         <h2>Current Time: <span id = "clock"></span></h2>
         <h2 id="fetch_time">Fetch Time: {{ fetch_time }}</h2>
     </div>
-    <img id="sce_logo" alt="SCE_Logo">
+
 
     <div id="outside_container">
         <div id="current_data_container">
             <table id="status_table">
+                <tr><th class="sticky-col" style="text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
                 <tr>
-                    <th style="text-align: left; padding-right: 2px">Job Name</th>
+                    <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
                     <th style="text-align: left; padding-right: 2px">Status</th>
                     <th style="text-align: left; padding-right: 2px">Detail</th>
                     <th>
@@ -105,11 +125,19 @@
                 </tr>
                 {% for item in data.values() %}
                 {% set job = item.job %}
-                {% set status = "✅ UP" if item.current_status == '1' else "❌ DOWN" %}
+
+                {% if item.current_status == '1' %}
+                {% set status = "✅ UP" %}
+                {% elif item.current_status == '0' %}
+                {% set status = "❌ DOWN" %}
+                {% else %}
+                {% set status = "⚠️ NO DATA" %}
+                {% endif %}
+
                 {% set detail = item.detail %}
 
-                <tr class="current_table_data">
-                    <td>{{ job }}</td>
+                <tr class="current_table_data" onclick="highlightRow(this)">
+                    <td class="sticky-col">{{ job }}</td>
                     <td>{{ status }}</td>
                     <td>{{ detail }}</td>
                     {% set ns = namespace(i=0) %}
@@ -123,7 +151,7 @@
                         {% else %}
                         ⚠️
                         {% endif %}
-                        {% if ns.i % 4 == 3%}
+                        {% if ns.i % 4 == 3 and ns.i < 20%}
                         |
                         {% endif %}
                         {% set ns.i = ns.i + 1 %}
@@ -162,6 +190,19 @@
 
         // Update every second
         setInterval(updateTime, 1000);
+        function highlightRow(clickedRow) {
+            if (clickedRow.classList.contains('highlighted')){
+                clickedRow.classList.remove("highlighted");
+                return;
+            }
+
+            document.querySelectorAll("tr").forEach(row => {
+                row.classList.remove("highlighted");
+            });
+
+            clickedRow.classList.add("highlighted");
+
+        }
     </script>
 
 </body>
