@@ -125,6 +125,7 @@ dashboard = Dashboard(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='connection_status',
                     refId='A',
+                    legendFormat="{{url}}",
                 ),
             ],
         ),
