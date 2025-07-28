@@ -54,5 +54,3 @@ that is currently running in the SCE clubroom.</p>
     </li>
 </ol>
 <hr>
-<h3>Example Run</h3>
-<img src="sample_run.jpg" alt="sample run screenshot">
