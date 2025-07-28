@@ -99,7 +99,7 @@ dashboard = Dashboard(
         ),
         Stat(
             title='Container Uptime',
-            gridPos=GridPos(h=8, w=12, x=12, y=9),
+            gridPos=GridPos(h=8, w=12, x=12, y=8),
             format=SECONDS,
             decimals=2,
             reduceCalc='lastNotNull',
@@ -109,6 +109,21 @@ dashboard = Dashboard(
                     datasource=PROMETHEUS_DATASOURCE_NAME,
                     expr='time() - process_start_time_seconds{job=~\"led-sign|delen|sce-printer\"}',
                     legendFormat="{{job}}",
+                    refId='A',
+                ),
+            ],
+        ),
+        TimeSeries(
+            title='clark-keep-ssh-tunnel-open',
+            unit=SECONDS,
+            gridPos=GridPos(h=8, w=12, x=0, y=16),
+            lineWidth=2,
+            tooltipMode='all',
+            tooltipSort='desc',
+            targets=[
+                Target(
+                    datasource=PROMETHEUS_DATASOURCE_NAME,
+                    expr='connection_status',
                     refId='A',
                 ),
             ],
