@@ -1,6 +1,8 @@
 import argparse
 import uvicorn
 import requests
+from dataclasses import dataclass
+from typing import List
 
 from urllib.parse import urljoin
 
@@ -12,6 +14,17 @@ from fastapi.staticfiles import StaticFiles
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+
+@dataclass
+class TimestampAndValuePair:
+    timestamp: datetime
+    value: str
+
+@dataclass
+class PrometheusData:
+    instance: str
+    job: str
+    values: List[TimestampAndValuePair]
 
 app = FastAPI()
 
@@ -125,15 +138,14 @@ def default_access_parsed():
 
 
 @app.get('/range_status_raw')
-def range_access():
+def get_prometheus_data() -> List[PrometheusData]:
     global now
     now = datetime.now()
     query: str='min_over_time(up{job!=""}[1h])'
     step: int = 1
     [start_str, end_str] = get_timestamps()
 
-    """Sends a PromQL query to Prometheus and returns the results."""
-    #url = urljoin(args.target, "/prometheusapi/v1/query_range")
+    """Sends a PromQL query to Prometheus and returns structured data."""
     url = urljoin(args.target, "api/v1/query_range")
     print(f"url queried: {url}")
     params = {
@@ -142,28 +154,58 @@ def range_access():
         'end': end_str,
         'step': f'{step}h'
     }
+    
     try:
         response = requests.get(url, params=params)
-        # print ("range_access", response.json())
-        response.raise_for_status() # Raise an exception for HTTP errors
-        return response.json() # return as a dictionary
+        response.raise_for_status()
+        prometheus_response = response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error querying Prometheus: {e}")
-        return None
+        return []
+
+    # Parse the response into dataclasses
+    prometheus_data_list = []
+    
+    if prometheus_response and prometheus_response.get("status") == "success":
+        results = prometheus_response["data"]["result"]
+        
+        for result in results:
+            metric = result["metric"]
+            values = []
+            
+            for timestamp_value_pair in result["values"]:
+                timestamp = datetime.fromtimestamp(timestamp_value_pair[0])
+                value = timestamp_value_pair[1]
+                values.append(TimestampAndValuePair(timestamp=timestamp, value=value))
+            
+            prometheus_data = PrometheusData(
+                instance=metric["instance"],
+                job=metric["job"],
+                values=values
+            )
+            prometheus_data_list.append(prometheus_data)
+    
+    return prometheus_data_list
 
 def range_access_parsed():
-    result = range_access()
-    if not result: # if the result is a falsy value
+    prometheus_data_list = get_prometheus_data()
+    if not prometheus_data_list: # if the result is a falsy value
         return[{"detail": "-", "status": "-"}]
 
     #only do the rest if the input is not None
-    #result = debug_data.non_input["data"]["result"]
-    result = range_access()["data"]["result"]
+    # Convert the dataclasses back to the expected format for backward compatibility
+    result = []
+    for prometheus_data in prometheus_data_list:
+        result.append({
+            "metric": {
+                "instance": prometheus_data.instance,
+                "job": prometheus_data.job
+            },
+            "values": [[int(pair.timestamp.timestamp()), pair.value] for pair in prometheus_data.values]
+        })
     print(result) #working
     #find out the start time string
-    #1753161586
-    #1753244386
-    [start_str, end_str] = get_timestamps()#[1753161586, 1753244386]#
+    [start_str, end_str] = get_timestamps()
     key_list = []
     for i in range(24):
         key_list.append(int(start_str) + i * 3600)
@@ -197,7 +239,6 @@ def range_access_parsed():
 
         #after the for loop, status_str is now holding the status
         string_list.append({"detail": element["metric"]["instance"], "status":status_str})
-
 
     print(string_list)
     return string_list
