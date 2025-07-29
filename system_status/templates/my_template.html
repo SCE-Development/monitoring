@@ -17,7 +17,7 @@
         th,
         td {
             margin: 0;
-            text-align: center;
+
             padding: 4px 8px;
             /* consistent spacing */
             font-size: 16px;
@@ -124,12 +124,12 @@
                     </th>
                     <th style="text-align: left; padding-right: 2px"> Warning</th>
                 </tr>
-                {% for item in data.values() %}
+                {% for item in data %}
                 {% set job = item.job %}
 
-                {% if item.current_status == '1' %}
+                {% if item.c_status == 'U' %}
                 {% set status = "✅ UP" %}
-                {% elif item.current_status == '0' %}
+                {% elif item.c_status == 'D' %}
                 {% set status = "❌ DOWN" %}
                 {% else %}
                 {% set status = "⚠️ NO DATA" %}
@@ -142,8 +142,8 @@
                     <td>{{ status }}</td>
                     <td>{{ detail }}</td>
                     {% set ns = namespace(i=0) %}
-                    <td>
-                        {% set statusStr = item.range_status %}
+                    <td style="text-align: center;">
+                        {% set statusStr = item.r_status %}
                         {% for char in statusStr %}
                         {% if char == "U" %}
                         ✅

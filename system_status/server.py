@@ -83,58 +83,21 @@ def page_generator(request: Request):
 
     #PROMETHEUS_URL = "http://" + target # override the URL if passed in a different value
     #print(PROMETHEUS_URL) #working
-    current_data = default_access_parsed() # a dict
-    range_data = range_access_parsed() # a list
-    key_list = current_data.keys()
-    for i in range(len(current_data)):
-        if (current_data[f"service_{i}"]["detail"] == range_data[i]["detail"]):
-            current_data[f"service_{i}"]["range_status"] =  range_data[i]["status"]
-            current_data[f"service_{i}"]["warning"] =  range_data[i]["warning"]
-    print(current_data)
+    #current_data = default_access_parsed() # a dict
+    range_data = prometheus_data_parsed() # a list
+    #key_list = current_data.keys()
+    #for i in range(len(range_data)):
+        #if (current_data[f"service_{i}"]["detail"] == range_data[i]["detail"]):
+        #current_data[f"service_{i}"]["range_status"] =  range_data[i]["status"]
+        #current_data[f"service_{i}"]["warning"] =  range_data[i]["warning"]
+    #print(current_data)
 
     return (templates.TemplateResponse
             ("my_template.html",
-             {"request": request, "data": current_data, "fetch_time": fetch_time}))
-
-@app.get("/current_status_raw")
-# return to the client as JSON file
-def default_access():
-    #print(PROMETHEUS_URL) #working
-    """Sends a PromQL query to Prometheus and returns the results."""
-    url = urljoin(args.target, "api/v1/query")
-    print(f"url queried: {url}")
-    params = {'query': "up"}
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status() # Raise an exception for HTTP errors
-        print (response.json()['data']['result'])
-        return response.json()['data']['result'] # return as a dictionary
-    except requests.exceptions.RequestException as e:
-        print(f"Error querying Prometheus: {e}")
-        return None
-
-def default_access_parsed():
-    #debugging
-    #import debug_data
-    #default_list = debug_data.non_input
-    default_list = default_access()
-    parse_dict = {}
-    if not default_list:
-        return {"service_0": {"job": "no job found", "detail": "-", "current_status": "-"}}
-
-    for i in range(len(default_list)):
-        parse_dict[f"service_{i}"] = {
-            "job": default_list[i]["metric"]["job"],
-            "detail": default_list[i]["metric"]["instance"],
-            "current_status": default_list[i]["value"][1]
-        }
-    print(default_list)
-    print(parse_dict)
-    return parse_dict
-
+             {"request": request, "data": range_data, "fetch_time": fetch_time}))
 
 @app.get('/range_status_raw')
-def range_access():
+def get_prometheus_data():
     global now
     now = datetime.now()
     query: str='min_over_time(up{job!=""}[1h])'
@@ -159,19 +122,19 @@ def range_access():
         print(f"Error querying Prometheus: {e}")
         return None
 
-def range_access_parsed():
+def prometheus_data_parsed():
     #debugging
     #import debug_data
     #result = debug_data.special_input
     #result = debug_data.non_input
-    result = range_access()
+    result = get_prometheus_data()
     if not result: # if the result is a falsy value
         return[{"detail": "-", "status": "-"}]
 
     #only do the rest if the input is not None
     #result = debug_data.non_input["data"]["result"]
     #result = debug_data.special_input["data"]["result"]
-    result = range_access()["data"]["result"]
+    result = get_prometheus_data()["data"]["result"]
     #print(result) #working
     #find out the start time string
     #1753161586
@@ -272,10 +235,8 @@ def range_access_parsed():
             warning_str = f"{null_str}"
         #after the for loop, status_str is now holding the status
         #print(warning_str)
-        status_str_list.append({"detail": element["metric"]["instance"], "status":status_str, "warning": warning_str})
-
-
-
+        status_str_list.append({"job": element["metric"]["job"], "detail": element["metric"]["instance"], "c_status": status_str[-1],
+                                "r_status":status_str, "warning": warning_str})
 
     #print(status_str_list)
     return status_str_list
