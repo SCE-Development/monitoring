@@ -122,6 +122,7 @@
                         <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
                         <div style="display: inline">Now</div>
                     </th>
+                    <th style="text-align: left; padding-right: 2px"> Warning</th>
                 </tr>
                 {% for item in data.values() %}
                 {% set job = item.job %}
@@ -159,7 +160,7 @@
                     </td>
 
                     {%set warning = item.warning%}
-                    <td>
+                    <td style = "text-align: left;">
                         {{warning|safe}}
                     </td>
                     {% endfor %}
