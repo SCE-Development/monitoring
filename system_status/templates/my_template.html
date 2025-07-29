@@ -6,7 +6,7 @@
     <title>SCE Service Status</title>
     <style>
         table {
-            border-collapse: collapse;
+            border-collapse: separate;
             margin: 0;
             padding: 0;
             border-spacing: 0;
@@ -17,18 +17,17 @@
         th,
         td {
             margin: 0;
+            text-align: center;
             padding: 4px 8px;
             /* consistent spacing */
-            vertical-align: top;
-            /* or middle */
             font-size: 16px;
             /* keep font sizes consistent */
             line-height: 1.4;
             /* helps alignment consistency */
+            border-bottom: 1px solid #ddd;
         }
         tr{
             /* Adds a 1px solid gray bottom border to each row */
-            border-bottom: 1px solid #ddd;
         }
 
         tr:hover{
@@ -42,8 +41,9 @@
         .sticky-col {
             position: sticky;
             left: 0;
-            background: #f9f9f9; /* or any background to cover overlap */
+            background: #ffffff; /* or any background to cover overlap */
             z-index: 1; /* make sure it stays above other columns */
+            border-right: 1px solid #ddd;
         }
 
         h1{
@@ -99,7 +99,7 @@
 
 <body>
 
-    <div id = "info_container">
+    <div class="sticky-col" id = "info_container" style="border: none;  ">
         <img id="sce_logo" alt="SCE_Logo">
         <h1>How are our services doing ???</h1>
         <h2>Current Time: <span id = "clock"></span></h2>
@@ -110,9 +110,9 @@
     <div id="outside_container">
         <div id="current_data_container">
             <table id="status_table">
-                <tr><th class="sticky-col" style="text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
+                <tr><th class="sticky-col" style="border: none;  text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
                 <tr>
-                    <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
+                    <th class="sticky-col" style=" text-align: left; padding-right: 2px">Job Name</th>
                     <th style="text-align: left; padding-right: 2px">Status</th>
                     <th style="text-align: left; padding-right: 2px">Detail</th>
                     <th>
@@ -156,6 +156,11 @@
                         {% endif %}
                         {% set ns.i = ns.i + 1 %}
                         {% endfor %}
+                    </td>
+
+                    {%set warning = item.warning%}
+                    <td>
+                        {{warning|safe}}
                     </td>
                     {% endfor %}
 

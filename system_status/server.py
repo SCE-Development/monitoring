@@ -89,6 +89,7 @@ def page_generator(request: Request):
     for i in range(len(current_data)):
         if (current_data[f"service_{i}"]["detail"] == range_data[i]["detail"]):
             current_data[f"service_{i}"]["range_status"] =  range_data[i]["status"]
+            current_data[f"service_{i}"]["warning"] =  range_data[i]["warning"]
     print(current_data)
 
     return (templates.TemplateResponse
@@ -161,6 +162,7 @@ def range_access():
 def range_access_parsed():
     #debugging
     #import debug_data
+    #result = debug_data.special_input
     #result = debug_data.non_input
     result = range_access()
     if not result: # if the result is a falsy value
@@ -168,8 +170,9 @@ def range_access_parsed():
 
     #only do the rest if the input is not None
     #result = debug_data.non_input["data"]["result"]
+    #result = debug_data.special_input["data"]["result"]
     result = range_access()["data"]["result"]
-    print(result) #working
+    #print(result) #working
     #find out the start time string
     #1753161586
     #1753244386
@@ -182,7 +185,7 @@ def range_access_parsed():
     if end_str == key_list[-1]:
         print("working") #check if the last key matches the end key of the actual data
 
-    string_list = []
+    status_str_list = []
     for element in result:
         #continue
         status_str = ""
@@ -205,12 +208,77 @@ def range_access_parsed():
             key_list_counter += 1
             value_list_counter += 1
 
+        #calculate the down and null time
+
+        warning_list = {"down": [], "null": []}
+        down_count = 0
+        null_count = 0
+        previous_status = "U"
+        char_index = 0
+
+        for char in status_str:
+            if char == "U": previous_status = "U" #if everything is normal
+            elif char == "D" and previous_status != "D": #new down occurrence
+                previous_status = "D" #update the previous status
+                warning_list["down"].append([key_list[char_index]-3600, key_list[char_index]]) #log the start and end of that entry
+                down_count += 1
+            elif char == "D" and previous_status == "D": #continuous down
+                # no need to update the previous status
+                warning_list["down"][down_count-1][1] = key_list[char_index] #update the end of the last entry
+                #no need to update down count cuz it's continuous
+            elif char == "N" and previous_status != "N": #new null occurrence
+                previous_status = "N" #update the previous status
+                warning_list["null"].append([key_list[char_index]-3600, key_list[char_index]]) #log the start and end of that entry
+                null_count += 1
+            elif char == "N" and previous_status == "N": #continuous null
+                # no need to update the previous status
+                warning_list["null"][down_count-1][1] = key_list[char_index] #update the end of the last entry
+                #no need to update down count cuz it's continuous
+            char_index += 1
+        #print("down: ", down_count, "| ", "null :", null_count, "| ", warning_list)
+
+        #convert the warning_list into warning string to send to the template
+        pacific_tz = ZoneInfo("America/Los_Angeles")
+        warning_str = ""
+        down_str = ""
+        null_str = ""
+        if warning_list["down"]: #if there's any down
+            down_str += "Down between:"
+            for down in warning_list["down"]:
+                down_str += "<br>" # the forbidden html injection hehe
+                #start = int(down[0])
+                #end = int(down[1])
+                start = datetime.fromtimestamp(int(down[0]), pacific_tz)
+                start_time = start.strftime("%m-%d %H:%M")
+                end = datetime.fromtimestamp(int(down[1]), pacific_tz)
+                end_time = end.strftime("%m-%d %H:%M")
+                down_str += f" ⚡ {start_time} - {end_time}"
+        if warning_list["null"]: # if there's any null data
+            null_str += "No data between:"
+            for null in warning_list["null"]:
+                null_str += "<br>" # the forbidden html injection hehe
+                #start = int(down[0])
+                #end = int(down[1])
+                start = datetime.fromtimestamp(int(null[0]), pacific_tz)
+                start_time = start.strftime("%m-%d %H:%M")
+                end = datetime.fromtimestamp(int(null[1]), pacific_tz)
+                end_time = end.strftime("%m-%d %H:%M")
+                null_str += f" ⚡ {start_time} - {end_time}"
+
+        #combine the two strings
+        if down_str:
+            warning_str = f"{down_str}<br>{null_str}"
+        else:
+            warning_str = f"{null_str}"
         #after the for loop, status_str is now holding the status
-        string_list.append({"detail": element["metric"]["instance"], "status":status_str})
+        #print(warning_str)
+        status_str_list.append({"detail": element["metric"]["instance"], "status":status_str, "warning": warning_str})
 
 
-    print(string_list)
-    return string_list
+
+
+    #print(status_str_list)
+    return status_str_list
 
 if __name__ == "__main__":
     #print("service is running")
