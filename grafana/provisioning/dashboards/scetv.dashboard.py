@@ -30,7 +30,17 @@ wrapper.AddPanel(
             expression='http_request_count_total{endpoint!=\"/metrics\"}',
             legend='{{endpoint}}'
     )],
-    panel_type_enum=PanelType.BARGAUGE
+    unit=NUMBER_FORMAT,
+    panel_type_enum=PanelType.BARGAUGE,
+    extraJson={
+        'options': {
+            'fieldOptions': {
+                "calcs": [
+                    "lastNotNull"
+                ],
+            },
+        }
+    }
 )
 
 wrapper.AddPanel(
