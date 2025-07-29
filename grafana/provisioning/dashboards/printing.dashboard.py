@@ -1,62 +1,86 @@
-from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
-from grafanalib.formatunits import PERCENT_UNIT, SECONDS
+from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
+from grafanalib.formatunits import PERCENT_UNIT, SECONDS 
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
-dashboard_wrapper = SceGrafanalibWrapper(title="Quasar")
+from common import PROMETHEUS_DATASOURCE_NAME
 
-dashboard_wrapper.AddPanel(
-    title="Ink Level",
-    unit=PERCENT_UNIT,
+wrapper = SceGrafanalibWrapper(title='Quasar')
+
+wrapper.AddPanel(
+    title='Ink Level',
     queries=[
         ExpressionAndLegendPair(
-            expression='snmp_metric{name="ink_level",ip="192.168.69.149"} / ignoring(name) group_left() snmp_metric{name="ink_capacity",ip="192.168.69.149"}',
-            legend='Left Printer {{ip}}'
+            'snmp_metric{name=\"ink_level\",ip=\"192.168.69.149\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.149\"}',
+            'Left Printer {{ip}}'
         ),
         ExpressionAndLegendPair(
-            expression='snmp_metric{name="ink_level",ip="192.168.69.208"} / ignoring(name) group_left() snmp_metric{name="ink_capacity",ip="192.168.69.208"}',
-            legend='Right Printer {{ip}}'
+            'snmp_metric{name=\"ink_level\",ip=\"192.168.69.208\"} / ignoring(name) group_left() snmp_metric{name=\"ink_capacity\",ip=\"192.168.69.208\"}',
+            'Right Printer {{ip}}'
         )
-    ]
+    ],
+    unit=PERCENT_UNIT,
+    dydt=False,
+    lineWidth=2,
+    stacking={'group': 'A','mode': 'none'},
+    # tooltipMode='all',
+    # tooltipSort='desc',
 )
 
-dashboard_wrapper.AddPanel(
-    title="# of Pages Printed",
+wrapper.AddPanel(
+    title='# of Pages Printed',
     queries=[
         ExpressionAndLegendPair(
-            expression='snmp_metric{name="page_count"}',
-            legend='{{ip}}'
+            'snmp_metric{name=\"page_count\"}',
+            '{{ip}}',
         )
-    ]
+    ],
+    dydt=False,
+    lineWidth=2,
+    # tooltipMode='all',
+    # tooltipSort='desc',
 )
 
-dashboard_wrapper.AddPanel(
-    title="SNMP Request Duration",
+wrapper.AddPanel(
+    title='SNMP Request Duration',
     unit=SECONDS,
     queries=[
         ExpressionAndLegendPair(
-            expression='snmp_request_duration_sum/snmp_request_duration_count',
-            legend='__auto'
+            'snmp_request_duration_sum/snmp_request_duration_count',
+            '__auto',
         )
-    ]
+    ],
+    dydt=False,
+    lineWidth=2,
+    # tooltipMode='all',
+    # tooltipSort='desc',
 )
 
-dashboard_wrapper.AddPanel(
-    title="Print Jobs Recieved",
+wrapper.AddPanel(
+    title='Print Jobs Recieved',
     queries=[
         ExpressionAndLegendPair(
-            expression='rate(print_jobs_recieved_total[$__rate_interval])',
-            legend='__auto'
+            'rate(print_jobs_recieved_total[$__rate_interval])',
+            '__auto',
         )
-    ]
+    ],
+    dydt=False,
+    lineWidth=2,
+    # tooltipMode='all',
+    # tooltipSort='desc',
 )
 
-dashboard_wrapper.AddPanel(
-    title="Active SNMP Errors",
+wrapper.AddPanel(
+    title='Active SNMP Errors',
     queries=[
         ExpressionAndLegendPair(
-            expression='snmp_error == 1',
-            legend='{{ip}} {{name}}'
+            'snmp_error == 1',
+            '{{ip}} {{name}}',
         )
-    ]
+    ],
+    dydt=False,
+    lineWidth=2,
+    # tooltipMode='all',
+    # tooltipSort='desc',
 )
 
-dashboard = dashboard_wrapper.Render()
+dashboard = wrapper.Render()
