@@ -85,7 +85,6 @@ def page_generator(request: Request):
     #print(PROMETHEUS_URL) #working
     current_data = default_access_parsed() # a dict
     range_data = range_access_parsed() # a list
-    key_list = current_data.keys()
     for i in range(len(current_data)):
         if (current_data[f"service_{i}"]["detail"] == range_data[i]["detail"]):
             current_data[f"service_{i}"]["range_status"] =  range_data[i]["status"]
@@ -95,9 +94,7 @@ def page_generator(request: Request):
             ("my_template.html",
              {"request": request, "data": current_data, "fetch_time": fetch_time}))
 
-@app.get("/current_status_raw")
-# return to the client as JSON file
-def default_access():
+def default_access_parsed():
     #print(PROMETHEUS_URL) #working
     """Sends a PromQL query to Prometheus and returns the results."""
     url = urljoin(args.target, "api/v1/query")
@@ -105,18 +102,13 @@ def default_access():
     params = {'query': "up"}
     try:
         response = requests.get(url, params=params)
+        print ("default_access_parsed:", response.json())
         response.raise_for_status() # Raise an exception for HTTP errors
-        print (response.json()['data']['result'])
-        return response.json()['data']['result'] # return as a dictionary
+        default_list = response.json()['data']['result']
     except requests.exceptions.RequestException as e:
-        print(f"Error querying Prometheus: {e}")
-        return None
 
-def default_access_parsed():
-    #debugging
-    #import debug_data
-    #default_list = debug_data.non_input
-    default_list = default_access()
+        return []
+
     parse_dict = {}
     if not default_list:
         return {"service_0": {"job": "no job found", "detail": "-", "current_status": "-"}}
@@ -152,6 +144,7 @@ def range_access():
     }
     try:
         response = requests.get(url, params=params)
+        # print ("range_access", response.json())
         response.raise_for_status() # Raise an exception for HTTP errors
         return response.json() # return as a dictionary
     except requests.exceptions.RequestException as e:
@@ -159,9 +152,6 @@ def range_access():
         return None
 
 def range_access_parsed():
-    #debugging
-    #import debug_data
-    #result = debug_data.non_input
     result = range_access()
     if not result: # if the result is a falsy value
         return[{"detail": "-", "status": "-"}]
