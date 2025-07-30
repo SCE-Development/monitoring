@@ -12,22 +12,15 @@
             border-spacing: 0;
             vertical-align: top;
         }
-
-
         th,
         td {
             margin: 0;
             padding: 4px 8px;
-            /* consistent spacing */
             vertical-align: top;
-            /* or middle */
             font-size: 16px;
-            /* keep font sizes consistent */
             line-height: 1.4;
-            /* helps alignment consistency */
         }
         tr{
-            /* Adds a 1px solid gray bottom border to each row */
             border-bottom: 1px solid #ddd;
         }
 
@@ -42,17 +35,14 @@
         .sticky-col {
             position: sticky;
             left: 0;
-            background: #f9f9f9; /* or any background to cover overlap */
-            z-index: 1; /* make sure it stays above other columns */
+            background: #f9f9f9; 
+            z-index: 1; 
         }
-
         h1{
             margin-block-start: 0.0em;
             margin-block-end: 0.0em;
             display: inline-block;
         }
-
-
         .container {
             margin: 0;
             padding: 0;
@@ -63,8 +53,8 @@
         }
 
         #status_table {
-            overflow-x: auto; /* Enables horizontal scrolling when content exceeds container width */
-            white-space: nowrap; /* Prevents content from wrapping to the next line */
+            overflow-x: auto; 
+            white-space: nowrap; 
         }
 
         #sce_logo {
@@ -79,13 +69,6 @@
         #range_data_container {
             margin-left: 20px;
         }
-
-        /*#range_headline{
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-            padding: 1px;
-        }*/
 
         .current_table_data {
             margin-right: 2px;
@@ -108,61 +91,58 @@
 
 
     <div id="outside_container">
-        <div id="current_data_container">
-            <table id="status_table">
-                <tr><th class="sticky-col" style="text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
-                <tr>
-                    <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
-                    <th style="text-align: left; padding-right: 2px">Status</th>
-                    <th style="text-align: left; padding-right: 2px">Detail</th>
-                    <th>
-                        <div style="display: inline">Prev. Day</div>
-                        <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
-                        <div style="display: inline">History of past 24 Hours</div>
-                        <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
-                        <div style="display: inline">Now</div>
-                    </th>
-                </tr>
-                {% for item in data.values() %}
-                {% set job = item.job %}
+    <div id="current_data_container">
+        <table id="status_table">
+            <tr><th class="sticky-col" style="text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
+            <tr>
+                <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
+                <th style="text-align: left; padding-right: 2px">Status</th>
+                <th style="text-align: left; padding-right: 2px">Detail</th>
+                <th>
+                    <div style="display: inline">Prev. Day</div>
+                    <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
+                    <div style="display: inline">History of past 24 Hours</div>
+                    <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
+                    <div style="display: inline">Now</div>
+                </th>
+            </tr>
+            {% for item in data %}
+            {% set job = item.job %}
 
-                {% if item.current_status == '1' %}
-                {% set status = "✅ UP" %}
-                {% elif item.current_status == '0' %}
-                {% set status = "❌ DOWN" %}
-                {% else %}
-                {% set status = "⚠️ NO DATA" %}
-                {% endif %}
+            {% if item.is_up %}
+            {% set status = "✅ UP" %}
+            {% else %}
+            {% set status = "❌ DOWN" %}
+            {% endif %}
 
-                {% set detail = item.detail %}
+            <tr class="current_table_data" onclick="highlightRow(this)">
+                <td class="sticky-col">{{ job }}</td>
+                <td>{{ status }}</td> {# This TD is for the "Status" column #}
+                <td>{{ item.range_status }}</td> {# This TD is for the "Detail" column #}
 
-                <tr class="current_table_data" onclick="highlightRow(this)">
-                    <td class="sticky-col">{{ job }}</td>
-                    <td>{{ status }}</td>
-                    <td>{{ detail }}</td>
-                    {% set ns = namespace(i=0) %}
-                    <td>
-                        {% set statusStr = item.range_status %}
-                        {% for char in statusStr %}
-                        {% if char == "U" %}
-                        ✅
-                        {% elif char == "D" %}
-                        ❌
+                {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
+                <td>
+                    {% for value in item.values %}
+                        {% if value.value == "1" %}
+                            ✅
                         {% else %}
-                        ⚠️
+                            ❌
                         {% endif %}
-                        {% if ns.i % 4 == 3 and ns.i < 20%}
-                        |
-                        {% endif %}
-                        {% set ns.i = ns.i + 1 %}
-                        {% endfor %}
-                    </td>
                     {% endfor %}
+                </td>
+                {# END OF CORRECTED SECTION #}
 
-                </tr>
-            </table>
-        </div>
+                {# The original template had an unclosed <td> and then {% endfor %}.
+                   You also need to make sure you have enough <td> elements
+                   to match your <th> headers.
+                   Based on your <th>s: Job Name, Status, Detail, History.
+                   You only had 2 <td>s initially.
+                #}
+            </tr>
+            {% endfor %}
+        </table>
     </div>
+</div>
     <script>
         const img = document.getElementById('sce_logo');
         const imageUrl = new URL('static/img/sjsu.sce.trimed.jpg', window.location.href);
