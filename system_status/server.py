@@ -64,7 +64,7 @@ def get_args() -> argparse.Namespace:
 
 args = get_args()
 
-
+#@app.get('/range_status_raw') #debug purpose
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
