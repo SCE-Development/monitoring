@@ -97,7 +97,6 @@
             <tr>
                 <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
                 <th style="text-align: left; padding-right: 2px">Status</th>
-                <th style="text-align: left; padding-right: 2px">Detail</th>
                 <th>
                     <div style="display: inline">Prev. Day</div>
                     <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
@@ -118,7 +117,6 @@
             <tr class="current_table_data" onclick="highlightRow(this)">
                 <td class="sticky-col">{{ job }}</td>
                 <td>{{ status }}</td> {# This TD is for the "Status" column #}
-                <td>{{ item.range_status }}</td> {# This TD is for the "Detail" column #}
 
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
@@ -145,7 +143,7 @@
 </div>
     <script>
         const img = document.getElementById('sce_logo');
-        const imageUrl = new URL('static/img/sjsu.sce.trimed.jpg', window.location.href);
+        const imageUrl = new URL('static/img/sce.jpg', window.location.href);
         img.src = imageUrl.href;
 
         const timeElement = document.getElementById("clock");
