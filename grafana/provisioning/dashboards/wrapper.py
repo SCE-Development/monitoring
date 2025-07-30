@@ -91,6 +91,8 @@ class SceGrafanalibWrapper:
         showPoints=None,
         stacking=None,
         extraJson=None,
+        tooltipMode='single',
+        tooltipSort=None,
     ):
         targets = []
         iterator = RefIdGenerator()
@@ -142,6 +144,8 @@ class SceGrafanalibWrapper:
                 y=self.current_y,
             ),
             extraJson=extraJson,
+            tooltipMode=tooltipMode,
+            tooltipSort=tooltipSort
         )
         if isinstance(panel, TimeSeries):
             if fillOpacity is not None:
