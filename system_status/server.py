@@ -68,6 +68,7 @@ args = get_args()
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
+    the response json looks like:
     {
         "status": "success",
         "data": {
