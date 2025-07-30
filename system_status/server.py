@@ -101,7 +101,6 @@ def get_prometheus_data() -> list[PrometheusData]:
         response = requests.get(url, params=params)
         response.raise_for_status()  # Raise an exception for HTTP errors
         response_json = response.json()
-        print(response_json)
         result_list = response_json.get("data", {}).get("result", [])
 
         for service_dict in result_list:
