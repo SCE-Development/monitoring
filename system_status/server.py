@@ -65,7 +65,7 @@ def get_args() -> argparse.Namespace:
 args = get_args()
 
 
-def get_prometheus_data():# -> list[PrometheusData]:
+def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
     the response json looks like:
@@ -92,8 +92,8 @@ def get_prometheus_data():# -> list[PrometheusData]:
     now = datetime.datetime.now()
     params = {
         "query": 'min_over_time(up{job!=""}[1h])',
-        "start": str((now - datetime.timedelta(hours=23)).timestamp()),
-        "end": str(now.timestamp()),
+        "start": int((now - datetime.timedelta(hours=23)).timestamp()),
+        "end": int(now.timestamp()),
         "step": "1h",
     }
     result = []
@@ -101,7 +101,7 @@ def get_prometheus_data():# -> list[PrometheusData]:
         response = requests.get(url, params=params)
         response.raise_for_status()  # Raise an exception for HTTP errors
         response_json = response.json()
-        result_list = response_json["data"]["result"]
+        result_list = response_json.get("data", {}).get("result", [])
 
         for service_dict in result_list:
             maybe_instance = service_dict.get("metric", {}).get(
