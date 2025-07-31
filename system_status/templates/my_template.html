@@ -35,7 +35,7 @@
         .sticky-col {
             position: sticky;
             left: 0;
-            background: #f9f9f9; 
+            background: #ffffff;
             z-index: 1; 
         }
         h1{
@@ -97,6 +97,7 @@
             <tr>
                 <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
                 <th style="text-align: left; padding-right: 2px">Status</th>
+                <th style="text-align: left; padding-right: 2px">Detail</th>
                 <th>
                     <div style="display: inline">Prev. Day</div>
                     <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
@@ -113,11 +114,11 @@
             {% else %}
             {% set status = "❌ DOWN" %}
             {% endif %}
-
+            {% set detail = item.instance %}
             <tr class="current_table_data" onclick="highlightRow(this)">
                 <td class="sticky-col">{{ job }}</td>
                 <td>{{ status }}</td> {# This TD is for the "Status" column #}
-
+                <td>{{ detail }}</td>
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
                     {% for value in item.values %}
