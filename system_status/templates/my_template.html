@@ -127,6 +127,10 @@
                         {% else %}
                             ❌
                         {% endif %}
+                        {# the below if-statement adds a vertical line for every four entries #}
+                        {% if (not loop.index % 4) and loop.index < 24%}
+                            |
+                        {% endif %}
                     {% endfor %}
                 </td>
                 {# END OF CORRECTED SECTION #}
