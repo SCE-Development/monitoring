@@ -121,17 +121,15 @@
                 <td>{{ detail }}</td>
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
-                    {% set ns = namespace(i=0) %}
                     {% for value in item.values %}
                         {% if value.value == "1" %}
                             ✅
                         {% else %}
                             ❌
                         {% endif %}
-                        {% if ns.i % 4 == 3 and ns.i < 20%}
-                        |
+                        {% if (not loop.index % 4) and loop.index < 24%}
+                            |
                         {% endif %}
-                        {% set ns.i = ns.i + 1 %}
                     {% endfor %}
                 </td>
                 {# END OF CORRECTED SECTION #}
