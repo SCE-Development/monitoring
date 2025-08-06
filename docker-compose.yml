@@ -92,7 +92,6 @@ services:
       - '/:/host:ro,rslave'
   portainer:
     image: portainer/portainer-ce:lts
-    container_name: portainer
     command: -H unix:///var/run/docker.sock --no-auth --base-url=/portainer
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
