@@ -64,7 +64,6 @@ def get_args() -> argparse.Namespace:
 
 args = get_args()
 
-@app.get("/page_raw")
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
@@ -89,10 +88,11 @@ def get_prometheus_data() -> list[PrometheusData]:
     }
     """
     url = urljoin(args.target, "api/v1/query_range")
-    now = datetime.datetime(2025, 8, 6, 11, 38, 49)
-    #now = datetime.datetime.now()
+    #the below date has a rare data for testing purpose
+    #now = datetime.datetime(2025, 8, 6, 11, 38, 49)
+    now = datetime.datetime.now()
     params = {
-        "query": '(min_over_time(up{job!=""}[1h])) or (vector(-1) * on(instance, job) ((up{job!=""} * 0) + 1))',
+        "query": '(min_over_time(up{job!=""}[1h]))',
         "start": int((now - datetime.timedelta(hours=23)).timestamp()),
         "end": int(now.timestamp()),
         "step": "1h",
