@@ -167,7 +167,7 @@
             // Format the string with leading zeroes
             const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
             const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            timeElement.innerText = `${dayStr} ${clockStr} - PDT/PST`;
+            timeElement.innerText = `${dayStr} ${clockStr} - Local Time`;
         }
 
         // Call initially to display time immediately
