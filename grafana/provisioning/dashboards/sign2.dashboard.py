@@ -59,4 +59,13 @@ wrapper.AddPanel(
     ],
 )
 
+wrapper.AddPanel(
+    title="Container Uptime",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - process_start_time_seconds{job="sign2"}',
+        )
+    ],
+)
+
 dashboard = wrapper.Render()
