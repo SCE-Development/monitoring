@@ -1,5 +1,5 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
-from grafanalib.formatunits import PERCENT_UNIT, SECONDS, NUMBER_FORMAT, TRUE_FALSE
+from grafanalib.formatunits import SECONDS
 
 from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
@@ -10,7 +10,8 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'time() - sign_last_updated',
-        )
+            unit=SECONDS
+        ),
     ],
 )
 
@@ -36,7 +37,7 @@ wrapper.AddPanel(
     title="Endpoint hits",
     queries=[
         ExpressionAndLegendPair(
-            'endpoint_hits',
+            'endpoint_hits{endpoint!="/metrics"}',
         )
     ],
 )
@@ -64,6 +65,7 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'time() - process_start_time_seconds{job="sce-sign2"}',
+            unit=SECONDS
         )
     ],
 )
