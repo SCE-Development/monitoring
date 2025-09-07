@@ -2,7 +2,7 @@ from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
 
 from grafanalib.formatunits import SECONDS, NUMBER_FORMAT
 
-wrapper = SceGrafanalibWrapper("SCEta")
+wrapper = SceGrafanalibWrapper("SCE Transit Page")
 wrapper.AddPanel(
     "Cache Update Errors",
     [ExpressionAndLegendPair("cache_update_errors_total", "__auto")],
