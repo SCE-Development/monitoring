@@ -10,9 +10,9 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'time() - sign_last_updated',
-            unit=SECONDS
         ),
     ],
+    unit=SECONDS
 )
 
 wrapper.AddPanel(
@@ -37,7 +37,8 @@ wrapper.AddPanel(
     title="Endpoint hits",
     queries=[
         ExpressionAndLegendPair(
-            'endpoint_hits{endpoint!="/metrics"}',
+            'endpoint_hits_total{job="sce-sign2", path!="/metrics", path!="/apple-touch-icon-precomposed.png", path!="/apple-touch-icon.png", path!="/favicon.ico"}',
+            "{{code}} {{path}}",
         )
     ],
 )
@@ -46,7 +47,8 @@ wrapper.AddPanel(
     title="LeetCode API Response Codes",
     queries=[
         ExpressionAndLegendPair(
-            'leetcode_api_response_codes',
+            'leetcode_api_response_codes_total',
+            "{{code}}",
         )
     ],
 )
@@ -55,7 +57,7 @@ wrapper.AddPanel(
     title="LeetCode API latency",
     queries=[
         ExpressionAndLegendPair(
-            'leetcode_api_latency',
+            'leetcode_api_latency_sum / leetcode_api_latency_count',
         )
     ],
 )
@@ -65,9 +67,9 @@ wrapper.AddPanel(
     queries=[
         ExpressionAndLegendPair(
             'time() - process_start_time_seconds{job="sce-sign2"}',
-            unit=SECONDS
         )
     ],
+    unit=SECONDS
 )
 
 dashboard = wrapper.Render()
