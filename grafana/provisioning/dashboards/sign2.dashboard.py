@@ -37,7 +37,7 @@ wrapper.AddPanel(
     title="Endpoint hits",
     queries=[
         ExpressionAndLegendPair(
-            'endpoint_hits_total{job="sce-sign2", path!="/metrics", path!="/apple-touch-icon-precomposed.png", path!="/apple-touch-icon.png", path!="/favicon.ico"}',
+            r'endpoint_hits_total{job="sce-sign2", path!~"(?:.*[.]png|.*[.]ico|/metrics)"}',
             "{{code}} {{path}}",
         )
     ],
