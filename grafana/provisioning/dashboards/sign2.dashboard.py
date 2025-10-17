@@ -9,7 +9,7 @@ wrapper.AddPanel(
     title="Sign last updated",
     queries=[
         ExpressionAndLegendPair(
-            'time() - sign_last_updated',
+            'time() - sign_last_updated{job="sce-sign2"}',
         ),
     ],
     unit=SECONDS
@@ -19,7 +19,7 @@ wrapper.AddPanel(
     title="Sign update error",
     queries=[
         ExpressionAndLegendPair(
-            'sign_update_error'
+            'sign_update_error{job="sce-sign2"}'
         )
  ],
 )
@@ -28,7 +28,7 @@ wrapper.AddPanel(
     title="LeetCode API Error",
     queries=[
         ExpressionAndLegendPair(
-            'leetcode_api_error'
+            'leetcode_api_error{job="sce-sign2"}'
         )
  ],
 )
@@ -47,7 +47,7 @@ wrapper.AddPanel(
     title="LeetCode API Response Codes",
     queries=[
         ExpressionAndLegendPair(
-            'leetcode_api_response_codes_total',
+            'leetcode_api_response_codes_total{job="sce-sign2"}',
             "{{code}}",
         )
     ],
@@ -57,7 +57,7 @@ wrapper.AddPanel(
     title="LeetCode API latency",
     queries=[
         ExpressionAndLegendPair(
-            'leetcode_api_latency_sum / leetcode_api_latency_count',
+            'leetcode_api_latency_sum / leetcode_api_latency_count{job="sce-sign2"}',
         )
     ],
 )
