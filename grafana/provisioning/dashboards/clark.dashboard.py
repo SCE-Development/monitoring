@@ -53,4 +53,24 @@ wrapper.AddPanel(
     ],
     unit=NUMBER_FORMAT,
 )
+wrapper.DefineRow("Emails")
+wrapper.AddPanel(
+    title="Emails sent",
+    queries=[
+        ExpressionAndLegendPair(
+            'email_sent{job="clark-email"}',
+            "{{type}}",
+        )
+    ],
+    unit=NUMBER_FORMAT,
+)
+wrapper.AddPanel(
+    title="Refresh token last updated",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - google_cloud_refresh_token_last_updated{job="clark-email"}',
+        )
+    ],
+    unit=NUMBER_FORMAT,
+)
 dashboard = wrapper.Render()
