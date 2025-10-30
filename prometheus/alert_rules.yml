@@ -15,6 +15,16 @@ groups:
           summary: Container "{{ $labels.name }}" not running
           description: container "{{ $labels.name }}" has not been seen by cAdvisor for
             more than {{ $value | printf "%.0f" }} seconds
+      - alert: ClarkEndpointNotLoaded
+        expr: |
+          error_loading_express_route == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Clark endpoint "{{ $labels.endpointName }}" did not load on server startup
+          description: The route "{{ $labels.endpointName }}" is signaling that it did not load.
+            Please connect to clark VM and check docker logs.
       - alert: SshTunnelDown
         expr: time() - last_health_check_request > 600
         for: 1m
