@@ -1,5 +1,5 @@
 from grafanalib.core import Dashboard, Templating, Stat, TimeSeries, Target, GridPos
-from grafanalib.formatunits import SECONDS, TRUE_FALSE, DAYS
+from grafanalib.formatunits import SECONDS, TRUE_FALSE
 
 from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
 
@@ -86,7 +86,7 @@ wrapper.AddPanel(
             legend='{{job}}',
     )],
     panel_type_enum=PanelType.STAT,
-    unit=DAYS,
+    unit=SECONDS,
 )
 
 dashboard = wrapper.Render()
