@@ -83,10 +83,10 @@ wrapper.AddPanel(
 )
 
 wrapper.AddPanel(
-    title="WAV Last Updated",
+    title="WAV Last Generated",
     queries=[
         ExpressionAndLegendPair(
-            'time() - wav_last_updated{job="sce-sign2"}',
+            'time() - wav_last_generated{job="sce-sign2"}',
         )
     ],
     unit=SECONDS
