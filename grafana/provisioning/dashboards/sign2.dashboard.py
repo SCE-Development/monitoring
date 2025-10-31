@@ -76,7 +76,7 @@ wrapper.AddPanel(
     title="WAV Last Sent",
     queries=[
         ExpressionAndLegendPair(
-            'wav_last_sent{job="sce-sign2"}',
+            'time() - wav_last_sent{job="sce-sign2"}',
         )
     ],
     unit=SECONDS
