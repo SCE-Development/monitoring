@@ -72,4 +72,24 @@ wrapper.AddPanel(
     unit=SECONDS
 )
 
+wrapper.AddPanel(
+    title="WAV Last Sent",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - wav_last_sent{job="sce-sign2"}',
+        )
+    ],
+    unit=SECONDS
+)
+
+wrapper.AddPanel(
+    title="WAV Last Updated",
+    queries=[
+        ExpressionAndLegendPair(
+            'time() - wav_last_updated{job="sce-sign2"}',
+        )
+    ],
+    unit=SECONDS
+)
+
 dashboard = wrapper.Render()
