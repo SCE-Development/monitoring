@@ -48,7 +48,7 @@ wrapper.AddPanel(
     unit=SECONDS,
     queries=[
         ExpressionAndLegendPair(
-            expression='time() - process_start_time_seconds{job=\"sce-tv\"}',
+            expression='time() - process_start_time_seconds{job=\"SCE-tv\"}',
             legend='{{job}}'
         )
     ],
@@ -71,7 +71,7 @@ wrapper.AddPanel(
     unit=BITS_SEC,
     queries=[
         ExpressionAndLegendPair(
-            expression='data_downloaded_total{job="sce-tv"} * 8 / download_time_sum',
+            expression='data_downloaded_total{job="SCE-tv"} * 8 / download_time_sum',
             legend='__auto'
         )
     ],
@@ -137,7 +137,7 @@ wrapper.AddPanel(
     unit=NUMBER_FORMAT,
     queries=[
         ExpressionAndLegendPair(
-            expression='cache_size{job="sce-tv"}',
+            expression='cache_size{job="SCE-tv"}',
             legend='__auto'
         )
     ],
@@ -148,11 +148,11 @@ wrapper.AddPanel(
     unit=SHORT,
     queries=[
         ExpressionAndLegendPair(
-            expression='receive_stream_running{job="sce-tv-pi"}',
+            expression='receive_stream_running{job="SCE-tv-pi"}',
             legend='{{job}}'
         ),
         ExpressionAndLegendPair(
-            expression='stream_state{job="sce-tv"}',
+            expression='stream_state{job="SCE-tv"}',
             legend='{{video_type}}'
         ),
     ],

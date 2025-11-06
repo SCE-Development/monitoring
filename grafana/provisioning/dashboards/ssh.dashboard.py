@@ -13,7 +13,7 @@ time_since_ssh_overrides=[
                     "options": {
                         "mode": "exclude",
                         "names": [
-                            "sce-printer"
+                            "SCE-printer"
                         ],
                         "prefix": "All except:",
                         "readOnly": True
@@ -65,7 +65,7 @@ wrapper.AddPanel(
     title='Container Health',
     queries=[
         ExpressionAndLegendPair(
-            expression='up{job=~"led-sign|delen|sce-printer"}',
+            expression='up{job=~"led-sign|delen|SCE-printer"}',
             legend='{{job}}',
         ),
         ExpressionAndLegendPair(
@@ -82,7 +82,7 @@ wrapper.AddPanel(
     title='Container Uptime',
     queries=[
         ExpressionAndLegendPair(
-            expression='time() - process_start_time_seconds{job=~\"led-sign|delen|sce-printer\"}',
+            expression='time() - process_start_time_seconds{job=~\"led-sign|delen|SCE-printer\"}',
             legend='{{job}}',
     )],
     panel_type_enum=PanelType.STAT,

@@ -87,7 +87,7 @@ groups:
           summary: The printer has no more ink
           description: Percent is 0
       - alert: StreamNotBeingReceived
-        expr: receive_stream_running{job="sce-tv-pi"} != 1
+        expr: receive_stream_running{job="SCE-tv-pi"} != 1
         for: 1m
         labels:
           severity: critical

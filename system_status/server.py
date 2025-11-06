@@ -90,7 +90,7 @@ def get_prometheus_data() -> list[PrometheusData]:
                 {
                     "metric": {
                         "instance": "192.168.69.141:8000",
-                        "job": "sce-tv-pi"
+                        "job": "SCE-tv-pi"
                     },
                     "values": [
                         [1753591741, "1"],
