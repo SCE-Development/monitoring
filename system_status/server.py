@@ -17,12 +17,12 @@ from fastapi.staticfiles import StaticFiles
 
 @dataclass
 class TimestampAndValuePair:
-    timestamp: datetime.datetime
+    timestamp: str
     value: str
 
     def to_dict(self):
         return {
-            "timestamp": self.timestamp.isoformat(),
+            "timestamp": self.timestamp,
             "value": self.value
         }
 
