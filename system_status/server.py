@@ -20,6 +20,12 @@ class TimestampAndValuePair:
     timestamp: datetime.datetime
     value: str
 
+    def to_dict(self):
+        return {
+            "timestamp": self.timestamp.isoformat(),
+            "value": self.value
+        }
+
 
 @dataclass
 class PrometheusData:
@@ -28,6 +34,13 @@ class PrometheusData:
     is_up: bool
     values: List[TimestampAndValuePair]
 
+    def to_dict(self):
+        return {
+            "instance": self.instance,
+            "job": self.job,
+            "is_up": self.is_up,
+            "values": [v.to_dict() for v in self.values]
+        }
 
 app = FastAPI()
 
@@ -139,7 +152,7 @@ def page_generator(request: Request):
     fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S")
     data = get_prometheus_data()
     if "json" in request.query_params:
-        return JSONResponse(content=data)
+        return JSONResponse(content=[d.to_dict() for d in data])
 
     return templates.TemplateResponse(
         "my_template.html", {"request": request, "data": data, "fetch_time": fetch_time}
