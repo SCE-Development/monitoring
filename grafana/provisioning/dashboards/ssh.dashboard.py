@@ -89,4 +89,13 @@ wrapper.AddPanel(
     unit=SECONDS,
 )
 
+wrapper.AddPanel(
+    title='[From Clark] SSH Tunnel Status',
+    queries=[
+        ExpressionAndLegendPair(
+            expression='connection_status{instance="keep-ssh-tunnel-open:8000"}',
+    )],
+    unit=TRUE_FALSE,
+)
+
 dashboard = wrapper.Render()
