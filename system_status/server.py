@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import urljoin
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -138,6 +138,8 @@ def page_generator(request: Request):
 
     fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S")
     data = get_prometheus_data()
+    if "json" in request.query_params:
+        return JSONResponse(content=data)
 
     return templates.TemplateResponse(
         "my_template.html", {"request": request, "data": data, "fetch_time": fetch_time}
