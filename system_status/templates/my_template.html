@@ -124,8 +124,10 @@
                     {% for value in item.values %}
                         {% if value.value == "1" %}
                             ✅
-                        {% else %}
+                        {% elif value.value == "0" %}
                             ❌
+                        {% else %}
+                            ⚠️
                         {% endif %}
                         {# the below if-statement adds a vertical line for every four entries #}
                         {% if (not loop.index % 4) and loop.index < 24%}
@@ -165,7 +167,7 @@
             // Format the string with leading zeroes
             const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
             const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            timeElement.innerText = `${dayStr} ${clockStr} - PDT/PST`;
+            timeElement.innerText = `${dayStr} ${clockStr} - Local Time`;
         }
 
         // Call initially to display time immediately

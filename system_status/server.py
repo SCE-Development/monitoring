@@ -77,7 +77,6 @@ def get_args() -> argparse.Namespace:
 
 args = get_args()
 
-
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
@@ -102,9 +101,11 @@ def get_prometheus_data() -> list[PrometheusData]:
     }
     """
     url = urljoin(args.target, "api/v1/query_range")
+    #the below date has a rare data for testing purpose
+    #now = datetime.datetime(2025, 8, 6, 11, 38, 49)
     now = datetime.datetime.now()
     params = {
-        "query": 'min_over_time(up{job!=""}[1h])',
+        "query": '(min_over_time(up{job!=""}[1h]))',
         "start": int((now - datetime.timedelta(hours=23)).timestamp()),
         "end": int(now.timestamp()),
         "step": "1h",
@@ -116,6 +117,12 @@ def get_prometheus_data() -> list[PrometheusData]:
         response_json = response.json()
         result_list = response_json.get("data", {}).get("result", [])
 
+        key_list = [] # make a list of expected timestamps
+        for i in range(24):
+            key_list.append(int(now.timestamp()) - (23 - i) * 3600)
+            key_list[i] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(key_list[i]))
+        #print(key_list)
+
         for service_dict in result_list:
             maybe_instance = service_dict.get("metric", {}).get(
                 "instance", "NO INSTANCE AVAILABLE"
@@ -124,9 +131,15 @@ def get_prometheus_data() -> list[PrometheusData]:
             maybe_values = service_dict.get("values", [])
 
             timestamps_and_values = []
-            for epoch_time, value in maybe_values:
-                timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch_time))
-                timestamps_and_values.append(TimestampAndValuePair(timestamp, value))
+            value_ptr = 0
+            for i in range(len(key_list)):
+                timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(maybe_values[value_ptr][0]))
+                if timestamp == key_list[i]:
+                    timestamps_and_values.append(TimestampAndValuePair(key_list[i], maybe_values[value_ptr][1]))
+                    value_ptr += 1
+                else:
+                    #fill in the gaps
+                    timestamps_and_values.append(TimestampAndValuePair(key_list[i], -1))
 
             # the service is up if the maximum timestamp's value is "1"
             # prometheus returns data with the greatest timestamp last
