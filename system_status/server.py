@@ -31,6 +31,7 @@ class TimestampAndValuePair:
 class PrometheusData:
     instance: str
     job: str
+    hasData: bool
     is_up: bool
     values: List[TimestampAndValuePair]
 
@@ -38,6 +39,7 @@ class PrometheusData:
         return {
             "instance": self.instance,
             "job": self.job,
+            "hasData": self.hasData,
             "is_up": self.is_up,
             "values": [v.to_dict() for v in self.values]
         }
@@ -76,6 +78,11 @@ def get_args() -> argparse.Namespace:
 
 
 args = get_args()
+
+def check_epoch_aggreement(epoch_time: int, assumed_epoch: int) -> bool:
+    #Ensures the epoch times from the data set are within the expected range, using the global scrape intervval for reference
+    aggreement = abs(epoch_time - assumed_epoch) < 5
+    return aggreement
 
 
 def get_prometheus_data() -> list[PrometheusData]:
@@ -123,18 +130,46 @@ def get_prometheus_data() -> list[PrometheusData]:
             maybe_job = service_dict.get("metric", {}).get("job", "NO JOB AVAILABLE")
             maybe_values = service_dict.get("values", [])
 
+    
             timestamps_and_values = []
-            for epoch_time, value in maybe_values:
-                timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch_time))
-                timestamps_and_values.append(TimestampAndValuePair(timestamp, value))
+            
+            expected_epochs = []
+            # generate the expected epoch times based on start time and 1 hour intervals
+            current_epoch = int(params.get("start"))
+            for _ in range(24):
+                expected_epochs.append(current_epoch)
+                current_epoch += 3600
+            for epoch_value in expected_epochs:
+                #catch for if the maybe_values queue is empty
+                if not maybe_values:
+                    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch_value))
+                    timestamps_and_values.append(TimestampAndValuePair(timestamp, "-1")) #-1 for no data
+                    continue
 
+                actual_epoch = maybe_values[0][0]
+                if not check_epoch_aggreement(int(actual_epoch), epoch_value):
+                    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch_value))
+                    timestamps_and_values.append(TimestampAndValuePair(timestamp, "-1")) #-1 for no data
+                else:
+                    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(actual_epoch))
+                    timestamps_and_values.append(TimestampAndValuePair(timestamp, maybe_values[0][1]))
+                    maybe_values.pop(0)
+   
             # the service is up if the maximum timestamp's value is "1"
             # prometheus returns data with the greatest timestamp last
             is_up = False
+            hasData = False
             if timestamps_and_values:
-                is_up = timestamps_and_values[-1].value == "1"
+                if timestamps_and_values[-1].value == "-1":
+                    is_up = False
+                    hasData = False
+                else:
+                    hasData = True
+                    is_up = timestamps_and_values[-1].value == "1"
+                    
+                
             service = PrometheusData(
-                maybe_instance, maybe_job, is_up, timestamps_and_values
+                maybe_instance, maybe_job, hasData, is_up, timestamps_and_values
             )
             result.append(service)
 
