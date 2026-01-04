@@ -25,7 +25,7 @@ scrape_configs:
   
   - job_name: 'SCE-sign2'
     static_configs:
-      - targets: ['192.168.69.123:8000']
+      - targets: ['sce-sign2:8080']
 
 alerting:
   alertmanagers:
