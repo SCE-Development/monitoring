@@ -92,4 +92,14 @@ wrapper.AddPanel(
     unit=SECONDS
 )
 
+wrapper.AddPanel(
+    title="Custom Metric (SECONDS)",
+    queries=[
+        ExpressionAndLegendPair(
+            'custom_metric_seconds{job="SCE-sign2"}',
+        ),
+    ],
+    unit=SECONDS
+)
+
 dashboard = wrapper.Render()
