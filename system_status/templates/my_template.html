@@ -109,7 +109,9 @@
             {% for item in data %}
             {% set job = item.job %}
 
-            {% if item.is_up %}
+            {% if not item.hasData %}
+            {% set status = "⚠️ NO DATA" %}
+            {% elif item.is_up %}
             {% set status = "✅ UP" %}
             {% else %}
             {% set status = "❌ DOWN" %}
@@ -122,7 +124,9 @@
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
                     {% for value in item.values %}
-                        {% if value.value == "1" %}
+                        {% if value.value == "-1" %}
+                            ⚠️
+                        {% elif value.value == "1" %}
                             ✅
                         {% else %}
                             ❌
