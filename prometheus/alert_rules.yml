@@ -87,7 +87,7 @@ groups:
           summary: The printer has no more ink
           description: Percent is 0
       - alert: PrinterLowInkPagesLeft
-        expr: snmp_metric{name="ink_level"} < 100
+        expr: snmp_metric{name="pages_remaining"} < 100
         for: 1m
         labels:
           severity: critical
