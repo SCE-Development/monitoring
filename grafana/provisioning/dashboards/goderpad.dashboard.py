@@ -27,17 +27,6 @@ wrapper.AddPanel(
 )
 
 wrapper.AddPanel(
-    title="HTTP Request Duration Seconds",
-    queries=[
-        ExpressionAndLegendPair(
-            'http_request_duration_seconds{job="goderpad"}',
-            "{{code}} {{path}}",
-        ),
-    ],
-    unit=SECONDS,
-)
-
-wrapper.AddPanel(
     title="Rooms Active",
     queries=[
         ExpressionAndLegendPair(
@@ -95,7 +84,7 @@ wrapper.AddPanel(
     title="Room Expiry Last Run",
     queries=[
         ExpressionAndLegendPair(
-            'room_expiry_last_run{job="goderpad"}',
+            'time() - room_expiry_last_run{job="goderpad"}',
         ),
     ],
 )
