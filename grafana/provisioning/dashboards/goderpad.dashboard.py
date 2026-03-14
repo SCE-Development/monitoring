@@ -87,6 +87,7 @@ wrapper.AddPanel(
             'time() - room_expiry_last_run{job="goderpad"}',
         ),
     ],
+    unit=SECONDS,
 )
 
 dashboard = wrapper.Render()
