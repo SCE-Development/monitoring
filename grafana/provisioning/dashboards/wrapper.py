@@ -48,10 +48,11 @@ class ExpressionAndLegendPair:
 class SceGrafanalibWrapper:
     MAX_WIDTH: Final[int] = 24
 
-    def __init__(self, title, panel_width=12, panel_height=8):
+    def __init__(self, title, description="", panel_width=12, panel_height=8):
         self.rows = []
         self.panels = []
         self.title = title
+        self.description = description
         self.current_x = 0
         self.current_y = 0
         self.panel_width = min(panel_width, self.MAX_WIDTH)
@@ -79,8 +80,7 @@ class SceGrafanalibWrapper:
             )
         )
 
-    def AddPanel(
-        self,
+    def CreatePanel(self,
         title,
         queries: list[ExpressionAndLegendPair],
         unit="",
@@ -90,8 +90,8 @@ class SceGrafanalibWrapper:
         fillOpacity=None,
         showPoints=None,
         stacking=None,
-        extraJson=None,
-    ):
+        extraJson=None):
+
         targets = []
         iterator = RefIdGenerator()
         for query in queries:
@@ -160,18 +160,108 @@ class SceGrafanalibWrapper:
             panel.unit = unit
         elif hasattr(panel, "format"):
             panel.format = unit
-        row_or_panel = self.rows[-1].panels if self.rows else self.panels
-        row_or_panel.append(panel)
+        return panel
+
+    def AddPanel(
+        self,
+        title,
+        queries: list[ExpressionAndLegendPair],
+        unit="",
+        dydt=False,
+        panel_type_enum=PanelType.TIME_SERIES,
+        lineWidth=None,
+        fillOpacity=None,
+        showPoints=None,
+        stacking=None,
+        extraJson=None,
+    ):
+        '''
+        Add panel under a new defined row
+        
+        :param title: panel title
+        :param queries: Description
+        :type queries: list[ExpressionAndLegendPair] 
+        :param unit: Y-axis unit/format 'percent' , 'bytes/sec', 'short'
+        :param dydt: if true aluto-generates two targets per query
+        :param panel_type_enum: panel visualization PanelType.TIME_SERIES , PanelType.GAUGE , PanelType.BARGAUGE , PanelType.STAT
+        :param lineWidth: line thickness 1-10
+        :param fillOpacity: area fill transparency 0.0-1.0
+        :param showPoints: point visibility "never" , "auto" , "always"
+        :param stacking: stacking mode "off" , "normal" , "100%"
+        :param extraJson: dict of raw JSON for panel constructor
+        '''
+    
+        panel = self.CreatePanel(
+            title,
+            queries,
+            unit,
+            dydt,
+            panel_type_enum,
+            lineWidth,
+            fillOpacity,
+            showPoints,
+            stacking,
+            extraJson)
+
+        # add the new panel as a new Row
+        row = Row(title=title, panels=[panel])
+        self.rows.append(row)
+        self.current_y += self.panel_height   
+
+    def AddPanelToRow(
+        self,
+        title,
+        queries: list[ExpressionAndLegendPair],
+        unit="",
+        dydt=False,
+        panel_type_enum=PanelType.TIME_SERIES,
+        lineWidth=None,
+        fillOpacity=None,
+        showPoints=None,
+        stacking=None,
+        extraJson=None,
+    ):
+        '''
+        Add panel to latest defined row
+        
+        :param title: panel title
+        :param queries: Description
+        :type queries: list[ExpressionAndLegendPair] 
+        :param unit: Y-axis unit/format 'percent' , 'bytes/sec', 'short'
+        :param dydt: if true aluto-generates two targets per query
+        :param panel_type_enum: panel visualization PanelType.TIME_SERIES , PanelType.GAUGE , PanelType.BARGAUGE , PanelType.STAT
+        :param lineWidth: line thickness 1-10
+        :param fillOpacity: area fill transparency 0.0-1.0
+        :param showPoints: point visibility "never" , "auto" , "always"
+        :param stacking: stacking mode "off" , "normal" , "100%"
+        :param extraJson: dict of raw JSON for panel constructor
+        '''
+        if not self.rows:
+            raise ValueError("No rows defined for this dashboard")
+
+        panel = self.CreatePanel(
+            title,
+            queries,
+            unit,
+            dydt,
+            panel_type_enum,
+            lineWidth,
+            fillOpacity,
+            showPoints,
+            stacking,
+            extraJson)
+
+        self.rows[-1].panels.append(panel) 
         self.current_x += self.panel_width
         if self.current_x >= self.MAX_WIDTH:
             self.current_y += self.panel_height
             self.current_x = 0
-
+    
     def Render(self):
+        valid_rows = [r for r in self.rows if r.panels]
         return Dashboard(
             title=self.title,
-            rows=self.rows,
-            panels=self.panels,
+            rows=valid_rows,
             timezone="browser",
             templating=Templating(list=self.templates),
         ).auto_panel_ids()
