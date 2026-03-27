@@ -79,13 +79,21 @@ groups:
           summary: The paper tray of the printer is empty
           description: Status code is not 0
       - alert: PrinterRunningOutOfInk
-        expr: ink_percent < 0.3
+        expr: snmp_metric{name="ink_level"} < 30
         for: 1m
         labels:
           severity: critical
         annotations:
           summary: The printer has no more ink
           description: Percent is 0
+      - alert: PrinterLowInkPagesLeft
+        expr: snmp_metric{name="pages_remaining"} < 100
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Printer ink capacity (num of printable pages) depleted
+          description: No more pages can be printed due to ink capacity
       - alert: StreamNotBeingReceived
         expr: receive_stream_running{job="SCE-tv-pi"} != 1
         for: 1m
