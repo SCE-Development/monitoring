@@ -1,7 +1,7 @@
 from grafanalib.core import Dashboard, Templating, Template, TimeSeries, Target, GridPos
-from grafanalib.formatunits import SECONDS
+from grafanalib.formatunits import SECONDS, NUMBER_FORMAT
 
-from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair
+from wrapper import SceGrafanalibWrapper, ExpressionAndLegendPair, PanelType
 
 wrapper = SceGrafanalibWrapper(title='goderpad')
 
@@ -14,16 +14,28 @@ wrapper.AddPanel(
         ),
     ],
     unit=SECONDS,
+    panel_type_enum=PanelType.STAT,
 )
 
 wrapper.AddPanel(
     title="Endpoint Hits",
     queries=[
         ExpressionAndLegendPair(
-            'endpoint_hits_total{job="goderpad", path!~"/metrics|.*[.].*"}',
+            'endpoint_hits{job="goderpad", path!~"/metrics|.*[.].*"}',
             "{{code}} {{path}}",
         ),
     ],
+    unit=NUMBER_FORMAT,
+    panel_type_enum=PanelType.BARGAUGE,
+    extraJson={
+        'options': {
+            'fieldOptions': {
+                "calcs": [
+                    "lastNotNull"
+                ],
+            },
+        }
+    }
 )
 
 wrapper.AddPanel(
