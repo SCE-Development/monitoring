@@ -100,6 +100,7 @@ wrapper.AddPanel(
         ),
     ],
     unit=SECONDS,
+    panel_type_enum=PanelType.STAT,
 )
 
 dashboard = wrapper.Render()
