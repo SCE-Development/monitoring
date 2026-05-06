@@ -3,189 +3,467 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCE Service Status</title>
     <style>
-        table {
-            border-collapse: collapse;
-            margin: 0;
-            padding: 0;
-            border-spacing: 0;
-            vertical-align: top;
-        }
-        th,
-        td {
-            margin: 0;
-            padding: 4px 8px;
-            vertical-align: top;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-        tr{
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover{
-            background-color: #ADD8E6
-        }
-
-        .highlighted {
-            background-color: #ADD8E6;
-        }
-
-        .sticky-col {
-            position: sticky;
-            left: 0;
-            background: #ffffff;
-            z-index: 1; 
-        }
-        h1{
-            margin-block-start: 0.0em;
-            margin-block-end: 0.0em;
-            display: inline-block;
-        }
-        .container {
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg: #2d3748;
+            --bg-card: #3a4556;
+            --bg-header: #1e2a3a;
+            --bg-hover: #4a5568;
+            --bg-highlight: #4a5f78;
+            --accent: #4fd1c5;
+            --accent-dark: #38b2ac;
+            --green: #38a169;
+            --green-bg: rgba(56, 161, 105, 0.18);
+            --red: #e53e3e;
+            --red-bg: rgba(229, 62, 62, 0.18);
+            --text: #e2e8f0;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #4a5568;
+            --radius: 10px;
+            --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.4);
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        #status_table {
-            overflow-x: auto; 
-            white-space: nowrap; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
         }
 
-        #sce_logo {
-            width: 53px;
-            margin-right: 20px;
-        }
-
-        #outside_container {
+        /* ── Header ── */
+        .header {
+            background: var(--bg-header);
+            color: #fff;
+            padding: 24px 32px;
             display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
         }
 
-        #range_data_container {
-            margin-left: 20px;
+        .header img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 4px;
         }
 
-        .current_table_data {
-            margin-right: 2px;
+        .header-text h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
 
-        #info_container{
-            display: inline-block;
+        .header-text .subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 2px;
         }
+
+        .header-right {
+            margin-left: auto;
+            text-align: right;
+            font-size: 13px;
+            opacity: 0.85;
+            line-height: 1.6;
+        }
+
+        .header-right .clock {
+            font-size: 18px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            opacity: 1;
+        }
+
+        /* ── Summary Banner ── */
+        .summary-bar {
+            display: flex;
+            gap: 16px;
+            padding: 20px 32px;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 160px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--border);
+        }
+
+        .summary-card.up { border-left-color: var(--green); }
+        .summary-card.down { border-left-color: var(--red); }
+        .summary-card.total { border-left-color: var(--accent); }
+
+        .summary-card .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 2px;
+            color: var(--text);
+        }
+
+        .summary-card.up .value { color: var(--green); }
+        .summary-card.down .value { color: var(--red); }
+        .summary-card.total .value { color: var(--accent); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ── Table Card ── */
+        .table-container {
+            margin: 16px 32px 32px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            background: var(--bg-header);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        thead th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: var(--bg-header);
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody td:first-child {
+            position: sticky;
+            left: 0;
+            background: var(--bg-card);
+            z-index: 1;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        tbody tr {
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+
+        tbody tr:hover td {
+            background: var(--bg-hover);
+        }
+
+        tbody tr:hover td:first-child {
+            background: var(--bg-hover);
+        }
+
+        tbody tr.highlighted td {
+            background: var(--bg-highlight) !important;
+        }
+
+        tbody tr.highlighted td:first-child {
+            background: var(--bg-highlight) !important;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ── Status Badge ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge.up {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .status-badge.down {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .status-badge .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .status-badge.up .badge-dot { background: var(--green); }
+        .status-badge.down .badge-dot { background: var(--red); animation: pulse 2s infinite; }
+
+        /* ── Detail / Instance ── */
+        .detail-text {
+            color: var(--text-dim);
+            font-size: 13px;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+        }
+
+        /* ── History Bar ── */
+        .history-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            position: relative;
+        }
+
+        .history-block {
+            width: 18px;
+            height: 24px;
+            border-radius: 3px;
+            transition: transform 0.15s ease;
+            cursor: default;
+            position: relative;
+        }
+
+        .history-block:hover {
+            transform: scaleY(1.3);
+            z-index: 10;
+        }
+
+        .history-block::after {
+            content: attr(data-time);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gray-800);
+            color: #fff;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .history-block:hover::after {
+            opacity: 1;
+        }
+
+        .history-block.up { background: var(--green); }
+        .history-block.down { background: var(--red); }
+
+        .history-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--text-dim);
+            margin: 0 2px;
+            flex-shrink: 0;
+            align-self: flex-start;
+        }
+
+        /* ── Legend ── */
+        .legend {
+            display: flex;
+            gap: 16px;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-header);
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .legend-swatch {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .legend-swatch.up { background: var(--green); }
+        .legend-swatch.down { background: var(--red); }
+        .legend-swatch.no-data { background: var(--text-dim); }
+
     </style>
 </head>
 
 <body>
 
-    <div id = "info_container">
-        <img id="sce_logo" alt="SCE_Logo">
-        <h1>How are our services doing ???</h1>
-        <h2>Current Time: <span id = "clock"></span></h2>
-        <h2 id="fetch_time">Fetch Time: {{ fetch_time }}</h2>
+    <!-- Header -->
+    <div class="header">
+        <img id="sce_logo" alt="SCE Logo">
+        <div class="header-text">
+            <h1>How are our services doing ???</h1>
+        </div>
+        <div class="header-right">
+            <div class="clock" id="clock"></div>
+            <div>Data fetched: {{ fetch_time }}</div>
+        </div>
     </div>
 
+    <!-- Summary Cards -->
+    <div class="summary-bar">
+        <div class="summary-card total">
+            <div class="label">Total Services</div>
+            <div class="value" id="total-count">0</div>
+        </div>
+        <div class="summary-card up">
+            <div class="label">Up</div>
+            <div class="value" id="up-count">0</div>
+        </div>
+        <div class="summary-card down">
+            <div class="label">Down</div>
+            <div class="value" id="down-count">0</div>
+        </div>
+    </div>
 
-    <div id="outside_container">
-    <div id="current_data_container">
-        <table id="status_table">
-            <tr><th class="sticky-col" style="text-align: left; padding-right: 2px">✅ Up | ❌ Down | ⚠️ No Data</th></tr>
-            <tr>
-                <th class="sticky-col" style="text-align: left; padding-right: 2px">Job Name</th>
-                <th style="text-align: left; padding-right: 2px">Status</th>
-                <th style="text-align: left; padding-right: 2px">Detail</th>
-                <th>
-                    <div style="display: inline">Prev. Day</div>
-                    <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
-                    <div style="display: inline">History of past 24 Hours</div>
-                    <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
-                    <div style="display: inline">Now</div>
-                </th>
-            </tr>
-            {% for item in data %}
-            {% set job = item.job %}
-
-            {% if item.is_up %}
-            {% set status = "✅ UP" %}
-            {% else %}
-            {% set status = "❌ DOWN" %}
-            {% endif %}
-            {% set detail = item.instance %}
-            <tr class="current_table_data" onclick="highlightRow(this)">
-                <td class="sticky-col">{{ job }}</td>
-                <td>{{ status }}</td> {# This TD is for the "Status" column #}
-                <td>{{ detail }}</td>
-                {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
-                <td>
-                    {% for value in item.values %}
-                        {% if value.value == "1" %}
-                            ✅
-                        {% else %}
-                            ❌
-                        {% endif %}
-                        {# the below if-statement adds a vertical line for every four entries #}
-                        {% if (not loop.index % 4) and loop.index < 24%}
-                            |
-                        {% endif %}
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>Instance</th>
+                        <th>Prev. Day ◀➖➖➖➖➖➖➖➖ History of past 24 Hours ➖➖➖➖➖➖➖➖▶ Now</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr onclick="highlightRow(this)">
+                        <td>{{ item.job }}</td>
+                        <td>
+                            {% if item.is_up %}
+                            <span class="status-badge up"><span class="badge-dot"></span>UP</span>
+                            {% else %}
+                            <span class="status-badge down"><span class="badge-dot"></span>Down</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="detail-text">{{ item.instance }}</span></td>
+                        <td>
+                            <div class="history-bar">
+                                {% for value in item.values %}
+                                    {% if value.value == "1" %}
+                                        <div class="history-block up" data-time="{{ value.timestamp }}"></div>
+                                    {% else %}
+                                        <div class="history-block down" data-time="{{ value.timestamp }}"></div>
+                                    {% endif %}
+                                    {% if loop.index0 % 6 == 5 and not loop.last %}
+                                        <div class="history-sep"></div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </td>
-                {# END OF CORRECTED SECTION #}
-
-                {# The original template had an unclosed <td> and then {% endfor %}.
-                   You also need to make sure you have enough <td> elements
-                   to match your <th> headers.
-                   Based on your <th>s: Job Name, Status, Detail, History.
-                   You only had 2 <td>s initially.
-                #}
-            </tr>
-            {% endfor %}
-        </table>
+                </tbody>
+            </table>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-swatch up"></div>Up</div>
+            <div class="legend-item"><div class="legend-swatch down"></div>Down</div>
+            <div class="legend-item"><div class="legend-swatch no-data"></div>No Data</div>
+        </div>
     </div>
-</div>
+
     <script>
+        // Logo
         const img = document.getElementById('sce_logo');
         const imageUrl = new URL('static/img/sce.jpg', window.location.href);
         img.src = imageUrl.href;
 
+        // Clock
         const timeElement = document.getElementById("clock");
-
         function updateTime() {
             const now = new Date();
             const year = now.getFullYear();
-            const month = now.getMonth() + 1 ;
-            const date = now.getDate();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-
-            // Format the string with leading zeroes
-            const dayStr = `${year.toString()}-${month.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
-            const clockStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            timeElement.innerText = `${dayStr} ${clockStr} - PDT/PST`;
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const date = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            timeElement.innerText = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
         }
-
-        // Call initially to display time immediately
         updateTime();
-
-        // Update every second
         setInterval(updateTime, 1000);
+
+        // Row highlight
         function highlightRow(clickedRow) {
-            if (clickedRow.classList.contains('highlighted')){
-                clickedRow.classList.remove("highlighted");
+            if (clickedRow.classList.contains('highlighted')) {
+                clickedRow.classList.remove('highlighted');
                 return;
             }
-
-            document.querySelectorAll("tr").forEach(row => {
-                row.classList.remove("highlighted");
-            });
-
-            clickedRow.classList.add("highlighted");
-
+            document.querySelectorAll('tbody tr').forEach(row => row.classList.remove('highlighted'));
+            clickedRow.classList.add('highlighted');
         }
+
+        // Summary counts
+        const rows = document.querySelectorAll('tbody tr');
+        let upCount = 0, downCount = 0;
+        rows.forEach(row => {
+            const badge = row.querySelector('.status-badge');
+            if (badge && badge.classList.contains('up')) upCount++;
+            else downCount++;
+        });
+        document.getElementById('total-count').textContent = rows.length;
+        document.getElementById('up-count').textContent = upCount;
+        document.getElementById('down-count').textContent = downCount;
+
     </script>
 
 </body>
