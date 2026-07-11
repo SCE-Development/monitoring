@@ -64,7 +64,7 @@ services:
   pushgateway:
     image: prom/pushgateway:latest
     restart: unless-stopped
-    ports: 
+    ports:
       - 9091:9091
 
 volumes:
