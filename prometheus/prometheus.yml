@@ -1,7 +1,6 @@
 global:
   scrape_interval: 5s
 
-
 scrape_configs:
   - job_name: 'SCE-printer'
     static_configs:
@@ -36,4 +35,3 @@ alerting:
 
 rule_files:
   - alert_rules.yml
-
