@@ -74,6 +74,57 @@
             margin-right: 2px;
         }
 
+        .history-marker {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            outline-offset: 2px;
+        }
+
+        .history-marker::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 8px);
+            transform: translateX(-50%);
+            visibility: hidden;
+            opacity: 0;
+            z-index: 10;
+            padding: 6px 8px;
+            border-radius: 4px;
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        .history-marker::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 2px);
+            transform: translateX(-50%);
+            visibility: hidden;
+            opacity: 0;
+            border: 4px solid transparent;
+            border-top-color: #222;
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        .history-marker:hover::before,
+        .history-marker:hover::after,
+        .history-marker:focus::before,
+        .history-marker:focus::after {
+            visibility: visible;
+            opacity: 1;
+        }
+
         #info_container{
             display: inline-block;
         }
@@ -122,11 +173,12 @@
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
                     {% for value in item.values %}
-                        {% if value.value == "1" %}
-                            ✅
-                        {% else %}
-                            ❌
-                        {% endif %}
+                        <span
+                            class="history-marker"
+                            data-tooltip="{{ value.timestamp }}"
+                            aria-label="Status at {{ value.timestamp }}"
+                            tabindex="0"
+                        >{% if value.value == "1" %}✅{% else %}❌{% endif %}</span>
                         {# the below if-statement adds a vertical line for every four entries #}
                         {% if (not loop.index % 4) and loop.index < 24%}
                             |
