@@ -122,11 +122,13 @@
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
                     {% for value in item.values %}
+                    <span title="{{value.timestamp}}" style="cursor: help">
                         {% if value.value == "1" %}
                             ✅
                         {% else %}
                             ❌
                         {% endif %}
+                    </span>
                         {# the below if-statement adds a vertical line for every four entries #}
                         {% if (not loop.index % 4) and loop.index < 24%}
                             |
