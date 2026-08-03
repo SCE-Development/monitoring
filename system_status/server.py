@@ -4,7 +4,6 @@ import uvicorn
 import requests
 from dataclasses import dataclass
 from typing import List
-import time
 from zoneinfo import ZoneInfo
 
 from urllib.parse import urljoin
@@ -13,6 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
+
+DISPLAY_TIMEZONE = ZoneInfo("America/Los_Angeles")
 
 
 @dataclass
@@ -125,7 +127,10 @@ def get_prometheus_data() -> list[PrometheusData]:
 
             timestamps_and_values = []
             for epoch_time, value in maybe_values:
-                timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch_time))
+                local_timestamp = datetime.datetime.fromtimestamp(
+                    epoch_time, DISPLAY_TIMEZONE
+                )
+                timestamp = local_timestamp.strftime("%Y-%m-%d | %H:%M:%S %Z")
                 timestamps_and_values.append(TimestampAndValuePair(timestamp, value))
 
             # the service is up if the maximum timestamp's value is "1"
@@ -147,7 +152,7 @@ def get_prometheus_data() -> list[PrometheusData]:
 # expects an optional parameter as the target URL
 @app.get("/", response_class=HTMLResponse)
 def page_generator(request: Request):
-    local_datetime = datetime.datetime.now(ZoneInfo("America/Los_Angeles"))
+    local_datetime = datetime.datetime.now(DISPLAY_TIMEZONE)
 
     fetch_time = local_datetime.strftime("%Y-%m-%d %H:%M:%S")
     data = get_prometheus_data()
