@@ -150,11 +150,11 @@
                 <th style="text-align: left; padding-right: 2px">Status</th>
                 <th style="text-align: left; padding-right: 2px">Detail</th>
                 <th>
-                    <div style="display: inline">Prev. Day</div>
+                    <div style="display: inline">Most Recent</div>
                     <div style="display: inline"> ◀➖➖➖➖➖➖➖➖ </div>
                     <div style="display: inline">History of past 24 Hours</div>
                     <div style="display: inline"> ➖➖➖➖➖➖➖➖▶ </div>
-                    <div style="display: inline">Now</div>
+                    <div style="display: inline">Earlier</div>
                 </th>
             </tr>
             {% for item in data %}
@@ -172,7 +172,7 @@
                 <td>{{ detail }}</td>
                 {# THIS IS THE CORRECTED SECTION for the EMOJI HISTORY #}
                 <td>
-                    {% for value in item.values %}
+                    {% for value in item.values | reverse %}
                         <span
                             class="history-marker"
                             data-tooltip="{{ value.timestamp }}"
