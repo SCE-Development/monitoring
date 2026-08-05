@@ -3,7 +3,7 @@ import datetime
 import uvicorn
 import requests
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 from zoneinfo import ZoneInfo
 
 from urllib.parse import urljoin
@@ -15,12 +15,15 @@ from fastapi.staticfiles import StaticFiles
 
 
 DISPLAY_TIMEZONE = ZoneInfo("America/Los_Angeles")
+HISTORY_POINT_COUNT = 24
+HISTORY_STEP_SECONDS = 60 * 60
+HISTORY_TIMESTAMP_TOLERANCE_SECONDS = 5
 
 
 @dataclass
 class TimestampAndValuePair:
     timestamp: str
-    value: str
+    value: Optional[str]
 
     def to_dict(self):
         return {
@@ -33,6 +36,7 @@ class TimestampAndValuePair:
 class PrometheusData:
     instance: str
     job: str
+    has_data: bool
     is_up: bool
     values: List[TimestampAndValuePair]
 
@@ -40,6 +44,7 @@ class PrometheusData:
         return {
             "instance": self.instance,
             "job": self.job,
+            "has_data": self.has_data,
             "is_up": self.is_up,
             "values": [v.to_dict() for v in self.values]
         }
@@ -80,6 +85,36 @@ def get_args() -> argparse.Namespace:
 args = get_args()
 
 
+def build_history_values(
+    prometheus_values: list, start_epoch: int
+) -> List[TimestampAndValuePair]:
+    """Return 24 fixed hourly slots, using None when Prometheus has no sample."""
+    values_by_slot = {}
+    for epoch_time, value in prometheus_values:
+        epoch_time = float(epoch_time)
+        slot = round((epoch_time - start_epoch) / HISTORY_STEP_SECONDS)
+        expected_epoch = start_epoch + slot * HISTORY_STEP_SECONDS
+        if (
+            0 <= slot < HISTORY_POINT_COUNT
+            and abs(epoch_time - expected_epoch)
+            <= HISTORY_TIMESTAMP_TOLERANCE_SECONDS
+        ):
+            values_by_slot[slot] = value
+
+    history_values = []
+    for slot in range(HISTORY_POINT_COUNT):
+        epoch_time = start_epoch + slot * HISTORY_STEP_SECONDS
+        local_timestamp = datetime.datetime.fromtimestamp(
+            epoch_time, DISPLAY_TIMEZONE
+        )
+        timestamp = local_timestamp.strftime("%Y-%m-%d | %H:%M:%S %Z")
+        history_values.append(
+            TimestampAndValuePair(timestamp, values_by_slot.get(slot))
+        )
+
+    return history_values
+
+
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
@@ -107,9 +142,11 @@ def get_prometheus_data() -> list[PrometheusData]:
     now = datetime.datetime.now()
     params = {
         "query": 'min_over_time(up{job!=""}[1h])',
-        "start": int((now - datetime.timedelta(hours=23)).timestamp()),
+        "start": int(
+            (now - datetime.timedelta(hours=HISTORY_POINT_COUNT - 1)).timestamp()
+        ),
         "end": int(now.timestamp()),
-        "step": "1h",
+        "step": str(HISTORY_STEP_SECONDS),
     }
     result = []
     try:
@@ -125,21 +162,21 @@ def get_prometheus_data() -> list[PrometheusData]:
             maybe_job = service_dict.get("metric", {}).get("job", "NO JOB AVAILABLE")
             maybe_values = service_dict.get("values", [])
 
-            timestamps_and_values = []
-            for epoch_time, value in maybe_values:
-                local_timestamp = datetime.datetime.fromtimestamp(
-                    epoch_time, DISPLAY_TIMEZONE
-                )
-                timestamp = local_timestamp.strftime("%Y-%m-%d | %H:%M:%S %Z")
-                timestamps_and_values.append(TimestampAndValuePair(timestamp, value))
+            timestamps_and_values = build_history_values(
+                maybe_values, params["start"]
+            )
 
             # the service is up if the maximum timestamp's value is "1"
             # prometheus returns data with the greatest timestamp last
-            is_up = False
-            if timestamps_and_values:
-                is_up = timestamps_and_values[-1].value == "1"
+            latest_value = timestamps_and_values[-1].value
+            has_data = latest_value is not None
+            is_up = latest_value == "1"
             service = PrometheusData(
-                maybe_instance, maybe_job, is_up, timestamps_and_values
+                maybe_instance,
+                maybe_job,
+                has_data,
+                is_up,
+                timestamps_and_values,
             )
             result.append(service)
 
