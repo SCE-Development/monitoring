@@ -4,4 +4,4 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: "http://one.sce/prometheus"
+    url: "http://prometheus-federated:9090"
