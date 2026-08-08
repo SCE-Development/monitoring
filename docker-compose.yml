@@ -97,6 +97,21 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - portainer_data:/data
 
+  scraper:
+    container_name: system_status
+    build:
+      context: .
+      dockerfile: ./status/dockerfile
+    volumes:
+      - ./status/health.html:/app/health.html
+      - ./status/json.json:/app/json.json
+    restart: 'on-failure'
+    command:  
+      - --config json.json 
+      - --prometheus_url "http://one.sce/prometheus"
+      - -vvv
+
+
 volumes:
   alertmanager-data:
   grafana-data:
