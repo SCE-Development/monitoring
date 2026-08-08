@@ -22,8 +22,8 @@ wrapper.AddPanel(
     dydt=False,
     lineWidth=2,
     stacking={'group': 'A','mode': 'none'},
-    # tooltipMode='all',
-    # tooltipSort='desc',
+    tooltipMode='all',
+    tooltipSort='desc',
 )
 
 wrapper.AddPanel(
@@ -36,8 +36,8 @@ wrapper.AddPanel(
     ],
     dydt=False,
     lineWidth=2,
-    # tooltipMode='all',
-    # tooltipSort='desc',
+    tooltipMode='all',
+    tooltipSort='desc',
 )
 
 wrapper.AddPanel(
@@ -51,8 +51,8 @@ wrapper.AddPanel(
     ],
     dydt=False,
     lineWidth=2,
-    # tooltipMode='all',
-    # tooltipSort='desc',
+    tooltipMode='all',
+    tooltipSort='desc',
 )
 
 wrapper.AddPanel(
@@ -65,8 +65,8 @@ wrapper.AddPanel(
     ],
     dydt=False,
     lineWidth=2,
-    # tooltipMode='all',
-    # tooltipSort='desc',
+    tooltipMode='all',
+    tooltipSort='desc',
 )
 
 wrapper.AddPanel(
@@ -79,8 +79,8 @@ wrapper.AddPanel(
     ],
     dydt=False,
     lineWidth=2,
-    # tooltipMode='all',
-    # tooltipSort='desc',
+    tooltipMode='all',
+    tooltipSort='desc',
 )
 
 dashboard = wrapper.Render()
