@@ -25,6 +25,11 @@ scrape_configs:
   - job_name: 'SCE-sign2'
     static_configs:
       - targets: ['sce-sign2:8080']
+      
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['pushgateway:9091']
 
 alerting:
   alertmanagers:

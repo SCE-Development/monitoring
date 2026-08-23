@@ -10,6 +10,11 @@ services:
       - ./prometheus:/etc/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+  pushgateway:
+    image: prom/pushgateway:latest
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
   status-page-sshtunnel:
     image: nowsci/sshtunnel
     volumes:
