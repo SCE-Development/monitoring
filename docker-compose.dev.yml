@@ -61,11 +61,6 @@ services:
       - '--path.rootfs=/host'
     pid: host
     restart: unless-stopped
-  pushgateway:
-    image: prom/pushgateway:latest
-    restart: unless-stopped
-    ports:
-      - 9091:9091
 
 volumes:
   alertmanager-data:
