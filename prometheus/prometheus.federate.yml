@@ -14,6 +14,7 @@ scrape_configs:
         - prometheus-clark-sshtunnel:9090
         - prometheus-poweredge:9090
   - job_name: 'pushgateway'
+    metrics_path: '/push/metrics'
     static_configs:
       - targets: ['pushgateway:9091']
 
