@@ -160,7 +160,9 @@
             {% for item in data %}
             {% set job = item.job %}
 
-            {% if item.is_up %}
+            {% if not item.has_data %}
+            {% set status = "⚠️ NO DATA" %}
+            {% elif item.is_up %}
             {% set status = "✅ UP" %}
             {% else %}
             {% set status = "❌ DOWN" %}
@@ -176,9 +178,9 @@
                         <span
                             class="history-marker"
                             data-tooltip="{{ value.timestamp }}"
-                            aria-label="Status at {{ value.timestamp }}"
+                            aria-label="{% if value.value is none %}No data{% elif value.value == "1" %}Up{% else %}Down{% endif %} at {{ value.timestamp }}"
                             tabindex="0"
-                        >{% if value.value == "1" %}✅{% else %}❌{% endif %}</span>
+                        >{% if value.value is none %}⚠️{% elif value.value == "1" %}✅{% else %}❌{% endif %}</span>
                         {# the below if-statement adds a vertical line for every four entries #}
                         {% if (not loop.index % 4) and loop.index < 24%}
                             |
