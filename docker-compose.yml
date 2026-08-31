@@ -16,10 +16,10 @@ services:
     command:
       - '--web.route-prefix=/push'
       - '--web.external-url=http://localhost/push/'
-    ports:
-      - "9091:9091"
-  status-page-sshtunnel:
+  # this container is for clark to reach poweredge stuff like the status page
+  unified-sshtunnel:
     image: nowsci/sshtunnel
+    restart: unless-stopped
     volumes:
       - ~/.ssh/id_ed25519-tunnel.pub:/app/ssh_key.pub
       - ~/.ssh/id_ed25519-tunnel:/app/ssh_key
@@ -28,10 +28,12 @@ services:
       - REMOTE=true
       - TUNNEL_HOST=sce@10.31.5.15
       - TUNNEL_PORT=22
-      - CONTAINER_HOST=status-page
-      - CONTAINER_PORT=9100
+      - CONTAINER_HOST=poweredge-lb
+      - CONTAINER_PORT=80
       - REMOTE_PORT=17000
       - KEY=/app/ssh_key
+  # this is so the poweredge can scrape metrics from clark
+  # this container is for poweredge to talk to clark
   prometheus-clark-sshtunnel:
     image: nowsci/sshtunnel
     volumes:
