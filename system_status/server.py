@@ -127,15 +127,10 @@ def get_prometheus_data() -> list[PrometheusData]:
 
             timestamps_and_values = []
             for epoch_time, value in maybe_values:
-<<<<<<< HEAD
                 local_timestamp = datetime.datetime.fromtimestamp(
                     epoch_time, DISPLAY_TIMEZONE
                 )
                 timestamp = local_timestamp.strftime("%Y-%m-%d | %H:%M:%S %Z")
-=======
-                pacific_dt = datetime.datetime.fromtimestamp(epoch_time, tz=ZoneInfo("America/Los_Angeles"))
-                timestamp = pacific_dt.strftime("%Y-%m-%d %H:%M:%S")
->>>>>>> 2c1f5d4 (ui changes)
                 timestamps_and_values.append(TimestampAndValuePair(timestamp, value))
 
             # the service is up if the maximum timestamp's value is "1"
