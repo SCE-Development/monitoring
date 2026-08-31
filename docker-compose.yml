@@ -13,6 +13,9 @@ services:
   pushgateway:
     image: prom/pushgateway:latest
     restart: unless-stopped
+    command:
+      - '--web.route-prefix=/push'
+      - '--web.external-url=http://localhost/push/'
     ports:
       - "9091:9091"
   status-page-sshtunnel:
@@ -101,9 +104,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - portainer_data:/data
-  pushgateway:
-    image: prom/pushgateway:latest
-    restart: unless-stopped
 
 volumes:
   alertmanager-data:
