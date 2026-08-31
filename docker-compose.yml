@@ -101,9 +101,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - portainer_data:/data
-  pushgateway:
-    image: prom/pushgateway:latest
-    restart: unless-stopped
 
 volumes:
   alertmanager-data:
