@@ -8,7 +8,7 @@ scrape_configs:
 
   - job_name: 'led-sign'
     static_configs:
-      - targets: ['192.168.69.143:80']
+      - targets: ['192.168.69.144:80']
 
   - job_name: 'SCE-tv'
     static_configs:
