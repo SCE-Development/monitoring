@@ -141,7 +141,7 @@ def get_prometheus_data() -> list[PrometheusData]:
     url = urljoin(args.target, "api/v1/query_range")
     now = datetime.datetime.now()
     params = {
-        "query": 'min_over_time(up{job!=""}[1h])',
+        "query": 'min_over_time(up{job!=""}[1h]) and up{job!=""}',
         "start": int(
             (now - datetime.timedelta(hours=HISTORY_POINT_COUNT - 1)).timestamp()
         ),
