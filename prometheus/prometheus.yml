@@ -27,7 +27,7 @@ scrape_configs:
       - targets: ['sce-sign2:8080']
       
   - job_name: 'pushgateway'
-    honor_labels: true
+    metrics_path: '/push/metrics'
     static_configs:
       - targets: ['pushgateway:9091']
 
