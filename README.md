@@ -1,4 +1,4 @@
-# Monitoring (fs)
+# Monitoring
 
 The SCE Monitoring stack. A diagram of how we aggregate Prometheus metrics into grafana is below:
 
