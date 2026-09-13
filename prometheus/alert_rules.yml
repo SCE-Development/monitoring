@@ -94,4 +94,13 @@ groups:
         annotations:
           summary: Pi is down CALL VIET
           description: The Raspberry Pi has not recieved an RTMP stream for over a minute.
+      - alert: DcdOutOfDoorCodes
+        expr: increase(get_door_code_failure_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: DCD is failing to hand out door codes
+          description: get_door_code_failure_total increased by {{ $value | printf "%.0f" }}
+            in the last 5 minutes, meaning DCD ran out of codes to distribute.
 
