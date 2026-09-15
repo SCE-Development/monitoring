@@ -94,4 +94,11 @@ groups:
         annotations:
           summary: Pi is down CALL VIET
           description: The Raspberry Pi has not recieved an RTMP stream for over a minute.
-
+      - alert: CICDNotConnectedToSmee2
+        expr: is_websocket_connected != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: SCE CICD, specifically "{{ $labels.exported_job }}" has not been connected to smee2 for over 5 minutes
+          description: try restarting the CICD python code in tmux, also check if smee2 is running.
