@@ -148,12 +148,16 @@ wrapper.AddPanel(
     unit=SHORT,
     queries=[
         ExpressionAndLegendPair(
+            expression='receive_stream_current_url{job="SCE-tv-pi"}',
+            legend='SCE TV Pi current stream {{url}}'
+        ),
+        ExpressionAndLegendPair(
             expression='receive_stream_running{job="SCE-tv-pi"}',
-            legend='{{job}}'
+            legend='Is SCE TV Pi Recieving stream?'
         ),
         ExpressionAndLegendPair(
             expression='stream_state{job="SCE-tv"}',
-            legend='{{video_type}}'
+            legend='SCE TV State {{video_type}}'
         ),
     ],
 )
