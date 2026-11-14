@@ -115,6 +115,45 @@ def build_history_values(
     return history_values
 
 
+def get_latest_status_by_service() -> dict:
+    """Return the current value of `up` for each (instance, job) pair."""
+    """
+    the response json looks like:
+    {
+        "status": "success",
+        "data": {
+            "resultType": "vector",
+            "result": [
+                {
+                    "metric": {
+                        "__name__": "up",
+                        "instance": "192.168.69.141:8000",
+                        "job": "SCE-tv-pi"
+                    },
+                    "value": [1753595341, "1"]
+                }
+            ]
+        }
+    }
+    """
+    url = urljoin(args.target, "api/v1/query")
+    response = requests.get(url, params={"query": 'up{job!=""}'})
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    result_list = response.json().get("data", {}).get("result", [])
+
+    latest_status_by_service = {}
+    for service_dict in result_list:
+        metric = service_dict.get("metric", {})
+        maybe_value = service_dict.get("value", [])
+        if len(maybe_value) < 2:
+            continue
+        # value is a [timestamp, value] pair
+        key = (metric.get("instance"), metric.get("job"))
+        latest_status_by_service[key] = maybe_value[1]
+
+    return latest_status_by_service
+
+
 def get_prometheus_data() -> list[PrometheusData]:
     """Sends a PromQL query to Prometheus and returns the results."""
     """
@@ -150,25 +189,33 @@ def get_prometheus_data() -> list[PrometheusData]:
     }
     result = []
     try:
+        # the history query reports a service as down for an hour if it was
+        # down at any moment in that hour, so we ask for the latest status
+        # of each service separately
+        latest_status_by_service = get_latest_status_by_service()
+
         response = requests.get(url, params=params)
         response.raise_for_status()  # Raise an exception for HTTP errors
         response_json = response.json()
         result_list = response_json.get("data", {}).get("result", [])
 
         for service_dict in result_list:
-            maybe_instance = service_dict.get("metric", {}).get(
-                "instance", "NO INSTANCE AVAILABLE"
-            )
-            maybe_job = service_dict.get("metric", {}).get("job", "NO JOB AVAILABLE")
+            metric = service_dict.get("metric", {})
+            maybe_instance = metric.get("instance", "NO INSTANCE AVAILABLE")
+            maybe_job = metric.get("job", "NO JOB AVAILABLE")
             maybe_values = service_dict.get("values", [])
 
             timestamps_and_values = build_history_values(
                 maybe_values, params["start"]
             )
 
-            # the service is up if the maximum timestamp's value is "1"
-            # prometheus returns data with the greatest timestamp last
-            latest_value = timestamps_and_values[-1].value
+            # the last (most recent) history value and the current status
+            # come from the latest status query, the rest of the values
+            # come from the history query
+            latest_value = latest_status_by_service.get(
+                (metric.get("instance"), metric.get("job"))
+            )
+            timestamps_and_values[-1].value = latest_value
             has_data = latest_value is not None
             is_up = latest_value == "1"
             service = PrometheusData(
